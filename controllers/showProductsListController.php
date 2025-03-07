@@ -43,13 +43,13 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 				<div class="col-md-3">
 				<div class="card" style="margin-bottom: 10px;">';
 		if (is_file("./img/producto/" . $rows['image'])) {
-			$tabla .= '<img class="card-img-top mx-auto d-block w-50" src="./img/producto/' . $rows['image'] . '">';
+			$tabla .= '<img class="card-img-top mx-auto d-block img-responsive w-50" src="./img/producto/' . $rows['image'] . '">';
 		} else {
-			$tabla .= '<img class="card-img-top mx-auto d-block w-50" src="./img/producto.png">';
+			$tabla .= '<img class="card-img-top mx-auto d-block img-responsive w-50" src="./img/producto.png">';
 		}
 		$tabla .= '</img>
 			        <div class="card-body">
-                        <h5 class="card-title"><strong>' . $rows['NombreProducto'] . '</strong></h5>
+                        <h5 class="card-title"><strong>' . $rows['nombreProducto'] . '</strong></h5>
 						<hr>
 			              <p class="card-text">
 			                <strong>UPC:</strong> ' . $rows['UPC'] . '<br>
