@@ -50,8 +50,8 @@
                         require_once "./controllers/mainController.php";
 
                         # Eliminar producto #
-                        if (isset($_GET['product_id_del'])) {
-                            require_once "./php/producto_eliminar.php";
+                        if (isset($_GET['idProductDel'])) {
+                            require_once "./controllers/deleteProduct.php";
                         }
 
                         if (!isset($_GET['page'])) {
