@@ -60,12 +60,12 @@
                     }
 
                     $pagina = limpiar_cadena($pagina);
-                    $url = "index.php?page=requestProducts&category_id=$categoria_id&pages="; /* <== */
+                    $url = "index.php?page=requestProducts&CategoriaID=$categoria_id&pages="; /* <== */
                     $registros = 15;
                     $busqueda = "";
 
                     # Paginador producto #
-                    require_once "./php/listInsumos.php";
+                    require_once "./controllers/showProductsListController.php";
                 } else {
                     echo '
                     <div class="has-text-centered col-md-12">
