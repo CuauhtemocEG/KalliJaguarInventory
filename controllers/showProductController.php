@@ -40,11 +40,11 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 	<div class="d-flex justify-content-center row">
 		<div class="col-md-12">
 			<div class="row p-2 bg-white border rounded">
-				<div class="col-md-3 col-lg-2 col-sm-12 col-xl-1 mt-1 is-align-items-center">';
+				<div class="col-md-3 mt-1 is-align-items-center">';
 		if (is_file("./img/producto/" . $rows['image'])) {
-			$tabla .= '<img class="card-img-top mx-auto d-block w-50" src="./img/producto/' . $rows['image'] . '">';
+			$tabla .= '<img class="img-fluid img-responsive rounded product-image w-50" src="./img/producto/' . $rows['image'] . '">';
 		} else {
-			$tabla .= '<img class="card-img-top mx-auto d-block w-50" src="./img/producto.png">';
+			$tabla .= '<img class="img-fluid img-responsive rounded product-image w-50" src="./img/producto.png">';
 		}
 		$res = "";
 
