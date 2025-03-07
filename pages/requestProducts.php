@@ -60,7 +60,7 @@
                     }
 
                     $pagina = limpiar_cadena($pagina);
-                    $url = "index.php?page=requestProducts&category_id=$categoria_id&page="; /* <== */
+                    $url = "index.php?page=requestProducts&category_id=$categoria_id&pages="; /* <== */
                     $registros = 15;
                     $busqueda = "";
 

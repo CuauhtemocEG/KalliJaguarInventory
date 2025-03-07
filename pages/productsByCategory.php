@@ -54,17 +54,17 @@
                             require_once "./controllers/deleteProduct.php";
                         }
 
-                        if (!isset($_GET['page'])) {
+                        if (!isset($_GET['pages'])) {
                             $pagina = 1;
                         } else {
-                            $pagina = (int) $_GET['page'];
+                            $pagina = (int) $_GET['pages'];
                             if ($pagina <= 1) {
                                 $pagina = 1;
                             }
                         }
 
                         $pagina = limpiar_cadena($pagina);
-                        $url = "index.php?page=productsByCategory&idCategory=$categoria_id&page="; /* <== */
+                        $url = "index.php?page=productsByCategory&idCategory=$categoria_id&pages="; /* <== */
                         $registros = 15;
                         $busqueda = "";
 
