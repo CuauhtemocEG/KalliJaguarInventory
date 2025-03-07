@@ -43,9 +43,9 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 				<div class="col-md-3">
 				<div class="card" style="margin-bottom: 10px;">';
 		if (is_file("./img/producto/" . $rows['image'])) {
-			$tabla .= '<img class="card-img-top" src="./img/producto/' . $rows['image'] . '">';
+			$tabla .= '<img class="card-img-top img-fluid img-responsive rounded product-image w-50" src="./img/producto/' . $rows['image'] . '">';
 		} else {
-			$tabla .= '<img class="card-img-top" src="./img/producto.png">';
+			$tabla .= '<img class="card-img-top img-fluid img-responsive rounded product-image w-50" src="./img/producto.png">';
 		}
 		$tabla .= '</img>
 			        <div class="card-body">
