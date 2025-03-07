@@ -56,14 +56,14 @@ if ($total >= 1 && $pagina <= $Npaginas) {
                             <strong>Precio:</strong> $' . $rows['PrecioUnitario'] . '<br>
 							<strong>Disponible:</strong> ' . $rows['Cantidad'] . '<br>
 							<strong>Categoría:</strong> ' . $rows['categoryName'] . '<br>
-							<strong>Registrado por:</strong> ' . $rows['userName'] . ' ' . $rows['usuario_apellido'] . '
+							<strong>Registrado por:</strong> ' . $rows['userName'] . '
 			              </p>
 						<form action="" method="post">
 						  <input type="hidden" name="idProduct" value="' . $rows['ProductoID'] . '">
 						  <input type="hidden" name="precioProduct" value="' . $rows['PrecioUnitario'] . '">
 						  <input type="hidden" name="nameProduct" value="' . $rows['NombreProducto'] . '">
 						  <strong>Cantidad:</strong><br>
-						  <input class="form-control col-md-12" type="text" name="cantidadProduct" value="0">
+						  <input class="form-control col-md-12" type="text" name="cantidadProduct" value="0.0">
 						<hr>
 			            	<div class="has-text-centered">
 			            	    <button type="submit" class="btn btn-warning btn-sm"" name="agregar">Agregar Producto</	button>
