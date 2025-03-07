@@ -16,7 +16,7 @@
                             $categorias = $categorias->fetchAll();
                             foreach ($categorias as $row) {
                                 echo '
-                        <a class="list-group-item list-group-item-action text-white bg-dark" href="index.php?page=requestProducts&CategoriaID=' . $row['CategoriaID'] . '">' . $row['Nombre'] . '</a>';
+                        <a class="list-group-item list-group-item-action text-white bg-dark" href="index.php?page=requestProducts&category_id=' . $row['CategoriaID'] . '">' . $row['Nombre'] . '</a>';
                             }
                         } else {
                             echo '<p class="has-text-centered" >No hay categorías registradas</p>';
@@ -29,7 +29,7 @@
             <hr>
             <div class="row justify-content-center">
                 <?php
-                $categoria_id = (isset($_GET['CategoriaID'])) ? $_GET['CategoriaID'] : 0;
+                $categoria_id = (isset($_GET['category_id'])) ? $_GET['category_id'] : 0;
 
                 /*== Verificando categoria ==*/
                 $check_categoria = conexion();
@@ -60,7 +60,7 @@
                     }
 
                     $pagina = limpiar_cadena($pagina);
-                    $url = "index.php?page=requestProducts&CategoriaID=$categoria_id&pages="; /* <== */
+                    $url = "index.php?page=requestProducts&category_id=$categoria_id&pages="; /* <== */
                     $registros = 15;
                     $busqueda = "";
 

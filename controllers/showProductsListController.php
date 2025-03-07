@@ -2,7 +2,7 @@
 $inicio = ($pagina > 0) ? (($pagina * $registros) - $registros) : 0;
 $tabla = "";
 
-$campos = "Productos.ProductoID,Productos.UPC,Productos.Nombre as NombreProducto,Productos.PrecioUnitario,Productos.Cantidad,Productos.image,Productos.CategoriaID as productCategory,Productos.UsuarioID,Categorias.CategoriaID,Categorias.Nombre as categoryName,Usuarios.UsuarioID,Usuarios.Nombre as userName";
+$campos = "Productos.ProductoID,Productos.UPC,Productos.Nombre as nombreProducto,Productos.PrecioUnitario,Productos.Cantidad,Productos.image,Productos.CategoriaID as productCategory,Productos.UsuarioID,Categorias.CategoriaID,Categorias.Nombre as categoryName,Usuarios.UsuarioID,Usuarios.Nombre as userName";
 
 if (isset($busqueda) && $busqueda != "") {
 
@@ -42,8 +42,8 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 		$tabla .= '
 				<div class="col-md-3">
 				<div class="card" style="margin-bottom: 10px;">';
-		if (is_file("./img/producto/" . $rows['producto_foto'])) {
-			$tabla .= '<img class="card-img-top" src="./img/producto/' . $rows['producto_foto'] . '">';
+		if (is_file("./img/producto/" . $rows['image'])) {
+			$tabla .= '<img class="card-img-top" src="./img/producto/' . $rows['image'] . '">';
 		} else {
 			$tabla .= '<img class="card-img-top" src="./img/producto.png">';
 		}
