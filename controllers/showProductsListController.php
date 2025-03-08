@@ -40,6 +40,8 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 				<div class="row">';
 	foreach ($datos as $rows) {
 
+        $res = "";
+
         if ($rows['Tipo'] == "Pesable") {
 			$res = "Kg";
 			$unidades = $rows['Cantidad'];
