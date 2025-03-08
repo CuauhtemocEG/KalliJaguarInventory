@@ -39,6 +39,23 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 	$tabla .= '<div class="container-fluid mb-3">
 				<div class="row">';
 	foreach ($datos as $rows) {
+
+        if ($rows['Tipo'] == "Pesable") {
+			$res = "Kg";
+			$unidades = $rows['Cantidad'];
+		} else {
+			$res = "Unidades";
+			$unidades = (int) $rows['Cantidad'];
+		}
+
+        $txtDisponibilidad = "";
+
+		if($rows['Cantidad'] > 1) {
+			$txtDisponibilidad = '<h6 class="text-success mt-2">Disponible</h6>';
+		} else {
+			$txtDisponibilidad = '<h6 class="text-danger mt-2">No disponible</h6>';
+		}
+
 		$tabla .= '
 				<div class="col-md-3">
 				<div class="card" style="margin-bottom: 10px;">';
@@ -54,9 +71,10 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 			              <p class="card-text">
 			                <strong>UPC:</strong> ' . $rows['UPC'] . '<br>
                             <strong>Precio:</strong> $' . $rows['PrecioUnitario'] . '<br>
-							<strong>Disponible:</strong> ' . $rows['Cantidad'] . '<br>
+							<strong>Disponible:</strong> ' . $rows['Cantidad'] . ' '.$unidades.'<br>
 							<strong>Categoría:</strong> ' . $rows['categoryName'] . '<br>
-							<strong>Registrado por:</strong> ' . $rows['userName'] . '
+							<strong>Registrado por:</strong> ' . $rows['userName'] . '<br>
+                            '.$txtDisponibilidad.'
 			              </p>
 						<form action="" method="post">
 						  <input type="hidden" name="idProduct" value="' . $rows['ProductoID'] . '">
