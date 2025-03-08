@@ -1,5 +1,5 @@
 <?php
-require_once "./mainController.php";
+require_once "mainController.php";
 // Obtenemos la fecha actual
 $fechaActual = date('Y-m-d');
 
