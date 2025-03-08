@@ -73,7 +73,7 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 			              <p class="card-text">
 			                <strong>UPC:</strong> ' . $rows['UPC'] . '<br>
                             <strong>Precio:</strong> $' . $rows['PrecioUnitario'] . '<br>
-							<strong>Disponible:</strong> ' . $rows['Cantidad'] . ' '.$unidades.'<br>
+							<strong>Disponible:</strong> ' . $rows['Cantidad'] . ' '.$res.'<br>
 							<strong>Categoría:</strong> ' . $rows['categoryName'] . '<br>
 							<strong>Registrado por:</strong> ' . $rows['userName'] . '<br>
                             '.$txtDisponibilidad.'
