@@ -42,12 +42,12 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 
         $result = "";
 
-        if ($rows['Tipo'] == "Pesable") {
-			$result = "Kg";
-			$unidades = $rows['Cantidad'];
-		} else {
-			$result = "Unidades";
+        if ($rows['Tipo'] == "Unidades") {
+			$result = "Pesable";
 			$unidades = (int) $rows['Cantidad'];
+		} else {
+            $result = "Kg";
+			$unidades = $rows['Cantidad'];
 		}
 
         $txtDisponibilidad = "";
