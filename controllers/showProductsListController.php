@@ -40,13 +40,13 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 				<div class="row">';
 	foreach ($datos as $rows) {
 
-        $res = "";
+        $result = "";
 
         if ($rows['Tipo'] == "Pesable") {
-			$res = "Kg";
+			$result = "Kg";
 			$unidades = $rows['Cantidad'];
 		} else {
-			$res = "Unidades";
+			$result = "Unidades";
 			$unidades = (int) $rows['Cantidad'];
 		}
 
@@ -73,7 +73,7 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 			              <p class="card-text">
 			                <strong>UPC:</strong> ' . $rows['UPC'] . '<br>
                             <strong>Precio:</strong> $' . $rows['PrecioUnitario'] . '<br>
-							<strong>Disponible:</strong> ' . $unidades . ' '.$res.'<br>
+							<strong>Disponible:</strong> ' . $unidades . ' '.$result.'<br>
 							<strong>Categoría:</strong> ' . $rows['categoryName'] . '<br>
 							<strong>Registrado por:</strong> ' . $rows['userName'] . '<br>
                             '.$txtDisponibilidad.'
