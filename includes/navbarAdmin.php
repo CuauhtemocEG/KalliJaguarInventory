@@ -73,8 +73,10 @@
                 </div>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="index.php?page=expensesWeekly">Gastos Semanales <span class="sr-only">(current)</span></a>
                 <a class="nav-link" href="index.php?page=requestProducts">Solicitar Insumos <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="index.php?page=expensesWeekly">Gastos Semanales <span class="sr-only">(current)</span></a>
             </li>
         </ul>
         <div class="navbar-end">
