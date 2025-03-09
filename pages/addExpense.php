@@ -1,5 +1,14 @@
 <?php
-include '../controllers/mainController.php';
+$host = 'localhost:3306';
+$usuario = 'kallijag_stage'; // tu usuario de base de datos
+$clave = 'uNtiL.horSe@5';       // tu contraseña de base de datos
+$baseDeDatos = 'kallijag_inventory_stage';
+
+$conexion = new mysqli($host, $usuario, $clave, $baseDeDatos);
+
+if ($conexion->connect_error) {
+    die("Conexión fallida: " . $conexion->connect_error);
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $descripcion = $_POST['descripcion'];
