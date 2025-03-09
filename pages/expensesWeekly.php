@@ -42,7 +42,7 @@ $totalGastos = calcularTotal($gastos);
         <div class="card-body">
             <div class="form-rest"></div>
             <!-- Filtro de fechas -->
-            <form action="" method="GET">
+            <form action="" method="GET" class="FormularioAjax">
                 <div class="row mb-3">
                     <div class="col-md-4">
                         <label for="fecha_inicio" class="form-label">Fecha de inicio</label>
@@ -86,7 +86,7 @@ $totalGastos = calcularTotal($gastos);
                                 <td>$<?php echo number_format($gasto['Monto'], 2); ?></td>
                                 <td><?php echo $gasto['Fecha']; ?></td>
                                 <td>
-                                    <a href="deleteExpenses.php?id=<?php echo $gasto['ID']; ?>" class="btn btn-danger btn-sm">Eliminar</a>
+                                    <a href="<?php echo $url;?>/deleteExpenses.php?id=<?php echo $gasto['ID']; ?>" class="btn btn-danger btn-sm">Eliminar</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

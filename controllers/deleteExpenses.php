@@ -1,24 +1,30 @@
 <?php
-$host = 'localhost:3306';
-$usuario = 'kallijag_stage';
-$clave = 'uNtiL.horSe@5'; 
-$baseDeDatos = 'kallijag_inventory_stage';
-
-$conexion = new mysqli($host, $usuario, $clave, $baseDeDatos);
-
-if ($conexion->connect_error) {
-    die("Conexión fallida: " . $conexion->connect_error);
-}
-
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
-    $sql = "DELETE FROM Gastos WHERE ID = $id";
+    $elminarExpense = conexion();
+    $elminarExpense = $elminarExpense->prepare("DELETE FROM Sucursales WHERE ID=:id");
 
-    if ($conexion->query($sql) === TRUE) {
-        header('Location: index.php?page=expensesWeekly');
+    $elminarExpense->execute([":id" => $id]);
+
+    if ($elminarExpense->rowCount() == 1) {
+        echo '
+			<div class="alert alert-info alert-dismissible fade show" role="alert">
+            	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                	<span aria-hidden="true">&times;</span>
+         		</button>
+            	<strong>Gasto Eliminada!</strong><br>
+				Los datos del gasto se eliminaron con éxito.
+        	</div>';
     } else {
-        echo "Error: " . $conexion->error;
+        echo '
+			<div class="alert alert-danger alert-dismissible fade show" role="alert">
+            	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                	<span aria-hidden="true">&times;</span>
+         		</button>
+            	<strong>¡Ocurrio un error!</strong><br>
+				No pudimos eliminar el gasto, por favor intente nuevamente.
+        	</div>';
     }
+    $elminarExpense = null;
 }
-?>
