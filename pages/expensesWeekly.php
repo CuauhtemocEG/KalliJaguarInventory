@@ -32,7 +32,7 @@ $totalGastos = calcularTotal($gastos);
     <h1 class="text-center">Prueba de form May</h1>
 
     <!-- Filtro de fechas -->
-    <form action="index.php" method="GET">
+    <form action="" method="GET">
         <div class="row mb-3">
             <div class="col-md-4">
                 <label for="fecha_inicio" class="form-label">Fecha de inicio</label>
@@ -89,5 +89,5 @@ $totalGastos = calcularTotal($gastos);
     </table>
 
     <!-- Agregar gasto -->
-    <a href="agregar_gasto.php" class="btn btn-success mt-3">Agregar Nuevo Gasto</a>
+    <a href="../controllers/addExpense.php" class="btn btn-success mt-3">Agregar Nuevo Gasto</a>
 </div>

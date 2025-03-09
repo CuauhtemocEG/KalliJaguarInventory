@@ -1,5 +1,5 @@
 <?php
-include './mainController.php';
+include '../controllers/mainController.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $descripcion = $_POST['descripcion'];
