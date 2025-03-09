@@ -134,7 +134,7 @@
                                     <td>\${$item['precio']}</td>
                                     <td>{$item['cantidad']}</td>
                                     <td>\${$totalItem}</td>
-                                    <td><a href='index.php?vista=eliminar&id={$key}' class='btn btn-danger btn-sm'>Eliminar</a></td>
+                                    <td><a href='index.php?page=deleteProductList&id={$key}' class='btn btn-danger btn-sm'>Eliminar</a></td>
                                 </tr>";
                         }
 
