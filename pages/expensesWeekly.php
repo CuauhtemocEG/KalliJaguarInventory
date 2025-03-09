@@ -37,7 +37,7 @@ $totalGastos = calcularTotal($gastos);
         <div class="card-header font-weight-bold">Gestión de Gastos - Modulo May</div>
         <div class="card-body">
             <div class="form-rest"></div>
-            <form action="index.php?page=expensesWeekly" method="GET">
+            <form action="" method="GET">
                 <div class="row mb-3">
                     <div class="col-md-4">
                         <label for="fecha_inicio" class="form-label">Fecha de inicio</label>
