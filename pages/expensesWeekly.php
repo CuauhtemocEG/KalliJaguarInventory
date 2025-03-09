@@ -73,9 +73,6 @@ $totalGastos = calcularTotal($gastos);
                 </thead>
                 <tbody>
                     <?php
-                    if (isset($_GET['expensesId'])) {
-                        require_once "./deleteExpenses.php";
-                    }
                     if (count($gastos) > 0): ?>
                         <?php foreach ($gastos as $gasto): ?>
                             <tr>
