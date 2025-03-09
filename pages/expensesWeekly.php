@@ -40,6 +40,7 @@ $totalGastos = calcularTotal($gastos);
     <div class="card">
         <div class="card-header font-weight-bold">Gestión de Gastos - Modulo May</div>
         <div class="card-body">
+            <div class="form-rest"></div>
             <!-- Filtro de fechas -->
             <form action="" method="GET">
                 <div class="row mb-3">
