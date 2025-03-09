@@ -1,7 +1,7 @@
 <?php
 $host = 'localhost:3306';
-$usuario = 'kallijag_stage'; // tu usuario de base de datos
-$clave = 'uNtiL.horSe@5';       // tu contraseña de base de datos
+$usuario = 'kallijag_stage';
+$clave = 'uNtiL.horSe@5';
 $baseDeDatos = 'kallijag_inventory_stage';
 
 $conexion = new mysqli($host, $usuario, $clave, $baseDeDatos);
