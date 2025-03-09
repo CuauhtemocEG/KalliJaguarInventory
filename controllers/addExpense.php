@@ -1,42 +1,50 @@
 <?php
-require_once "./mainController.php";
+include './mainController.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $descripcion = $_POST['descripcion'];
     $monto = $_POST['monto'];
     $fecha = $_POST['fecha'];
 
-    $addGastos = conexion();
-    $addGastos = $addGastos->prepare("INSERT INTO Gastos (Descripcion, Monto, Fecha) VALUES (:descripcion,:monto,:fecha)");
+    $sql = "INSERT INTO gastos (descripcion, monto, fecha) VALUES ('$descripcion', '$monto', '$fecha')";
 
-    $marcadores = [
-        ":descripcion" => $descripcion,
-        ":monto" => $monto,
-        ":fecha" => $fecha
-    ];
-
-    $addGastos->execute($marcadores);
-
-    if ($addGastos->rowCount() == 1) {
-        echo '
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-                </button>
-                <strong>¡Gasto Registrado!</strong><br>
-                El Gasto se registro con éxito en la Base de Datos.
-            </div>
-        ';
+    if ($conexion->query($sql) === TRUE) {
+        header('Location: index.php');
     } else {
-        echo '
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-                </button>
-                <strong>¡Ocurrio un error!</strong><br>
-                No se pudo registrar el gasto, por favor intente nuevamente.
-            </div>
-        ';
+        echo "Error: " . $conexion->error;
     }
-    $conexion = null;
 }
+?>
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Gasto</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Agregar Gasto</h1>
+
+        <form action="agregar_gasto.php" method="POST">
+            <div class="mb-3">
+                <label for="descripcion" class="form-label">Descripción</label>
+                <input type="text" class="form-control" id="descripcion" name="descripcion" required>
+            </div>
+            <div class="mb-3">
+                <label for="monto" class="form-label">Monto</label>
+                <input type="number" class="form-control" id="monto" name="monto" required>
+            </div>
+            <div class="mb-3">
+                <label for="fecha" class="form-label">Fecha</label>
+                <input type="date" class="form-control" id="fecha" name="fecha" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar Gasto</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
