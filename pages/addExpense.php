@@ -3,7 +3,7 @@
         <div class="card-header font-weight-bold">Agregar Gasto</div>
         <div class="card-body">
             <div class="form-rest"></div>
-            <form action="./controllers/saveExpense.php" method="POST">
+            <form action="./controllers/saveExpense.php" method="POST" class="FormularioAjax">
                 <div class="mb-3">
                     <label for="descripcion" class="form-label">Descripción</label>
                     <input type="text" class="form-control" id="descripcion" name="descripcion" required>
