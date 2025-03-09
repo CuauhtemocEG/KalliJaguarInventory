@@ -1,6 +1,6 @@
 <?php
-if (isset($_GET['id'])) {
-    $id = $_GET['id'];
+if (isset($_GET['expensesId'])) {
+    $id = $_GET['expensesId'];
 
     $elminarExpense = conexion();
     $elminarExpense = $elminarExpense->prepare("DELETE FROM Gastos WHERE ID=:id");
