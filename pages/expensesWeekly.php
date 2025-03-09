@@ -36,7 +36,7 @@ if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
     $elminarExpense = conexion();
-    $elminarExpense = $elminarExpense->prepare("DELETE FROM Sucursales WHERE ID=:id");
+    $elminarExpense = $elminarExpense->prepare("DELETE FROM Gastos WHERE ID=:id");
 
     $elminarExpense->execute([":id" => $id]);
 
