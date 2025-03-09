@@ -1,18 +1,27 @@
 <?php
 require_once "../controllers/mainController.php";
 
-if (isset($_GET['expensesId'])) {
-	echo '<script>confirm("Quieres enviar el formulario")</script>';
-	$id = $_GET['expensesId'];
+$idGastoDelete = limpiar_cadena($_GET['expensesId']);
+
+$checkGastoId = conexion();
+$checkGastoId = $checkGastoId->query("SELECT ID FROM Gastos WHERE ID='$idGastoDelete'");
+
+if ($checkGastoId->rowCount() == 1) {
 
 	$elminarExpense = conexion();
 	$elminarExpense = $elminarExpense->prepare("DELETE FROM Gastos WHERE ID=:id");
 
-	$elminarExpense->execute([":id" => $id]);
+	$elminarExpense->execute([":id" => $idGastoDelete]);
 
 	if ($elminarExpense->rowCount() == 1) {
-		echo "<script>window.setTimeout(function() { window.location = 'index.php?page=expensesWeekly' }, 100);</script>";
-		exit();
+		echo '
+			<div class="alert alert-info alert-dismissible fade show" role="alert">
+            	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                	<span aria-hidden="true">&times;</span>
+         		</button>
+            	<strong>Gasto Eliminado!</strong><br>
+				Los datos del Gasto se eliminaron con éxito.
+        	</div>';
 	} else {
 		echo '
 			<div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -25,3 +34,4 @@ if (isset($_GET['expensesId'])) {
 	}
 	$elminarExpense = null;
 }
+
