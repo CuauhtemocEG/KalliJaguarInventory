@@ -10,10 +10,8 @@ if ($conexion->connect_error) {
     die("Conexión fallida: " . $conexion->connect_error);
 }
 
-$fechaInicio = $_GET['fecha_inicio'] ?? date('Y-m-01');  // Fecha de inicio por defecto el primer día del mes
-$fechaFin = $_GET['fecha_fin'] ?? date('Y-m-d');          // Fecha de fin por defecto el día de hoy
-
-// Función para obtener los gastos dentro de un rango de fechas
+$fechaInicio = $_GET['fecha_inicio'] ?? date('Y-m-01');
+$fechaFin = $_GET['fecha_fin'] ?? date('Y-m-d');
 function obtenerGastos($conexion, $fechaInicio, $fechaFin)
 {
     $sql = "SELECT * FROM Gastos WHERE Fecha BETWEEN '$fechaInicio' AND '$fechaFin'";
@@ -21,10 +19,8 @@ function obtenerGastos($conexion, $fechaInicio, $fechaFin)
     return $resultado->fetch_all(MYSQLI_ASSOC);
 }
 
-// Obtener los gastos
 $gastos = obtenerGastos($conexion, $fechaInicio, $fechaFin);
 
-// Función para calcular el total de los gastos
 function calcularTotal($gastos)
 {
     $total = 0;
@@ -35,14 +31,43 @@ function calcularTotal($gastos)
 }
 
 $totalGastos = calcularTotal($gastos);
+
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
+
+    $elminarExpense = conexion();
+    $elminarExpense = $elminarExpense->prepare("DELETE FROM Sucursales WHERE ID=:id");
+
+    $elminarExpense->execute([":id" => $id]);
+
+    if ($elminarExpense->rowCount() == 1) {
+        echo '
+			<div class="alert alert-info alert-dismissible fade show" role="alert">
+            	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                	<span aria-hidden="true">&times;</span>
+         		</button>
+            	<strong>Gasto Eliminada!</strong><br>
+				Los datos del gasto se eliminaron con éxito.
+        	</div>';
+    } else {
+        echo '
+			<div class="alert alert-danger alert-dismissible fade show" role="alert">
+            	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                	<span aria-hidden="true">&times;</span>
+         		</button>
+            	<strong>¡Ocurrio un error!</strong><br>
+				No pudimos eliminar el gasto, por favor intente nuevamente.
+        	</div>';
+    }
+    $elminarExpense = null;
+}
 ?>
 <div class="container-fluid" style="padding-top:15px; padding-bottom:15px">
     <div class="card">
         <div class="card-header font-weight-bold">Gestión de Gastos - Modulo May</div>
         <div class="card-body">
             <div class="form-rest"></div>
-            <!-- Filtro de fechas -->
-            <form action="" method="GET" class="FormularioAjax">
+            <form action="expensesWeekly.php" method="GET" class="FormularioAjax">
                 <div class="row mb-3">
                     <div class="col-md-4">
                         <label for="fecha_inicio" class="form-label">Fecha de inicio</label>
@@ -59,7 +84,6 @@ $totalGastos = calcularTotal($gastos);
                 </div>
             </form>
 
-            <!-- Resumen de gastos -->
             <h3>Resumen de Gastos</h3>
             <ul class="list-group mb-4">
                 <li class="list-group-item">
@@ -67,7 +91,6 @@ $totalGastos = calcularTotal($gastos);
                 </li>
             </ul>
 
-            <!-- Mostrar los gastos -->
             <h3>Lista de Gastos</h3>
             <table class="table table-bordered">
                 <thead>
@@ -86,7 +109,7 @@ $totalGastos = calcularTotal($gastos);
                                 <td>$<?php echo number_format($gasto['Monto'], 2); ?></td>
                                 <td><?php echo $gasto['Fecha']; ?></td>
                                 <td>
-                                    <a href="controllers/deleteExpenses.php?id=<?php echo $gasto['ID']; ?>" class="btn btn-danger btn-sm">Eliminar</a>
+                                    <a href="index.php?page=expensesWeekly&id=<?php echo $gasto['ID']; ?>" class="btn btn-danger btn-sm">Eliminar</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -98,7 +121,6 @@ $totalGastos = calcularTotal($gastos);
                 </tbody>
             </table>
 
-            <!-- Agregar gasto -->
             <a href="index.php?page=addExpense" class="btn btn-success mt-3">Agregar Nuevo Gasto</a>
         </div>
     </div>
