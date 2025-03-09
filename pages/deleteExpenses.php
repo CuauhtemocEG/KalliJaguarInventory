@@ -1,4 +1,6 @@
 <?php
+require_once "../controllers/mainController.php";
+
 if (isset($_GET['expensesId'])) {
 	echo '<script>confirm("Quieres enviar el formulario")</script>';
 	$id = $_GET['expensesId'];
