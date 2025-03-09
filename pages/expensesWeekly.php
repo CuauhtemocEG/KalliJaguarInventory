@@ -1,5 +1,14 @@
 <?php
-include '../controllers/mainController.php';
+$host = 'localhost:3306';
+$usuario = 'kallijag_stage'; // tu usuario de base de datos
+$clave = 'uNtiL.horSe@5';       // tu contraseña de base de datos
+$baseDeDatos = 'kallijag_inventory_stage';
+
+$conexion = new mysqli($host, $usuario, $clave, $baseDeDatos);
+
+if ($conexion->connect_error) {
+    die("Conexión fallida: " . $conexion->connect_error);
+}
 
 $fechaInicio = $_GET['fecha_inicio'] ?? date('Y-m-01');  // Fecha de inicio por defecto el primer día del mes
 $fechaFin = $_GET['fecha_fin'] ?? date('Y-m-d');          // Fecha de fin por defecto el día de hoy
@@ -89,5 +98,5 @@ $totalGastos = calcularTotal($gastos);
     </table>
 
     <!-- Agregar gasto -->
-    <a href="../controllers/addExpense.php" class="btn btn-success mt-3">Agregar Nuevo Gasto</a>
+    <a href="index.php?page=productsByCategory" class="btn btn-success mt-3">Agregar Nuevo Gasto</a>
 </div>
