@@ -109,7 +109,7 @@ if (isset($_GET['id'])) {
                                 <td>$<?php echo number_format($gasto['Monto'], 2); ?></td>
                                 <td><?php echo $gasto['Fecha']; ?></td>
                                 <td>
-                                    <a href="index.php?page=expensesWeekly&id=<?php echo $gasto['ID']; ?>" class="btn btn-danger btn-sm">Eliminar</a>
+                                    <a href="index.php?page=expensesWeekly?id=<?php echo $gasto['ID']; ?>" class="btn btn-danger btn-sm">Eliminar</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
