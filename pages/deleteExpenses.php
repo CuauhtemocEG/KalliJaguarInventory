@@ -1,5 +1,6 @@
 <?php
 if (isset($_GET['expensesId'])) {
+	echo '<script>confirm("Quieres enviar el formulario")</script>';
 	$id = $_GET['expensesId'];
 
 	$elminarExpense = conexion();
