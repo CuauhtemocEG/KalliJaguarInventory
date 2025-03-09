@@ -38,7 +38,7 @@ $totalGastos = calcularTotal($gastos);
 ?>
 <div class="container-fluid" style="padding-top:15px; padding-bottom:15px">
     <div class="card">
-        <div class="card-header font-weight-bold">Agregar Sucursal</div>
+        <div class="card-header font-weight-bold">Gestión de Gastos - Modulo May</div>
         <div class="card-body">
             <!-- Filtro de fechas -->
             <form action="" method="GET">
