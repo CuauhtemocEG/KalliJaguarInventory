@@ -8,14 +8,8 @@ if (isset($_GET['expensesId'])) {
     $elminarExpense->execute([":id" => $id]);
 
     if ($elminarExpense->rowCount() == 1) {
-        echo '
-			<div class="alert alert-info alert-dismissible fade show" role="alert">
-            	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                	<span aria-hidden="true">&times;</span>
-         		</button>
-            	<strong>Gasto Eliminada!</strong><br>
-				Los datos del gasto se eliminaron con éxito.
-        	</div>';
+        echo "<script>window.setTimeout(function() { window.location = 'index.php?page=expensesWeekly' }, 100);</script>";
+exit();
     } else {
         echo '
 			<div class="alert alert-danger alert-dismissible fade show" role="alert">
