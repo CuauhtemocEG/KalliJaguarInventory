@@ -72,9 +72,6 @@
                 <span>Solicitar Insumos</span></a>
         </li>
         <hr class="sidebar-divider d-none d-md-block">
-        <div class="text-center d-none d-md-inline">
-            <button class="rounded-circle border-0" id="sidebarToggle"></button>
-        </div>
         <div class="sidebar-card d-none d-lg-flex">
             <p class="text-center mb-2"><strong>Bienvenido al nuevo landing</strong> constantemente el sitio tendrá mejoras, si detectas algún problema avisa al administrador del sitio.</p>
         </div>
