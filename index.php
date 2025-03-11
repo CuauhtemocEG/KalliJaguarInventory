@@ -45,9 +45,9 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
         if ($_SESSION['rol'] == "Administrador") {
             include "./includes/navbarNewBottom.php";
         } elseif ($_SESSION['rol'] == "Supervisor") {
-            include "./includes/navbarSup.php";
+            include "./includes/navbarNewBottom.php";
         } elseif ($_SESSION['rol'] == "Logistica") {
-            include "./includes/navbarLog.php";
+            include "./includes/navbarNewBottom.php";
         } else {
             echo "";
         }
