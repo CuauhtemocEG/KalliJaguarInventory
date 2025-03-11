@@ -98,12 +98,12 @@
                         <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                             aria-labelledby="userDropdown">
                             <a class="dropdown-item" href="index.php?page=updateUser&idUserUpdate=<?php echo $_SESSION['id']; ?>">
-                                <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                <i class="fa fa-user-circle fa-sm fa-fw mr-2 text-gray-400"></i>
                                 Mi Cuenta
                             </a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                <i class="fa fa-sign-out fa-sm fa-fw mr-2 text-gray-400"></i>
                                 Cerrar Sesión
                             </a>
                         </div>
