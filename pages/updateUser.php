@@ -32,7 +32,7 @@ $id = limpiar_cadena($id);
 					<div class="form-row">
 						<div class="form-group col-md-6">
 							<b><label>Nombre:</label></b>
-							<input class="input" type="text" name="userName" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{3,40}" maxlength="40" required value="<?php echo $datos['Nombre']; ?>">
+							<input class="form-control" type="text" name="userName" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{3,40}" maxlength="40" required value="<?php echo $datos['Nombre']; ?>">
 						</div>
 						<div class="form-group col-md-6">
 							<b><label>Rol del Usuario:</label></b>
@@ -49,11 +49,11 @@ $id = limpiar_cadena($id);
 					<div class="form-row">
 						<div class="form-group col-md-6">
 							<b><label>Usuario:</label></b>
-							<input class="input" type="text" name="user" pattern="[a-zA-Z0-9]{4,20}" maxlength="20" required value="<?php echo $datos['Username']; ?>">
+							<input class="form-control" type="text" name="user" pattern="[a-zA-Z0-9]{4,20}" maxlength="20" required value="<?php echo $datos['Username']; ?>">
 						</div>
 						<div class="form-group col-md-6">
 							<b><label>Email:</label></b>
-							<input class="input" type="email" name="userEmail" maxlength="70" value="<?php echo $datos['email']; ?>">
+							<input class="form-control" type="email" name="userEmail" maxlength="70" value="<?php echo $datos['email']; ?>">
 						</div>
 					</div>
 
@@ -65,11 +65,11 @@ $id = limpiar_cadena($id);
 					<div class="form-row">
 						<div class="form-group col-md-6">
 							<b><label>Password:</label></b>
-							<input class="input" type="password" name="userPassword" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100">
+							<input class="form-control" type="password" name="userPassword" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100">
 						</div>
 						<div class="form-group col-md-6">
 							<b><label>Repetir Password:</label></b>
-							<input class="input" type="password" name="userPassword2" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100">
+							<input class="form-control" type="password" name="userPassword2" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100">
 						</div>
 					</div>
 					<hr>
@@ -80,11 +80,11 @@ $id = limpiar_cadena($id);
 					<div class="form-row">
 						<div class="form-group col-md-6">
 							<b><label>Nombre de Usuario:</label></b>
-							<input class="input" type="text" name="adminUser" pattern="[a-zA-Z0-9]{4,20}" maxlength="20" required>
+							<input class="form-control" type="text" name="adminUser" pattern="[a-zA-Z0-9]{4,20}" maxlength="20" required>
 						</div>
 						<div class="form-group col-md-6">
 							<b><label>Password:</label></b>
-							<input class="input" type="password" name="adminPassword" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100" required>
+							<input class="form-control" type="password" name="adminPassword" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100" required>
 						</div>
 					</div>
 					<br>

@@ -27,8 +27,8 @@
 	$Npaginas =ceil($total/$registros);
 
 	$tabla.='
-	<div class="table-container">
-        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+	<div class="table-responsive">
+        <table class="table table-bordered" width="100%" cellspacing="0">
             <thead>
                 <tr class="has-text-centered">
                 	<th>#</th>

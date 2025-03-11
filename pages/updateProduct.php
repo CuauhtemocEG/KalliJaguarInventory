@@ -25,23 +25,23 @@
 					<div class="form-row">
 						<div class="form-group col-md-6">
 							<b><label>Código de barra (UPC):</label></b>
-							<input class="input" type="text" name="productUPC" pattern="[a-zA-Z0-9- ]{1,70}" maxlength="70" required value="<?php echo $datos['UPC']; ?>">
+							<input class="form-control" type="text" name="productUPC" pattern="[a-zA-Z0-9- ]{1,70}" maxlength="70" required value="<?php echo $datos['UPC']; ?>">
 						</div>
 
 						<div class="form-group col-md-6">
 							<b><label>Nombre del Producto:</label></b>
-							<input class="input" type="text" name="productName" pattern="[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ().,$#\-\/ ]{1,70}" maxlength="70" required value="<?php echo $datos['Nombre']; ?>">
+							<input class="form-control" type="text" name="productName" pattern="[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ().,$#\-\/ ]{1,70}" maxlength="70" required value="<?php echo $datos['Nombre']; ?>">
 						</div>
 					</div>
 
 					<div class="form-row">
 						<div class="form-group col-md-4">
 							<b><label>Precio:</label></b>
-							<input class="input" type="text" name="productPrecio" pattern="[0-9.]{1,25}" maxlength="25" required value="<?php echo $datos['PrecioUnitario']; ?>">
+							<input class="form-control" type="text" name="productPrecio" pattern="[0-9.]{1,25}" maxlength="25" required value="<?php echo $datos['PrecioUnitario']; ?>">
 						</div>
 						<div class="form-group col-md-4">
 							<b><label>Stock:</label></b>
-							<input class="input" type="text" name="productStock" required value="<?php echo $datos['Cantidad']; ?>">
+							<input class="form-control" type="text" name="productStock" required value="<?php echo $datos['Cantidad']; ?>">
 						</div>
 						<div class="form-group col-md-4">
 							<b><label>Tipo de Inventario (Unitario, Pesable):</label></b>
