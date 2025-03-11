@@ -50,7 +50,7 @@
 
 							<div class="file has-name is-horizontal is-justify-content-center">
 								<label class="file-label">
-									<input class="file-input" type="file" name="imageProduct" accept=".jpg, .png, .jpeg">
+									<input class="form-control" type="file" name="imageProduct" accept=".jpg, .png, .jpeg">
 									<span class="file-cta">
 										<span class="file-label">Imagen</span>
 									</span>

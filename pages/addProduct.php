@@ -61,7 +61,7 @@
 						<b><label>Foto o imagen del producto:</label></b><br>
 						<div class="file is-small has-name">
 							<label class="file-label">
-								<input class="file-input" type="file" name="productImage" accept=".jpg, .png, .jpeg">
+								<input class="form-control" type="file" name="productImage" accept=".jpg, .png, .jpeg">
 								<span class="file-cta">
 									<span class="file-label">Imagen</span>
 								</span>
