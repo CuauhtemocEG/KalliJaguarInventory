@@ -14,7 +14,7 @@
         <hr class="sidebar-divider">
         <div class="sidebar-heading">Gestión</div>
         <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+            <a class="nav-link collapsed fa fa-angle-right" href="#" data-toggle="collapse" data-target="#collapseTwo"
                 aria-expanded="true" aria-controls="collapseTwo">
                 <i class="fa fa-home"></i>
                 <span>Sucursales</span>
