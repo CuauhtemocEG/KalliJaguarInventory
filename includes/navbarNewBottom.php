@@ -1,17 +1,8 @@
 </div>
 
-<footer class="sticky-footer bg-white">
-    <div class="container my-auto">
-        <div class="copyright text-center my-auto">
-            <span>Kalli Jaguar Inventory 2025</span>
-        </div>
-    </div>
-</footer>
-
-
 </div>
 <a class="scroll-to-top rounded" href="#page-top">
-    <i class="fas fa-angle-up"></i>
+    <i class="fa fa-angle-up"></i>
 </a>
 
 <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
