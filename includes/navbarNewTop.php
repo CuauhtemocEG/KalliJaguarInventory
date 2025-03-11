@@ -16,7 +16,7 @@
         <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                 aria-expanded="true" aria-controls="collapseTwo">
-                <i class="fas fa-fw fa-cog"></i>
+                <i class="fa fa-home"></i>
                 <span>Sucursales</span>
             </a>
             <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
@@ -30,7 +30,7 @@
         <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
                 aria-expanded="true" aria-controls="collapseUtilities">
-                <i class="fas fa-fw fa-wrench"></i>
+                <i class="fa fa-user"></i>
                 <span>Usuarios</span>
             </a>
             <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
@@ -48,7 +48,7 @@
         <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
                 aria-expanded="true" aria-controls="collapsePages">
-                <i class="fas fa-fw fa-folder"></i>
+                <i class="fa fa-archive"></i>
                 <span>Producto</span>
             </a>
             <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
@@ -68,7 +68,7 @@
         </li>
         <li class="nav-item">
             <a class="nav-link" href="index.php?page=requestProducts">
-                <i class="fas fa-fw fa-chart-area"></i>
+                <i class="fa fa-truck"></i>
                 <span>Solicitar Insumos</span></a>
         </li>
         <hr class="sidebar-divider d-none d-md-block">
