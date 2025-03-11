@@ -59,9 +59,9 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 		$txtDisponibilidad = "";
 
 		if($rows['Cantidad'] > 1) {
-			$txtDisponibilidad = '<h6 class="text-success mt-2">Disponible</h6>';
+			$txtDisponibilidad = '<span class="badge badge-pill badge-success">Disponible</span>';
 		} else {
-			$txtDisponibilidad = '<h6 class="text-danger mt-2">No disponible</h6>';
+			$txtDisponibilidad = '<span class="badge badge-pill badge-danger">No disponible</span>';
 		}
 
 		$tabla .= '</div>
@@ -78,11 +78,11 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 						</p>
 					</div>
 					<div class="align-items-center align-content-center col-md-3 border-left mt-1">
-						<div class="d-flex flex-row align-items-center">
-							<h4 class="mr-1">
+						<div class="d-flex has-text-centered">
+							<h4 class="mr-1 col-md-6">
 								<p class="font-weight-bold">Precio Compra:</p> $'.$rows['PrecioUnitario'].'
 							</h4>
-							<h4 class="mr-1">
+							<h4 class="mr-1 col-md-6">
 								<p class="font-weight-bold">Precio Venta:</p> $'. $rows['PrecioUnitario'] + ($rows['PrecioUnitario'] * 0.16).'
 							</h4>
 						</div>'
