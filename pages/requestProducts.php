@@ -122,8 +122,8 @@
                     $table = "";
                     // Mostrar los productos en el carrito
                     if (isset($_SESSION['INV']) && count($_SESSION['INV']) > 0) {
-                        $table = "<div class='table-container'>
-        <table class='table is-bordered is-striped is-narrow is-hoverable is-fullwidth'><tr><th>Producto</th><th>Precio</th><th>Cantidad</th><th>Total</th><th>Acciones</th></tr>";
+                        $table = "<div class='table-responsive'>
+        <table class='table table-bordered' width='100%' cellspacing='0'><tr><th>Producto</th><th>Precio</th><th>Cantidad</th><th>Total</th><th>Acciones</th></tr>";
 
                         $total = 0;
                         foreach ($_SESSION['INV'] as $key => $item) {
