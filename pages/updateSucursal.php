@@ -26,11 +26,11 @@
 					<div class="form-row">
 						<div class="form-group col-md-6">
 							<label class="font-weight-bold">Nombre de la Sucursal:</label>
-							<input class="input" type="text" name="nombreSucursal" pattern="[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]{4,50}" maxlength="50" required value="<?php echo $datos['nombre']; ?>">
+							<input class="form-control" type="text" name="nombreSucursal" pattern="[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]{4,50}" maxlength="50" required value="<?php echo $datos['nombre']; ?>">
 						</div>
 						<div class="form-group col-md-6">
 							<label class="font-weight-bold">Dirección:</label>
-							<input class="input" type="text" name="addressSucursal" pattern="[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]{5,150}" maxlength="150" value="<?php echo $datos['direccion']; ?>">
+							<input class="form-control" type="text" name="addressSucursal" pattern="[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]{5,150}" maxlength="150" value="<?php echo $datos['direccion']; ?>">
 						</div>
 					</div>
 					<p class="has-text-centered">
