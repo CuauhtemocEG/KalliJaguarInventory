@@ -66,17 +66,15 @@
 
 	# Funcion paginador de tablas #
 	function paginador_tablas($pagina,$Npaginas,$url,$botones){
-		$tabla='<nav class="pagination is-centered" role="navigation" aria-label="pagination">';
+		$tabla='<ul class="pagination d-flex justify-content-center">';
 
 		if($pagina<=1){
 			$tabla.='
-			<a class="pagination-previous btn btn-warning btn-sm disabled" >Anterior</a>
-			<ul class="pagination-list">';
+			<a class="pagination-previous btn btn-warning disabled" >Anterior</a>';
 		}else{
 			$tabla.='
-			<a class="pagination-previous btn btn-warning btn-sm" href="'.$url.($pagina-1).'" >Anterior</a>
-			<ul class="pagination-list">
-				<li><a class="btn btn-light btn-sm" href="'.$url.'1">1</a></li>
+			<a class="pagination-previous btn btn-warning" href="'.$url.($pagina-1).'" >Anterior</a>
+				<li><a class="paginate_button page-item btn btn-light" href="'.$url.'1">1</a></li>
 				<li><span class="pagination-ellipsis">&hellip;</span></li>
 			';
 		}
@@ -87,7 +85,7 @@
 				break;
 			}
 			if($pagina==$i){
-				$tabla.='<li><a class="btn btn-dark btn-sm is-current" href="'.$url.$i.'">'.$i.'</a></li>';
+				$tabla.='<li><a class="paginate_button page-item active btn btn-dark" href="'.$url.$i.'">'.$i.'</a></li>';
 			}else{
 				//$tabla.='<li><a class="pagination-link" href="'.$url.$i.'">'.$i.'</a></li>';
 			}
@@ -96,18 +94,16 @@
 
 		if($pagina==$Npaginas){
 			$tabla.='
-			</ul>
-			<a class="pagination-next btn btn-warning btn-sm disabled" >Siguiente</a>
+			<a class="paginate_button page-item next disabled btn btn-warning" >Siguiente</a>
 			';
 		}else{
 			$tabla.='
 				<li><span class="pagination-ellipsis">&hellip;</span></li>
-				<li><a class="btn btn-light btn-sm" href="'.$url.$Npaginas.'">'.$Npaginas.'</a></li>
-			</ul>
-			<a class="pagination-next btn btn-warning btn-sm" href="'.$url.($pagina+1).'" >Siguiente</a>
+				<li><a class="paginate_button page-item btn btn-light" href="'.$url.$Npaginas.'">'.$Npaginas.'</a></li>
+			<a class="paginate_button page-item next btn btn-warning" href="'.$url.($pagina+1).'" >Siguiente</a>
 			';
 		}
 
-		$tabla.='</nav>';
+		$tabla.='</ul>';
 		return $tabla;
 	}
