@@ -53,9 +53,9 @@ if ($total >= 1 && $pagina <= $Npaginas) {
         $txtDisponibilidad = "";
 
 		if($rows['Cantidad'] > 1) {
-			$txtDisponibilidad = '<h6 class="text-success mt-2">Disponible</h6>';
+			$txtDisponibilidad = '<span class="badge badge-pill badge-success">Disponible</span>';
 		} else {
-			$txtDisponibilidad = '<h6 class="text-danger mt-2">No disponible</h6>';
+			$txtDisponibilidad = '<span class="badge badge-pill badge-danger">No disponible</span>';
 		}
 
 		$tabla .= '
