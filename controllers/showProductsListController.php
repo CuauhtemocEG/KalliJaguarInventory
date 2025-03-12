@@ -50,6 +50,24 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 			$unidades = (int) $rows['Cantidad'];
 		}
 
+		$cantidadRequested = '';
+		if ($rows['Cantidad'] > 0) {
+			$cantidadRequested = '
+			<form action="" method="post">
+				<input type="hidden" name="idProduct" value="' . $rows['ProductoID'] . '">
+				<input type="hidden" name="precioProduct" value="' . $rows['PrecioUnitario'] . '">
+				<input type="hidden" name="nameProduct" value="' . $rows['nombreProducto'] . '">
+				<strong>Cantidad a solicitar:</strong><br>
+				<input class="form-control col-md-12" type="text" name="cantidadProduct" value="0.0">
+				<hr>
+			    <div class="has-text-centered">
+			        <button type="submit" class="btn btn-warning btn-sm"" name="agregar">Agregar Producto</	button>
+			    </div>
+			</form>';
+		} else {
+			$cantidadRequested = '';
+		}
+
         $txtDisponibilidad = "";
 
 		if($rows['Cantidad'] > 1) {
@@ -78,17 +96,7 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 							<strong>Registrado por:</strong> ' . $rows['userName'] . '<br>
                             '.$txtDisponibilidad.'
 			              </p>
-						<form action="" method="post">
-						  <input type="hidden" name="idProduct" value="' . $rows['ProductoID'] . '">
-						  <input type="hidden" name="precioProduct" value="' . $rows['PrecioUnitario'] . '">
-						  <input type="hidden" name="nameProduct" value="' . $rows['nombreProducto'] . '">
-						  <strong>Cantidad:</strong><br>
-						  <input class="form-control col-md-12" type="text" name="cantidadProduct" value="0.0">
-						<hr>
-			            	<div class="has-text-centered">
-			            	    <button type="submit" class="btn btn-warning btn-sm"" name="agregar">Agregar Producto</	button>
-			            	</div>
-						</form>
+						  '.$cantidadRequested.'
 			        </div>
 			    </div>
 				</div>';
