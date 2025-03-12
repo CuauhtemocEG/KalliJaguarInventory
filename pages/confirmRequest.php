@@ -1,6 +1,6 @@
 <?php
 require('../fpdf/fpdf.php');
-require_once "mainController.php"; // Asegúrate de incluir tu controlador de la base de datos
+require_once "../controllers/mainController.php"; // Asegúrate de incluir tu controlador de la base de datos
 
 session_start();
 
