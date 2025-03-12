@@ -1,5 +1,6 @@
 <div class="container-fluid" style="padding-top:15px;padding-bottom:15px">
     <?php
+    session_start();
     require_once "./controllers/mainController.php";
     ?>
     <div class="card">
@@ -47,7 +48,7 @@
                     }
 
                     if (isset($_GET['id'])) {
-                        require_once "eliminar.php";
+                        require_once "deleteProductList.php";
                     }
 
                     if (!isset($_GET['pages'])) {
