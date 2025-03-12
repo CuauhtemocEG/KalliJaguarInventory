@@ -184,7 +184,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                                <form method="POST" action="confirmRequest.php" id="confirmForm">
+                                <form method="POST" action="index.php?page=confirmRequest.php" id="confirmForm">
                                     <button type="submit" class="btn btn-primary">Confirmar Pedido</button>
                                 </form>
                             </div>
