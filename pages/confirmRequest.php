@@ -3,7 +3,7 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 require('./fpdf/fpdf.php');
-require_once "../controllers/mainController.php"; // Asegúrate de incluir tu controlador de la base de datos
+require_once "./controllers/mainController.php"; // Asegúrate de incluir tu controlador de la base de datos
 
 session_start();
 
