@@ -4,12 +4,12 @@ require_once "../controllers/mainController.php"; // Asegúrate de incluir tu co
 
 session_start();
 
-if (!isset($_SESSION['INV']) || count($_SESSION['INV']) == 0) {
+if (!isset($_SESSION['INV']) || count($_SESSION['INV']) == 0 || !isset($_POST['idSucursal'])) {
     echo 'No hay productos en el carrito.';
     exit();
 }
 
-$sucursal_id = isset($_POST['idSucursal']);
+$sucursal_id = $_POST['idSucursal'];
 
 // Crear una instancia de la clase FPDF
 $pdf = new FPDF();
@@ -54,11 +54,14 @@ foreach ($_SESSION['INV'] as $item) {
     // Registrar el movimiento en la tabla de movimientos
     $stmt = $conn->prepare("INSERT INTO MovimientosInventario (SucursalID, ProductoID, TipoMovimiento, Cantidad, FechaMovimiento, PrecioFinal, UsuarioID) 
                             VALUES (:sucursalID, :productoID, 'Salida', :cantidad, NOW(), :precioFinal, :usuarioID)");
+
+    $precioFinales = $item['precio'] + ($item['cantidad'] * 0.16);
+
     $stmt->execute([
         ':sucursalID' => $sucursal_id,
         ':productoID' => $item['producto'],
         ':cantidad' => $item['cantidad'],
-        ':precioFinal' => $item['precio'] + ($item['cantidad'] * 0.16),
+        ':precioFinal' => $precioFinales,
         ':usuarioID' => $_SESSION['id'], // Asumiendo que tienes un ID de usuario en sesión
     ]);
 
