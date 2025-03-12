@@ -5,8 +5,6 @@ error_reporting(E_ALL);
 require('./fpdf/fpdf.php');
 require_once "./controllers/mainController.php"; // Asegúrate de incluir tu controlador de la base de datos
 
-session_start();
-
 if (!isset($_SESSION['INV']) || !is_array($_SESSION['INV']) || count($_SESSION['INV']) == 0 || !isset($_POST['idSucursal'])) {
     echo 'No hay productos en el carrito.';
     exit();
@@ -50,7 +48,7 @@ try {
     $pdf->Cell(40, 10, '$' . number_format($totalGeneral, 2), 1);
 
     // Salvar o enviar el PDF
-    $pdf->Output('I', 'Solicitud_Productos.pdf'); // Generar PDF en pantalla
+    $pdf->Output('I', 'solicitud.pdf'); // Generar PDF en pantalla
 } catch (Exception $e) {
     echo "Error al generar PDF: " . $e->getMessage();
 }
@@ -93,5 +91,5 @@ foreach ($_SESSION['INV'] as $item) {
 // Limpiar la sesión después de procesar la solicitud
 unset($_SESSION['INV']);
 
-header("Location: index.php?page=requestProducts");
-exit;
+echo "<script>window.setTimeout(function() { window.location = 'index.php?page=requestProducts' }, 100);</script>";
+exit();
