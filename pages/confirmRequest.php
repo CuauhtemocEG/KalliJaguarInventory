@@ -4,7 +4,7 @@ require_once "../controllers/mainController.php"; // Asegúrate de incluir tu co
 
 session_start();
 
-if (!isset($_SESSION['INV']) || count($_SESSION['INV']) == 0 || !isset($_POST['idSucursal'])) {
+if (!isset($_SESSION['INV']) || !is_array($_SESSION['INV']) || count($_SESSION['INV']) == 0 || !isset($_POST['idSucursal'])) {
     echo 'No hay productos en el carrito.';
     exit();
 }
@@ -59,10 +59,10 @@ foreach ($_SESSION['INV'] as $item) {
 
     $precioFinales = $item['precio'] * (1 + 0.16);
 
-    echo "<script>console.log(".$item['producto'].");</script>";
-echo "<script>console.log(".$item['cantidad'].");</script>";
-echo "<script>console.log(".$precioFinales .");</script>";
-echo "<script>console.log(".$_SESSION['id'].");</script>";
+    echo "<script>console.log(" . json_encode($item['producto']) . ");</script>";
+    echo "<script>console.log(" . json_encode($item['cantidad']) . ");</script>";
+    echo "<script>console.log(" . json_encode($precioFinales) . ");</script>";
+    echo "<script>console.log(" . json_encode($_SESSION['id']) . ");</script>";
 
     $stmt->execute([
         ':sucursalID' => $sucursal_id,
@@ -85,5 +85,5 @@ unset($_SESSION['INV']);
 
 //echo "<script>window.setTimeout(function() { window.location = 'index.php?page=requestProducts' }, 100);</script>";
 header("Location: index.php?page=requestProducts");
-exit();
+exit;
 ?>
