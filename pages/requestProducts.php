@@ -164,7 +164,7 @@
                             <div class="modal-body">
                                 ¿Está seguro de que desea enviar la lista de productos solicitados?
 
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-12">
                                     <b><label>Sucursal de Destino:</label></b>
                                     <select class="form-control" id="inputSucursal" name="idSucursal">
                                         <option selected>Seleccione una Sucursal</option>
