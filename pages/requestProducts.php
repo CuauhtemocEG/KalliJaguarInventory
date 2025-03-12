@@ -140,7 +140,7 @@
                         }
 
                         $table .= '<tr><td colspan="3">Total</td><td>$' . $total . '</td><td>
-                        <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-bs-target="#confirmModal">
+                        <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#confirmModal">
                             Enviar Solicitud
                         </button>
                         </td></tr>';
