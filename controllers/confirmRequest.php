@@ -1,6 +1,6 @@
 <?php
-require('fpdf/fpdf.php');
-require_once "./controllers/mainController.php"; // Asegúrate de incluir tu controlador de la base de datos
+require('../fpdf/fpdf.php');
+require_once "mainController.php"; // Asegúrate de incluir tu controlador de la base de datos
 
 session_start();
 
@@ -50,18 +50,18 @@ $conn = conexion(); // Asumiendo que tienes una función de conexión a la BD.
 // Registrar los movimientos y reducir las cantidades en inventario
 foreach ($_SESSION['INV'] as $item) {
     // Registrar el movimiento en la tabla de movimientos
-    $stmt = $conn->prepare("INSERT INTO Movimientos (SucursalID, ProductoID, TipoMovimiento, Cantidad, FechaMovimiento, PrecioFinal, UsuarioID) 
+    $stmt = $conn->prepare("INSERT INTO MovimientosInventario (SucursalID, ProductoID, TipoMovimiento, Cantidad, FechaMovimiento, PrecioFinal, UsuarioID) 
                             VALUES (:sucursalID, :productoID, 'Salida', :cantidad, NOW(), :precioFinal, :usuarioID)");
     $stmt->execute([
-        ':sucursalID' => 1, // Aquí deberías tener la lógica para obtener la sucursal actual
+        ':sucursalID' => 1,
         ':productoID' => $item['producto'],
         ':cantidad' => $item['cantidad'],
-        ':precioFinal' => $item['precio'],
-        ':usuarioID' => $_SESSION['user_id'], // Asumiendo que tienes un ID de usuario en sesión
+        ':precioFinal' => $item['precio'] + ($item['cantidad'] * 0.16),
+        ':usuarioID' => $_SESSION['id'], // Asumiendo que tienes un ID de usuario en sesión
     ]);
 
     // Reducir la cantidad del producto en el inventario
-    $updateStmt = $conn->prepare("UPDATE Inventario SET Cantidad = Cantidad - :cantidad WHERE ProductoID = :productoID");
+    $updateStmt = $conn->prepare("UPDATE Productos SET Cantidad = Cantidad - :cantidad WHERE ProductoID = :productoID");
     $updateStmt->execute([
         ':cantidad' => $item['cantidad'],
         ':productoID' => $item['producto']
