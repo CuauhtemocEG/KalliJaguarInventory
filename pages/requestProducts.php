@@ -139,7 +139,11 @@
                                 </tr>";
                         }
 
-                        $table .= '<tr><td colspan="3">Total</td><td>$' . $total . '</td><td></td></tr>';
+                        $table .= '<tr><td colspan="3">Total</td><td>$' . $total . '</td><td>
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                            Enviar Solicitud
+                        </button>
+                        </td></tr>';
                         $table .= '</table></div>';
                     } else {
                         $table .= '<div class="has-text-centered alert alert-danger alert-dismissible fade show" role="alert">
@@ -149,6 +153,25 @@
 
                     echo $table;
                     ?>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabel">Confirmar Solicitud a Almacén</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    ¿Está seguro de que desea enviar la lista de productos solicitados?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form method="POST" action="generar_pdf.php" id="confirmForm">
+                        <button type="submit" class="btn btn-primary">Confirmar Pedido</button>
+                    </form>
                 </div>
             </div>
         </div>
