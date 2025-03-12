@@ -165,7 +165,7 @@
                                 ¿Está seguro de que desea enviar la lista de productos solicitados?
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
                                 <form method="POST" action="generar_pdf.php" id="confirmForm">
                                     <button type="submit" class="btn btn-primary">Confirmar Pedido</button>
                                 </form>
