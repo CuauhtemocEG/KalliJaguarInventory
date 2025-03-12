@@ -81,7 +81,7 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 						<form action="" method="post">
 						  <input type="hidden" name="idProduct" value="' . $rows['ProductoID'] . '">
 						  <input type="hidden" name="precioProduct" value="' . $rows['PrecioUnitario'] . '">
-						  <input type="hidden" name="nameProduct" value="' . $rows['NombreProducto'] . '">
+						  <input type="hidden" name="nameProduct" value="' . $rows['nombreProducto'] . '">
 						  <strong>Cantidad:</strong><br>
 						  <input class="form-control col-md-12" type="text" name="cantidadProduct" value="0.0">
 						<hr>
