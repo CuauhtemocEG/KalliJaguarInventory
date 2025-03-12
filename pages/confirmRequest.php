@@ -9,6 +9,8 @@ if (!isset($_SESSION['INV']) || count($_SESSION['INV']) == 0) {
     exit();
 }
 
+$sucursal_id = isset($_POST['idSucursal']);
+
 // Crear una instancia de la clase FPDF
 $pdf = new FPDF();
 $pdf->AddPage();
@@ -53,7 +55,7 @@ foreach ($_SESSION['INV'] as $item) {
     $stmt = $conn->prepare("INSERT INTO MovimientosInventario (SucursalID, ProductoID, TipoMovimiento, Cantidad, FechaMovimiento, PrecioFinal, UsuarioID) 
                             VALUES (:sucursalID, :productoID, 'Salida', :cantidad, NOW(), :precioFinal, :usuarioID)");
     $stmt->execute([
-        ':sucursalID' => 1,
+        ':sucursalID' => $sucursal_id,
         ':productoID' => $item['producto'],
         ':cantidad' => $item['cantidad'],
         ':precioFinal' => $item['precio'] + ($item['cantidad'] * 0.16),

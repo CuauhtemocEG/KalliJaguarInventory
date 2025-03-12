@@ -163,29 +163,28 @@
                             </div>
                             <div class="modal-body">
                                 ¿Está seguro de que desea enviar la lista de productos solicitados?
-
-                                <div class="form-group col-md-12">
-                                    <b><label>Sucursal de Destino:</label></b>
-                                    <select class="form-control" id="inputSucursal" name="idSucursal">
-                                        <option selected>Seleccione una Sucursal</option>
-                                        <?php
-                                        $sucursal = conexion();
-                                        $sucursal = $sucursal->query("SELECT * FROM Sucursales");
-                                        if ($sucursal->rowCount() > 0) {
-                                            $sucursal = $sucursal->fetchAll();
-                                            foreach ($sucursal as $row) {
-                                                echo '<option value="' . $row['SucursalID'] . '" >' . $row['nombre'] . '</option>';
+                                <form method="POST" action="index.php?page=confirmRequest" id="confirmForm">
+                                    <div class="form-group col-md-12">
+                                        <b><label>Sucursal de Destino:</label></b>
+                                        <select class="form-control" id="inputSucursal" name="idSucursal">
+                                            <option selected>Seleccione una Sucursal</option>
+                                            <?php
+                                            $sucursal = conexion();
+                                            $sucursal = $sucursal->query("SELECT * FROM Sucursales");
+                                            if ($sucursal->rowCount() > 0) {
+                                                $sucursal = $sucursal->fetchAll();
+                                                foreach ($sucursal as $row) {
+                                                    echo '<option value="' . $row['SucursalID'] . '" >' . $row['nombre'] . '</option>';
+                                                }
                                             }
-                                        }
-                                        $sucursal = null;
-                                        ?>
-                                    </select>
-                                </div>
+                                            $sucursal = null;
+                                            ?>
+                                        </select>
+                                    </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                                <form method="POST" action="index.php?page=confirmRequest" id="confirmForm">
-                                    <button type="submit" class="btn btn-primary">Confirmar Pedido</button>
+                                <button type="submit" class="btn btn-primary">Confirmar Pedido</button>
                                 </form>
                             </div>
                         </div>
