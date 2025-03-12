@@ -55,7 +55,7 @@ foreach ($_SESSION['INV'] as $item) {
     $stmt = $conn->prepare("INSERT INTO MovimientosInventario (SucursalID, ProductoID, TipoMovimiento, Cantidad, FechaMovimiento, PrecioFinal, UsuarioID) 
                             VALUES (:sucursalID, :productoID, 'Salida', :cantidad, NOW(), :precioFinal, :usuarioID)");
 
-    $precioFinales = $item['precio'] + ($item['cantidad'] * 0.16);
+    $precioFinales = $item['precio'] * (1 + 0.16);
 
     $stmt->execute([
         ':sucursalID' => $sucursal_id,
@@ -76,6 +76,7 @@ foreach ($_SESSION['INV'] as $item) {
 // Limpiar la sesión después de procesar la solicitud
 unset($_SESSION['INV']);
 
-echo "<script>window.setTimeout(function() { window.location = 'index.php?page=requestProducts' }, 100);</script>";
+//echo "<script>window.setTimeout(function() { window.location = 'index.php?page=requestProducts' }, 100);</script>";
+header("Location: index.php?page=requestProducts");
 exit();
 ?>
