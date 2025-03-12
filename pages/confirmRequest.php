@@ -48,7 +48,7 @@ try {
     $pdf->Cell(40, 10, '$' . number_format($totalGeneral, 2), 1);
 
     // Salvar o enviar el PDF
-    $pdf->Output('D', 'solicitud.pdf'); // Generar PDF en pantalla
+    $pdf->Output('F', '../documents/solicitud.pdf'); // Generar PDF en pantalla
 } catch (Exception $e) {
     echo "Error al generar PDF: " . $e->getMessage();
 }
