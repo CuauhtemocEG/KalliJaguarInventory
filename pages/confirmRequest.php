@@ -11,6 +11,8 @@ if (!isset($_SESSION['INV']) || count($_SESSION['INV']) == 0 || !isset($_POST['i
 
 $sucursal_id = $_POST['idSucursal'];
 
+echo "<script>console.log(".$_POST['idSucursal'].");</script>";
+
 // Crear una instancia de la clase FPDF
 $pdf = new FPDF();
 $pdf->AddPage();
@@ -56,6 +58,11 @@ foreach ($_SESSION['INV'] as $item) {
                             VALUES (:sucursalID, :productoID, 'Salida', :cantidad, NOW(), :precioFinal, :usuarioID)");
 
     $precioFinales = $item['precio'] * (1 + 0.16);
+
+    echo "<script>console.log(".$item['producto'].");</script>";
+echo "<script>console.log(".$item['cantidad'].");</script>";
+echo "<script>console.log(".$precioFinales .");</script>";
+echo "<script>console.log(".$_SESSION['id'].");</script>";
 
     $stmt->execute([
         ':sucursalID' => $sucursal_id,
