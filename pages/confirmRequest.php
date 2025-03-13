@@ -15,10 +15,7 @@ $sucursal_id = $_POST['idSucursal'];
 // Generar un ID único para la comanda basado en la fecha, sucursal y un número aleatorio
 $fecha = date('Ymd'); // Formato de fecha: AñoMesDía (ej. 20250311)
 $random_number = rand(100, 999); // Número aleatorio de 3 dígitos
-$comandaID = $fecha . '-' . $sucursal_id . '-' . $random_number; // Ejemplo: 20250311-1-235
-
-// Debugging output
-echo "<script>console.log(" . json_encode($comandaID) . ");</script>";
+$comandaID = 'COM-'.$fecha . '-' . $sucursal_id . '-' . $random_number; // Ejemplo: 20250311-1-235
 
 try {
     // Crear una instancia de la clase FPDF
@@ -93,5 +90,5 @@ foreach ($_SESSION['INV'] as $item) {
 
 // Limpiar la sesión después de procesar la solicitud
 unset($_SESSION['INV']);
-echo "<script>window.setTimeout(function() { window.location = 'index.php?page=showPDFp&pdf=" . urlencode($pdfPath)."' }, 100);</script>";
+echo "<script>window.setTimeout(function() { window.location = 'index.php?page=showPDF&pdf=" . urlencode($pdfPath)."' }, 100);</script>";
 exit();
