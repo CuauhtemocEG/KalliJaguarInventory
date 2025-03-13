@@ -71,6 +71,11 @@
                 <i class="fa fa-truck"></i>
                 <span>Solicitar Insumos</span></a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" href="index.php?page=showRequest">
+                <i class="fa fa-truck"></i>
+                <span>Mis Solicitudes</span></a>
+        </li>
         <hr class="sidebar-divider d-none d-md-block">
         <div class="sidebar-card d-none d-lg-flex">
             <p class="text-center mb-2"><strong>Bienvenido al nuevo landing</strong> constantemente el sitio tendrá mejoras, si detectas algún problema avisa al administrador del sitio.</p>
