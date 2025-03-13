@@ -112,13 +112,11 @@
                             'cantidad' => $cantidad
                         ];
                     }
-
-                    echo "<div class='row justify-content-center col-md-12'>Producto agregado a la Lista de solicitud. <a href='index.php?vista=solicitarInsumos'>Ver Lista</a></div><br>";
                 }
 
                 ?>
                 <div class="col-md-10">
-                    <h5 class="card-title h5 font-weight-bold">Lista de productos solicitados a almacen</h5>
+                    <h5 class="card-title h5 font-weight-bold">Lista de productos solicitados</h5>
                     <?php
                     $table = "";
                     // Mostrar los productos en el carrito
