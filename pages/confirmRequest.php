@@ -50,9 +50,9 @@ try {
     $pdf->Cell(130, 10, 'Total', 1);
     $pdf->Cell(40, 10, '$' . number_format($totalGeneral, 2), 1);
 
-    $pdfPath = $comandaID.'.pdf';
+    $pdfPath = './documents/'.$comandaID.'.pdf';
     // Salvar o enviar el PDF
-    $pdf->Output('I', $pdfPath, true); // Generar PDF en pantalla
+    $pdf->Output('D', $pdfPath, true); // Generar PDF en pantalla
 } catch (Exception $e) {
     echo "Error al generar PDF: " . $e->getMessage();
 }
@@ -90,5 +90,5 @@ foreach ($_SESSION['INV'] as $item) {
 
 // Limpiar la sesión después de procesar la solicitud
 unset($_SESSION['INV']);
-//echo "<script>window.setTimeout(function() { window.location = 'index.php?page=showPDF&pdf=" . urlencode($pdfPath)."' }, 100);</script>";
+echo "<script>window.setTimeout(function() { window.location = 'index.php?page=showPDF' }, 100);</script>";
 exit();
