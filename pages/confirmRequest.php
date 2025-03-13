@@ -48,7 +48,7 @@ try {
     $pdf->Cell(40, 10, '$' . number_format($totalGeneral, 2), 1);
 
     // Salvar o enviar el PDF
-    $pdf->Output('F', '../documents/solicitud.pdf'); // Generar PDF en pantalla
+    $pdf->Output('F', 'solicitudInsumos.pdf', true); // Generar PDF en pantalla
 } catch (Exception $e) {
     echo "Error al generar PDF: " . $e->getMessage();
 }
@@ -91,5 +91,4 @@ foreach ($_SESSION['INV'] as $item) {
 // Limpiar la sesión después de procesar la solicitud
 unset($_SESSION['INV']);
 
-echo "<script>window.setTimeout(function() { window.location = 'index.php?page=requestProducts' }, 100);</script>";
 exit();
