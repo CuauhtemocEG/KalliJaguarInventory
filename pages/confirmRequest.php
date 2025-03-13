@@ -50,7 +50,7 @@ try {
     $pdf->Cell(130, 10, 'Total', 1);
     $pdf->Cell(40, 10, '$' . number_format($totalGeneral, 2), 1);
 
-    $pdfPath = './documents/request-'.$comandaID.'.pdf';
+    $pdfPath = $comandaID.'.pdf';
     // Salvar o enviar el PDF
     $pdf->Output('I', $pdfPath, true); // Generar PDF en pantalla
 } catch (Exception $e) {
