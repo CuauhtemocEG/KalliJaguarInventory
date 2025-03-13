@@ -17,45 +17,54 @@ $fecha = date('Ymd'); // Formato de fecha: AñoMesDía (ej. 20250311)
 $random_number = rand(100, 999); // Número aleatorio de 3 dígitos
 $comandaID = 'COM-' . $fecha . '-' . $sucursal_id . '-' . $random_number; // Ejemplo: 20250311-1-235
 
+$dataSucursal = conexion();
+$dataSucursal = $dataSucursal->query("SELECT nombre FROM Sucursales WHERE SucursalID = '$sucursal_id'");
+$nameSucursal = $dataSucursal->fetchColumn();
+
+$idUser = $_SESSION['id'];
+
+$dataUser = conexion();
+$dataUser = $dataUser->query("SELECT Nombre FROM Usuarios WHERE UsuarioID = '$idUser'");
+$nameUser = $dataUser->fetchColumn();
+
 try {
     // Crear una instancia de la clase FPDF
     $pdf = new FPDF();
     $pdf->AddPage();
-    //$pdf->SetFont('Arial', 'B', 12);
 
-    // Título
-    //$pdf->Cell(200, 10, 'Lista de Productos Solicitados', 0, 1, 'C');
+    $pdf->Image('./img/logo.png', 15, 15, 50);
 
     //Superior
 
-    $pdf->Image('./img/logo.png', 10, 10, 30); // Logo en la parte superior izquierda (ajusta las coordenadas y tamaño)
+    $pdf->Image('./img/logo.png', 20, 20, 63); // Logo en la parte superior izquierda (ajusta las coordenadas y tamaño)
 
     // Título en el centro superior (debes personalizar según lo que necesitas)
-    // Tablón central superior e inferior
-    $pdf->SetFont('Arial', 'B', 12);
-    $pdf->SetXY(50, 10);
-    $pdf->Cell(40, 10, 'Sucursal', 1, 0, 'C');
-    $pdf->SetXY(50, 20);
-    $pdf->Cell(40, 10, 'Listado de Salida', 1, 0, 'C');
+    $pdf->SetFont('Arial', 'B', 8);
+    $pdf->SetXY(70, 11);
+    $pdf->Cell(60, 10, ''.$nameSucursal.'', 1, 0, 'C');
+    $pdf->SetXY(70, 21);
+    $pdf->Cell(60, 10, 'Listado de Salida', 1, 0, 'C');
 
     // Tablón derecho superior e inferior
-    $pdf->SetXY(110, 10);
-    $pdf->Cell(40, 10, '' . $comandaID . '', 1, 0, 'C');
-    $pdf->SetXY(110, 20);
-    $pdf->Cell(40, 10, 'Usuario', 1, 0, 'C');
+    $pdf->SetXY(130, 11);
+    $pdf->Cell(60, 10, ''.$comandaID.'', 1, 0, 'C');
+    $pdf->SetXY(130, 21);
+    $pdf->Cell(60, 10, $nameUser, 1, 0, 'C');
 
     // Salto de línea para el espacio entre la cabecera y el listado de productos
     $pdf->Ln(20);
-
+    $pdf->SetFont('Arial', '', 8);
+    $pdf->Cell(180, 5, utf8_decode('A continuación se debe capturar las observaciones del producto al ser recepcionado por el solicitante, verificar que todos los productos'), 0, 1, 'C');
+    $pdf->Cell(180, 5, utf8_decode('solicitados están siendo entregados y contar con 3 copias de este documento para cada una de las áreas'), 0, 1, 'C');
     //body
-
+    $pdf->Ln(5);
+    $pdf->SetFont('Arial', 'B', 9);
+    $pdf->Cell(190, 10, utf8_decode('Listado de productos solicitados a Almácen:'), 0, 1, 'L');
     $pdf->SetFont('Arial', '', 12);
-    $pdf->Cell(190, 10, 'Listado de productos:', 0, 1, 'L');
     // Encabezado de la tabla
-    $pdf->Cell(50, 10, 'Producto', 1);
-    $pdf->Cell(40, 10, 'Precio', 1);
+    $pdf->Cell(70, 10, 'Producto', 1);
     $pdf->Cell(40, 10, 'Cantidad', 1);
-    $pdf->Cell(40, 10, 'Total', 1);
+    $pdf->Cell(70, 10, 'Observaciones', 1);
     $pdf->Ln();
 
     // Datos de los productos
@@ -64,26 +73,22 @@ try {
         $totalItem = $item['precio'] * $item['cantidad'];
         $totalGeneral += $totalItem;
 
-        $pdf->Cell(50, 10, $item['nombre'], 1);
-        $pdf->Cell(40, 10, '$' . number_format($item['precio'], 2), 1);
+        $pdf->Cell(70, 10, $item['nombre'], 1);
         $pdf->Cell(40, 10, $item['cantidad'], 1);
-        $pdf->Cell(40, 10, '$' . number_format($totalItem, 2), 1);
+        $pdf->Cell(70, 10, '', 1);
         $pdf->Ln();
     }
 
-    // Total
-    $pdf->Cell(130, 10, 'Total', 1);
-    $pdf->Cell(40, 10, '$' . number_format($totalGeneral, 2), 1);
+    $pdf->Ln(20);
 
-    //Footer
-
-    // Firma izquierda
-    $pdf->SetXY(10, -30);
-    $pdf->Cell(90, 10, 'Firma', 1, 0, 'C');
-
-    // Firma derecha
-    $pdf->SetXY(110, -30);
-    $pdf->Cell(90, 10, 'Firma', 1, 0, 'C');
+    $pdf->Cell(90, 10, '', 0, 0, 'C');
+    $pdf->Cell(90, 10, '', 0, 0, 'C');
+    $pdf->Ln(10);
+    $pdf->Cell(90, 10, 'Firma', 0, 0, 'C');
+    $pdf->Cell(90, 10, 'Firma', 0, 0, 'C');
+    $pdf->Ln(10);
+    $pdf->Cell(90, 10, ''.$nameUser.'', 0, 0, 'C');
+    $pdf->Cell(90, 10, 'Logistica', 0, 0, 'C');
 
 
     $pdfPath = './documents/' . $comandaID . '.pdf';
