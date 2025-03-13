@@ -86,9 +86,9 @@ try {
     $pdf->Cell(90, 10, 'Firma', 1, 0, 'C');
 
 
-    $pdfPath = './documents/' . $comandaID . '.pdf';
+    //$pdfPath = './documents/' . $comandaID . '.pdf';
     // Salvar o enviar el PDF
-    $pdf->Output('D', $pdfPath, true); // Generar PDF en pantalla
+    $pdf->Output('D', $comandaID, true); // Generar PDF en pantalla
 } catch (Exception $e) {
     echo "Error al generar PDF: " . $e->getMessage();
 }
