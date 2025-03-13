@@ -35,7 +35,7 @@ try {
 
     //Superior
 
-    $pdf->Cell('./img/logo.png', 10, 10, 30); // Logo en la parte superior izquierda (ajusta las coordenadas y tamaño)
+    $pdf->Image('./img/logo.png', 10, 10, 30); // Logo en la parte superior izquierda (ajusta las coordenadas y tamaño)
 
     // Título en el centro superior (debes personalizar según lo que necesitas)
     // Tablón central superior e inferior
