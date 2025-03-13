@@ -52,7 +52,7 @@ try {
 
     $pdfPath = './documents/request-'.$comandaID.'.pdf';
     // Salvar o enviar el PDF
-    $pdf->Output('F', $pdfPath, true); // Generar PDF en pantalla
+    $pdf->Output('I', $pdfPath, true); // Generar PDF en pantalla
 } catch (Exception $e) {
     echo "Error al generar PDF: " . $e->getMessage();
 }
