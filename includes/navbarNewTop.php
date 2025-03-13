@@ -73,7 +73,7 @@
         </li>
         <li class="nav-item">
             <a class="nav-link" href="index.php?page=showRequest">
-                <i class="fa fa-truck"></i>
+                <i class="fa fa-list-alt"></i>
                 <span>Mis Solicitudes</span></a>
         </li>
         <hr class="sidebar-divider d-none d-md-block">
