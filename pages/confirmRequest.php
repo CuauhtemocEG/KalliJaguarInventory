@@ -32,6 +32,7 @@ try {
 
     // Título en el centro superior (debes personalizar según lo que necesitas)
     // Tablón central superior e inferior
+    $pdf->SetFont('Arial', 'B', 12);
     $pdf->SetXY(50, 10);
     $pdf->Cell(40, 10, 'Sucursal', 1, 0, 'C');
     $pdf->SetXY(50, 20);
@@ -48,7 +49,7 @@ try {
 
     //body
 
-    //$pdf->SetFont('Arial', '', 12);
+    $pdf->SetFont('Arial', '', 12);
     $pdf->Cell(190, 10, 'Listado de productos:', 0, 1, 'L');
     // Encabezado de la tabla
     $pdf->Cell(50, 10, 'Producto', 1);
