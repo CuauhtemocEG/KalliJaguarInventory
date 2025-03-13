@@ -12,7 +12,13 @@ if (!isset($_SESSION['INV']) || !is_array($_SESSION['INV']) || count($_SESSION['
 
 $sucursal_id = $_POST['idSucursal'];
 
-echo "<script>console.log(" . $_POST['idSucursal'] . ");</script>";
+// Generar un ID único para la comanda basado en la fecha, sucursal y un número aleatorio
+$fecha = date('Ymd'); // Formato de fecha: AñoMesDía (ej. 20250311)
+$random_number = rand(100, 999); // Número aleatorio de 3 dígitos
+$comandaID = $fecha . '-' . $sucursal_id . '-' . $random_number; // Ejemplo: 20250311-1-235
+
+// Debugging output
+echo "<script>console.log(" . json_encode($comandaID) . ");</script>";
 
 try {
     // Crear una instancia de la clase FPDF
@@ -58,18 +64,14 @@ $conn = conexion(); // Asumiendo que tienes una función de conexión a la BD.
 // Registrar los movimientos y reducir las cantidades en inventario
 foreach ($_SESSION['INV'] as $item) {
     // Registrar el movimiento en la tabla de movimientos
-    $stmt = $conn->prepare("INSERT INTO MovimientosInventario (SucursalID, ProductoID, TipoMovimiento, Cantidad, FechaMovimiento, PrecioFinal, UsuarioID) 
-                            VALUES (:sucursalID, :productoID, 'Salida', :cantidad, NOW(), :precioFinal, :usuarioID)");
+    $stmt = $conn->prepare("INSERT INTO MovimientosInventario (ComandaID, SucursalID, ProductoID, TipoMovimiento, Cantidad, FechaMovimiento, PrecioFinal, UsuarioID) 
+                            VALUES (:comandaID,:sucursalID, :productoID, 'Salida', :cantidad, NOW(), :precioFinal, :usuarioID)");
 
     $precioFinales = $item['precio'] * (1 + 0.16);
 
-    echo "<script>console.log(" . json_encode($item['producto']) . ");</script>";
-    echo "<script>console.log(" . json_encode($item['cantidad']) . ");</script>";
-    echo "<script>console.log(" . json_encode($precioFinales) . ");</script>";
-    echo "<script>console.log(" . json_encode($_SESSION['id']) . ");</script>";
-
     try {
         $stmt->execute([
+            ':comandaID' => $comandaID,
             ':sucursalID' => $sucursal_id,
             ':productoID' => $item['producto'],
             ':cantidad' => $item['cantidad'],
@@ -90,5 +92,5 @@ foreach ($_SESSION['INV'] as $item) {
 
 // Limpiar la sesión después de procesar la solicitud
 unset($_SESSION['INV']);
-
+header("Location: index.php?page=showPDFp&pdf=" . urlencode($pdfPath));
 exit();
