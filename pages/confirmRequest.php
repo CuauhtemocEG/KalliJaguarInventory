@@ -21,42 +21,41 @@ try {
     // Crear una instancia de la clase FPDF
     $pdf = new FPDF();
     $pdf->AddPage();
-    $pdf->SetFont('Arial', 'B', 12);
+    //$pdf->SetFont('Arial', 'B', 12);
 
     // Título
-    $pdf->Cell(200, 10, 'Lista de Productos Solicitados', 0, 1, 'C');
+    //$pdf->Cell(200, 10, 'Lista de Productos Solicitados', 0, 1, 'C');
 
+    //Superior
+
+    $pdf->Image('./img/logo.png', 10, 10, 30); // Logo en la parte superior izquierda (ajusta las coordenadas y tamaño)
+
+    // Título en el centro superior (debes personalizar según lo que necesitas)
+    // Tablón central superior e inferior
+    $pdf->SetXY(50, 10);
+    $pdf->Cell(40, 10, 'Sucursal', 1, 0, 'C');
+    $pdf->SetXY(50, 20);
+    $pdf->Cell(40, 10, 'Listado de Salida', 1, 0, 'C');
+
+    // Tablón derecho superior e inferior
+    $pdf->SetXY(110, 10);
+    $pdf->Cell(40, 10, '' . $comandaID . '', 1, 0, 'C');
+    $pdf->SetXY(110, 20);
+    $pdf->Cell(40, 10, 'Usuario', 1, 0, 'C');
+
+    // Salto de línea para el espacio entre la cabecera y el listado de productos
+    $pdf->Ln(20);
+
+    //body
+
+    //$pdf->SetFont('Arial', '', 12);
+    $pdf->Cell(190, 10, 'Listado de productos:', 0, 1, 'L');
     // Encabezado de la tabla
     $pdf->Cell(50, 10, 'Producto', 1);
     $pdf->Cell(40, 10, 'Precio', 1);
     $pdf->Cell(40, 10, 'Cantidad', 1);
     $pdf->Cell(40, 10, 'Total', 1);
     $pdf->Ln();
-
-    //Superior
-
-    //$pdf->Image('./img/logo.png', 10, 10, 30); // Logo en la parte superior izquierda (ajusta las coordenadas y tamaño)
-
-    // Título en el centro superior (debes personalizar según lo que necesitas)
-    // Tablón central superior e inferior
-    //$pdf->SetXY(50, 10);
-    //$pdf->Cell(40, 10, 'Sucursal', 1, 0, 'C');
-    //$pdf->SetXY(50, 20);
-    //$pdf->Cell(40, 10, 'Listado de Salida', 1, 0, 'C');
-
-    // Tablón derecho superior e inferior
-    //$pdf->SetXY(110, 10);
-    //$pdf->Cell(40, 10, ''.$comandaID.'', 1, 0, 'C');
-    //$pdf->SetXY(110, 20);
-    //$pdf->Cell(40, 10, 'Usuario', 1, 0, 'C');
-
-    // Salto de línea para el espacio entre la cabecera y el listado de productos
-    //$pdf->Ln(20);
-
-    //body
-
-    //$pdf->SetFont('Arial', '', 12);
-    //$pdf->Cell(190, 10, 'Listado de productos:', 0, 1, 'L');
 
     // Datos de los productos
     $totalGeneral = 0;
@@ -78,17 +77,17 @@ try {
     //Footer
 
     // Firma izquierda
-    //$pdf->SetXY(10, -30);
-    //$pdf->Cell(90, 10, 'Firma', 1, 0, 'C');
+    $pdf->SetXY(10, -30);
+    $pdf->Cell(90, 10, 'Firma', 1, 0, 'C');
 
     // Firma derecha
-    //$pdf->SetXY(110, -30);
-    //$pdf->Cell(90, 10, 'Firma', 1, 0, 'C');
+    $pdf->SetXY(110, -30);
+    $pdf->Cell(90, 10, 'Firma', 1, 0, 'C');
 
 
     $pdfPath = './documents/' . $comandaID . '.pdf';
     // Salvar o enviar el PDF
-    $pdf->Output('D', $pdfPath, true); // Generar PDF en pantalla
+    $pdf->Output('F', $pdfPath, true); // Generar PDF en pantalla
 } catch (Exception $e) {
     echo "Error al generar PDF: " . $e->getMessage();
 }
