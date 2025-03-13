@@ -50,18 +50,18 @@ try {
     $pdf->Ln(20);
     $pdf->SetFont('Arial', '', 8);
     $pdf->Cell(180, 5, utf8_decode('A continuación se debe capturar las observaciones del producto al ser recepcionado por el solicitante, verificar que todos los productos'), 0, 1, 'C');
-    $pdf->Cell(180, 5, utf8_decode('solicitados están siendo entregados y contar con 3 copias de este documento para cada una de las áreas'), 0, 1, 'C');
+    $pdf->Cell(180, 5, utf8_decode('solicitados están siendo entregados y contar con 3 copias de este documento para cada una de las áreas.'), 0, 1, 'C');
     //body
     $pdf->Ln(5);
     $pdf->SetFont('Arial', 'B', 8);
     $pdf->Cell(190, 10, utf8_decode('Listado de productos solicitados a Almácen:'), 0, 1, 'L');
-    $pdf->SetFont('Arial', '', 9);
+    $pdf->SetFont('Arial', 'B', 9);
     // Encabezado de la tabla
     $pdf->Cell(70, 10, 'Producto', 1, 0, 'C');
     $pdf->Cell(40, 10, 'Cantidad', 1, 0, 'C');
     $pdf->Cell(70, 10, 'Observaciones', 1, 0, 'C');
     $pdf->Ln();
-
+    $pdf->SetFont('Arial', '', 9);
     // Datos de los productos
     $totalGeneral = 0;
     foreach ($_SESSION['INV'] as $item) {
