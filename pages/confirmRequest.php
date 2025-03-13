@@ -38,8 +38,6 @@ try {
     //$pdf->Cell('./img/logo.png', 10, 10, 30); // Logo en la parte superior izquierda (ajusta las coordenadas y tamaño)
 
     // Título en el centro superior (debes personalizar según lo que necesitas)
-    $pdf->SetFont('Arial', 'B', 12);
-
     // Tablón central superior e inferior
     $pdf->SetXY(50, 10);
     $pdf->Cell(40, 10, 'Sucursal', 1, 0, 'C');
@@ -48,7 +46,7 @@ try {
 
     // Tablón derecho superior e inferior
     $pdf->SetXY(110, 10);
-    $pdf->Cell(40, 10, 'Codigo', 1, 0, 'C');
+    $pdf->Cell(40, 10, ''.$comandaID.'', 1, 0, 'C');
     $pdf->SetXY(110, 20);
     $pdf->Cell(40, 10, 'Usuario', 1, 0, 'C');
 
