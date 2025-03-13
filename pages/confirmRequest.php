@@ -53,8 +53,9 @@ try {
     $pdf->Cell(130, 10, 'Total', 1);
     $pdf->Cell(40, 10, '$' . number_format($totalGeneral, 2), 1);
 
+    $pdfPath = './documents/request-'.$comandaID.'.pdf';
     // Salvar o enviar el PDF
-    $pdf->Output('F', './documents/request-'.$comandaID.'.pdf', true); // Generar PDF en pantalla
+    $pdf->Output('F', $pdfPath, true); // Generar PDF en pantalla
 } catch (Exception $e) {
     echo "Error al generar PDF: " . $e->getMessage();
 }
