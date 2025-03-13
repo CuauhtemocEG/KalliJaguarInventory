@@ -90,5 +90,5 @@ foreach ($_SESSION['INV'] as $item) {
 
 // Limpiar la sesión después de procesar la solicitud
 unset($_SESSION['INV']);
-echo "<script>window.setTimeout(function() { window.location = 'index.php?page=showPDF&pdf=" . urlencode($pdfPath)."' }, 100);</script>";
+//echo "<script>window.setTimeout(function() { window.location = 'index.php?page=showPDF&pdf=" . urlencode($pdfPath)."' }, 100);</script>";
 exit();
