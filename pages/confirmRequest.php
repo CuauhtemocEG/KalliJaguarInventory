@@ -33,11 +33,6 @@ try {
     $pdf->AddPage();
 
     $pdf->Image('./img/logo.png', 15, 15, 50);
-
-    //Superior
-
-    $pdf->Image('./img/logo.png', 20, 20, 63); // Logo en la parte superior izquierda (ajusta las coordenadas y tamaño)
-
     // Título en el centro superior (debes personalizar según lo que necesitas)
     $pdf->SetFont('Arial', 'B', 8);
     $pdf->SetXY(70, 11);
@@ -58,13 +53,13 @@ try {
     $pdf->Cell(180, 5, utf8_decode('solicitados están siendo entregados y contar con 3 copias de este documento para cada una de las áreas'), 0, 1, 'C');
     //body
     $pdf->Ln(5);
-    $pdf->SetFont('Arial', 'B', 9);
+    $pdf->SetFont('Arial', 'B', 8);
     $pdf->Cell(190, 10, utf8_decode('Listado de productos solicitados a Almácen:'), 0, 1, 'L');
     $pdf->SetFont('Arial', '', 12);
     // Encabezado de la tabla
-    $pdf->Cell(70, 10, 'Producto', 1);
-    $pdf->Cell(40, 10, 'Cantidad', 1);
-    $pdf->Cell(70, 10, 'Observaciones', 1);
+    $pdf->Cell(70, 10, 'Producto', 1, 0, 'C');
+    $pdf->Cell(40, 10, 'Cantidad', 1, 0, 'C');
+    $pdf->Cell(70, 10, 'Observaciones', 1, 0, 'C');
     $pdf->Ln();
 
     // Datos de los productos
@@ -73,8 +68,8 @@ try {
         $totalItem = $item['precio'] * $item['cantidad'];
         $totalGeneral += $totalItem;
 
-        $pdf->Cell(70, 10, $item['nombre'], 1);
-        $pdf->Cell(40, 10, $item['cantidad'], 1);
+        $pdf->Cell(70, 10, $item['nombre'], 1, 0, 'C');
+        $pdf->Cell(40, 10, $item['cantidad'], 1, 0, 'C');
         $pdf->Cell(70, 10, '', 1);
         $pdf->Ln();
     }
