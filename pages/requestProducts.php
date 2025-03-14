@@ -112,6 +112,9 @@
                             'cantidad' => $cantidad
                         ];
                     }
+
+                    echo "<script>window.setTimeout(function() { window.location = 'index.php?page=requestProducts&category_id=". $categoria_id."' }, 100);</script>";
+                    exit();
                 }
 
                 ?>
