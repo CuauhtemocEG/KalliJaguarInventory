@@ -89,6 +89,11 @@
                     <i class="fa fa-bars"></i>
                 </button>
                 <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="cartToggle" data-toggle="tooltip" title="Ver carrito">
+                            <i class="fa fa-shopping-cart"></i>
+                        </a>
+                    </li>
                     <div class="topbar-divider d-none d-sm-block"></div>
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
@@ -112,3 +117,43 @@
                     </li>
                 </ul>
             </nav>
+
+            <div id="cartPanel" class="cart-panel">
+                <div class="cart-header">
+                    <h4>Lista de solicitud</h4>
+                    <button id="closeCart" class="btn btn-danger btn-sm">Cerrar</button>
+                </div>
+                <div class="cart-body" id="cartBody">
+                    <?php
+                    if (isset($_SESSION['INV']) && count($_SESSION['INV']) > 0) {
+                        $total = 0;
+                        $totalItem = 0;
+                        foreach ($_SESSION['INV'] as $key => $item) {
+                            $totalItem += $item['cantidad'];
+
+                            echo '
+        <div class="col-md-12 mb-2">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">' . $item["nombre"] . '</div>
+                            <div class="h6 mb-0 font-weight-bold text-gray-800">Cantidad de articulos:'.$item["cantidad"].'</div>
+                            <a href="index.php?page=deleteProductList&id='.$key.'" class="btn btn-danger btn-sm">Eliminar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>';
+                        }
+                        echo '<strong>Total</strong>
+                        <strong>'.$totalItem.'</strong>
+                        <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#confirmModal">
+                            Enviar Solicitud
+                        </button>';
+                    } else {
+                        echo '<p>No hay productos en el carrito.</p>';
+                    }
+                    ?>
+                </div>
+            </div>
