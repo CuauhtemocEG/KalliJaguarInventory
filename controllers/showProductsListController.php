@@ -44,7 +44,7 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 
         if ($rows['Tipo'] == "Pesable") {
 			$result = "Kg";
-			$unidades = $rows['Cantidad'];
+			$unidades = number_format($rows['Cantidad'], 2, '.', '');
 		} else {
 			$result = "Unidades";
 			$unidades = (int) $rows['Cantidad'];
@@ -58,27 +58,25 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 				<input type="hidden" name="precioProduct" value="' . $rows['PrecioUnitario'] . '">
 				<input type="hidden" name="nameProduct" value="' . $rows['nombreProducto'] . '">
 				<strong>Cantidad a solicitar:</strong><br>
-				<input class="form-control col-md-12" type="text" name="cantidadProduct" value="0.0">
+				<input class="form-control col-md-12" type="number" name="cantidadProduct" value="0.0" min="0" step="any">
 				<hr>
 			    <div class="has-text-centered">
 			        <button type="submit" class="btn btn-warning btn-sm"" name="agregar">Agregar Producto</	button>
 			    </div>
 			</form>';
-		} else {
-			$cantidadRequested = '';
 		}
 
         $txtDisponibilidad = "";
 
 		if($rows['Cantidad'] > 1) {
-			$txtDisponibilidad = '<span class="badge badge-pill badge-success">Disponible</span>';
+			$txtDisponibilidad = '<span class="badge badge-success">Disponible</span>';
 		} else {
-			$txtDisponibilidad = '<span class="badge badge-pill badge-danger">No disponible</span>';
+			$txtDisponibilidad = '<span class="badge badge-danger">No disponible</span>';
 		}
 
 		$tabla .= '
 				<div class="col-md-3">
-				<div class="card" style="margin-bottom: 10px;">';
+				<div class="card mb-2">';
 		if (is_file("./img/producto/" . $rows['image'])) {
 			$tabla .= '<img class="card-img-top mx-auto d-block img-responsive w-50" src="./img/producto/' . $rows['image'] . '">';
 		} else {
