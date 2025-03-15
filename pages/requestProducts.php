@@ -118,43 +118,6 @@
                 }
 
                 ?>
-                <div class="col-md-10">
-                    <h5 class="card-title h5 font-weight-bold">Lista de productos solicitados</h5>
-                    <?php
-                    $table = "";
-                    // Mostrar los productos en el carrito
-                    if (isset($_SESSION['INV']) && count($_SESSION['INV']) > 0) {
-                        $table = "<div class='table-responsive'>
-        <table class='table table-bordered' width='100%' cellspacing='0'><tr><th>Producto</th><th>Precio</th><th>Cantidad</th><th>Total</th><th>Acciones</th></tr>";
-
-                        $total = 0;
-                        foreach ($_SESSION['INV'] as $key => $item) {
-                            $totalItem = $item['precio'] * $item['cantidad'];
-                            $total += $totalItem;
-                            $table .= "<tr>
-                                    <td>{$item['nombre']}</td>
-                                    <td>\${$item['precio']}</td>
-                                    <td>{$item['cantidad']}</td>
-                                    <td>\${$totalItem}</td>
-                                    <td><a href='index.php?page=deleteProductList&id={$key}' class='btn btn-danger btn-sm'>Eliminar</a></td>
-                                </tr>";
-                        }
-
-                        $table .= '<tr><td colspan="3">Total</td><td>$' . $total . '</td><td>
-                        <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#confirmModal">
-                            Enviar Solicitud
-                        </button>
-                        </td></tr>';
-                        $table .= '</table></div>';
-                    } else {
-                        $table .= '<div class="has-text-centered alert alert-danger alert-dismissible fade show" role="alert">
-                        <strong>¡La lista esta vacía!</strong>
-                    </div>';
-                    }
-
-                    echo $table;
-                    ?>
-                </div>
                 <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
