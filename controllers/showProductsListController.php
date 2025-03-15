@@ -146,3 +146,25 @@ echo $tabla;
 if ($total >= 1 && $pagina <= $Npaginas) {
 	echo paginador_tablas($pagina, $Npaginas, $url, 7);
 }
+?>
+<script>
+// Función para disminuir la cantidad
+function decreaseQuantity(productId) {
+    var cantidadInput = document.getElementById('cantidad_' + productId);
+    var currentValue = parseFloat(cantidadInput.value);
+    var step = parseFloat(cantidadInput.getAttribute('step'));
+
+    if (currentValue > 0) {
+        cantidadInput.value = (currentValue - step).toFixed(1);
+    }
+}
+
+// Función para aumentar la cantidad
+function increaseQuantity(productId) {
+    var cantidadInput = document.getElementById('cantidad_' + productId);
+    var currentValue = parseFloat(cantidadInput.value);
+    var step = parseFloat(cantidadInput.getAttribute('step'));
+
+    cantidadInput.value = (currentValue + step).toFixed(1);
+}
+</script>
