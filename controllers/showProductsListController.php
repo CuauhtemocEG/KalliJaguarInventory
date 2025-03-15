@@ -54,7 +54,7 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 			$result = "<i class='fas fa-cube'></i> Unidades";
 			$tipoClass = 'text-warning';
 			$step = '1';
-			$value = '0';
+			(int) $value = '0';
 		}
 
 		$cantidadRequested = '';
