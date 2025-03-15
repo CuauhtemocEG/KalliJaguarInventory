@@ -47,13 +47,14 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 			$unidades = number_format($rows['Cantidad'], 2, '.', ''); 
 			$tipoClass = 'text-success';
 			$step = '0.1';
+			$value = '0.0';
 		} else {
 			$result = "Unidades";
 			$unidades = (int) $rows['Cantidad'];
 			$result = "<i class='fas fa-cube'></i> Unidades";
-			$unidades = (int) $rows['Cantidad'];
 			$tipoClass = 'text-warning';
 			$step = '1';
+			$value = '0';
 		}
 
 		$cantidadRequested = '';
@@ -66,7 +67,7 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 				<strong>Cantidad a solicitar:</strong><br>
 				<div class="input-group">
 					<button type="button" class="btn btn-outline-secondary" onclick="decreaseQuantity(' . $rows['ProductoID'] . ')">-</button>
-					<input class="form-control col-md-12" type="number" name="cantidadProduct" value="' . ($unidades) . '" step="' . $step . '" min="0" id="cantidad_' . $rows['ProductoID'] . '">
+					<input class="form-control col-md-12" type="number" name="cantidadProduct" value="' . ($value) . '" step="' . $step . '" min="0" id="cantidad_' . $rows['ProductoID'] . '">
 					<button type="button" class="btn btn-outline-secondary" onclick="increaseQuantity(' . $rows['ProductoID'] . ')">+</button>
 				</div>
 				<hr>
