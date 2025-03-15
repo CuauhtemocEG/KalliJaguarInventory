@@ -43,11 +43,17 @@ if ($total >= 1 && $pagina <= $Npaginas) {
         $result = "";
 
         if ($rows['Tipo'] == "Pesable") {
-			$result = "Kg";
-			$unidades = number_format($rows['Cantidad'], 2, '.', '');
+			$result = "<i class='fas fa-balance-scale'></i> Kg";
+			$unidades = number_format($rows['Cantidad'], 2, '.', ''); 
+			$tipoClass = 'text-success';
+			$step = '0.1';
 		} else {
 			$result = "Unidades";
 			$unidades = (int) $rows['Cantidad'];
+			$result = "<i class='fas fa-cube'></i> Unidades";
+			$unidades = (int) $rows['Cantidad'];
+			$tipoClass = 'text-warning';
+			$step = '1';
 		}
 
 		$cantidadRequested = '';
@@ -58,7 +64,11 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 				<input type="hidden" name="precioProduct" value="' . $rows['PrecioUnitario'] . '">
 				<input type="hidden" name="nameProduct" value="' . $rows['nombreProducto'] . '">
 				<strong>Cantidad a solicitar:</strong><br>
-				<input class="form-control col-md-12" type="number" name="cantidadProduct" value="0.0" min="0" step="any">
+				<div class="input-group">
+					<button type="button" class="btn btn-outline-secondary" onclick="decreaseQuantity(' . $rows['ProductoID'] . ')">-</button>
+					<input class="form-control col-md-12" type="number" name="cantidadProduct" value="' . ($unidades) . '" step="' . $step . '" min="0" id="cantidad_' . $rows['ProductoID'] . '">
+					<button type="button" class="btn btn-outline-secondary" onclick="increaseQuantity(' . $rows['ProductoID'] . ')">+</button>
+				</div>
 				<hr>
 			    <div class="has-text-centered">
 			        <button type="submit" class="btn btn-warning btn-sm"" name="agregar">Agregar Producto</	button>
