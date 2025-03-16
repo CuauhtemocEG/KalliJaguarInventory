@@ -109,7 +109,7 @@ foreach ($_SESSION['INV'] as $item) {
             ':sucursalID' => $sucursal_id,
             ':productoID' => $item['producto'],
             ':cantidad' => $item['cantidad'],
-            ':precioFinal' => $precioFinales,
+            ':precioFinal' => $precioFinales * $item['cantidad'],
             ':usuarioID' => $_SESSION['id']
         ]);
     } catch (Exception $e) {
