@@ -2,7 +2,7 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 date_default_timezone_set("America/Mexico_City");
-
+$timeRegister = date('Y/m/d h:i:sa');
 require('./fpdf/fpdf.php');
 require_once "./controllers/mainController.php"; // Asegúrate de incluir tu controlador de la base de datos
 
@@ -103,7 +103,7 @@ $conn = conexion(); // Asumiendo que tienes una función de conexión a la BD.
 foreach ($_SESSION['INV'] as $item) {
     // Registrar el movimiento en la tabla de movimientos
     $stmt = $conn->prepare("INSERT INTO MovimientosInventario (ComandaID, SucursalID, ProductoID, TipoMovimiento, Cantidad, FechaMovimiento, PrecioFinal, UsuarioID) 
-                            VALUES (:comandaID,:sucursalID, :productoID, 'Salida', :cantidad, date('Y/m/d h:i:sa'), :precioFinal, :usuarioID)");
+                            VALUES (:comandaID,:sucursalID, :productoID, 'Salida', :cantidad, $timeRegister, :precioFinal, :usuarioID)");
 
     $precioFinales = $item['precio'] * (1 + 0.16);
 
