@@ -57,23 +57,26 @@ try {
     $pdf->Cell(190, 10, utf8_decode('Listado de productos solicitados a Almácen:'), 0, 1, 'L');
     $pdf->SetFont('Arial', 'B', 9);
     // Encabezado de la tabla
-    $pdf->Cell(70, 10, 'Nombre del Producto/Materia Prima', 1, 0, 'C');
+    $pdf->Cell(60, 10, 'Nombre del Producto/Materia Prima', 1, 0, 'C');
     $pdf->Cell(40, 10, 'Cantidad', 1, 0, 'C');
-    $pdf->Cell(70, 10, 'Observaciones', 1, 0, 'C');
+    $pdf->Cell(40, 10, 'Precio', 1, 0, 'C');
+    $pdf->Cell(40, 10, 'Observaciones', 1, 0, 'C');
     $pdf->Ln();
     $pdf->SetFont('Arial', '', 9);
     // Datos de los productos
     $totalGeneral = 0;
     foreach ($_SESSION['INV'] as $item) {
-        $totalItem = $item['precio'] * $item['cantidad'];
+        $totalItem = ($item['precio'] * 1.16) * $item['cantidad'];
         $totalGeneral += $totalItem;
 
-        $pdf->Cell(70, 10, $item['nombre'], 1, 0, 'C');
+        $pdf->Cell(60, 10, $item['nombre'], 1, 0, 'C');
         $pdf->Cell(40, 10, $item['cantidad'], 1, 0, 'C');
-        $pdf->Cell(70, 10, '', 1);
+        $pdf->Cell(40, 10, '$'.$totalItem, 1, 0, 'C');
+        $pdf->Cell(40, 10, '', 1);
         $pdf->Ln();
     }
-
+    $pdf->Cell(100, 10, 'Total:', 1, 0, 'L');
+    $pdf->Cell(40, 10, '$'.$totalGeneral, 1, 0, 'C');
     $pdf->Ln(20);
 
     $pdf->Cell(90, 10, '', 0, 0, 'C');
