@@ -2,7 +2,8 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 date_default_timezone_set("America/Mexico_City");
-$timeRegister = date('Y/m/d h:i:sa');
+$timeRegister = date('Y/m/d h:i:s');
+
 require('./fpdf/fpdf.php');
 require_once "./controllers/mainController.php"; // Asegúrate de incluir tu controlador de la base de datos
 
