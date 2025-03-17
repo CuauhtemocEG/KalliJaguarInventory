@@ -16,7 +16,7 @@ foreach ($_SESSION['INV'] as $item) {
     $consultaStock = $consultaStock->query("SELECT Cantidad FROM Productos WHERE ProductoID = " . $item['producto'] . "");
     $stockDisponible = $consultaStock->fetchColumn();
 
-    if ($item['cantidad'] < $stockDisponible) {
+    if ($item['cantidad'] <= $stockDisponible) {
         // Registrar el movimiento en la tabla de movimientos
         $conn = conexion();
         $stmt = $conn->prepare("INSERT INTO MovimientosInventario (ComandaID, SucursalID, ProductoID, TipoMovimiento, Cantidad, FechaMovimiento, PrecioFinal, UsuarioID) 
