@@ -1,5 +1,6 @@
 <div class="container-fluid" style="padding-top:15px;padding-bottom:15px">
     <?php
+    session_start();
     require_once "./controllers/mainController.php";
     ?>
     <div class="card">
@@ -47,7 +48,7 @@
                     }
 
                     if (isset($_GET['id'])) {
-                        require_once "eliminar.php";
+                        require_once "deleteProductList.php";
                     }
 
                     if (!isset($_GET['pages'])) {
@@ -112,42 +113,46 @@
                         ];
                     }
 
-                    echo "<div class='row justify-content-center col-md-12'>Producto agregado a la Lista de solicitud. <a href='index.php?vista=solicitarInsumos'>Ver Lista</a></div><br>";
+                    echo "<script>window.setTimeout(function() { window.location = 'index.php?page=requestProducts&category_id=" . $categoria_id . "' }, 100);</script>";
+                    exit();
                 }
 
                 ?>
-                <div class="col-md-10">
-                    <h5 class="card-title h5 font-weight-bold">Lista de productos solicitados a almacen</h5>
-                    <?php
-                    $table = "";
-                    // Mostrar los productos en el carrito
-                    if (isset($_SESSION['INV']) && count($_SESSION['INV']) > 0) {
-                        $table = "<div class='table-responsive'>
-        <table class='table table-bordered' width='100%' cellspacing='0'><tr><th>Producto</th><th>Precio</th><th>Cantidad</th><th>Total</th><th>Acciones</th></tr>";
-
-                        $total = 0;
-                        foreach ($_SESSION['INV'] as $key => $item) {
-                            $totalItem = $item['precio'] * $item['cantidad'];
-                            $total += $totalItem;
-                            $table .= "<tr>
-                                    <td>{$item['nombre']}</td>
-                                    <td>\${$item['precio']}</td>
-                                    <td>{$item['cantidad']}</td>
-                                    <td>\${$totalItem}</td>
-                                    <td><a href='index.php?page=deleteProductList&id={$key}' class='btn btn-danger btn-sm'>Eliminar</a></td>
-                                </tr>";
-                        }
-
-                        $table .= '<tr><td colspan="3">Total</td><td>$' . $total . '</td><td></td></tr>';
-                        $table .= '</table></div>';
-                    } else {
-                        $table .= '<div class="has-text-centered alert alert-danger alert-dismissible fade show" role="alert">
-                        <strong>¡La lista esta vacía!</strong>
-                    </div>';
-                    }
-
-                    echo $table;
-                    ?>
+                <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="confirmModalLabel">Confirmar Solicitud a Almacén</h5>
+                                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                            </div>
+                            <div class="modal-body">
+                                ¿Está seguro de que desea enviar la lista de productos solicitados?
+                                <form method="POST" action="index.php?page=confirmRequest" id="confirmForm">
+                                    <div class="form-group col-md-12">
+                                        <b><label>Sucursal de Destino:</label></b>
+                                        <select class="form-control" id="inputSucursal" name="idSucursal">
+                                            <option selected>Seleccione una Sucursal</option>
+                                            <?php
+                                            $sucursal = conexion();
+                                            $sucursal = $sucursal->query("SELECT * FROM Sucursales");
+                                            if ($sucursal->rowCount() > 0) {
+                                                $sucursal = $sucursal->fetchAll();
+                                                foreach ($sucursal as $row) {
+                                                    echo '<option value="' . $row['SucursalID'] . '" >' . $row['nombre'] . '</option>';
+                                                }
+                                            }
+                                            $sucursal = null;
+                                            ?>
+                                        </select>
+                                    </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Confirmar Pedido</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

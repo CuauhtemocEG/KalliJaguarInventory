@@ -42,25 +42,53 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 
         $result = "";
 
+		$txtDisponibilidad = "";
+
+		if($rows['Cantidad'] >= 1) {
+			$txtDisponibilidad = '<span class="badge badge-success">Disponible</span>';
+		} else {
+			$txtDisponibilidad = '<span class="badge badge-danger">No disponible</span>';
+		}
+
         if ($rows['Tipo'] == "Pesable") {
-			$result = "Kg";
-			$unidades = $rows['Cantidad'];
+			$result = "<i class='fas fa-balance-scale'></i> Kg";
+			$unidades = number_format($rows['Cantidad'], 2, '.', ''); 
+			$tipoClass = 'text-success';
+			$step = '0.1';
+			$value = '0.0';
 		} else {
 			$result = "Unidades";
 			$unidades = (int) $rows['Cantidad'];
+			$result = "<i class='fas fa-cube'></i> Unidades";
+			$tipoClass = 'text-warning';
+			$step = '1';
+			$value = '0.0';
 		}
 
-        $txtDisponibilidad = "";
-
-		if($rows['Cantidad'] > 1) {
-			$txtDisponibilidad = '<span class="badge badge-pill badge-success">Disponible</span>';
-		} else {
-			$txtDisponibilidad = '<span class="badge badge-pill badge-danger">No disponible</span>';
+		$cantidadRequested = '';
+		if ($rows['Cantidad'] > 0) {
+			$cantidadRequested = '
+			<form action="" method="post">
+				<input type="hidden" name="idProduct" value="' . $rows['ProductoID'] . '">
+				<input type="hidden" name="precioProduct" value="' . $rows['PrecioUnitario'] . '">
+				<input type="hidden" name="nameProduct" value="' . $rows['nombreProducto'] . '">
+				<strong>Cantidad a solicitar:</strong><br>
+				<div class="input-group">
+					<button type="button" class="btn btn-outline-secondary" onclick="decreaseQuantity(' . $rows['ProductoID'] . ')">-</button>
+					<input class="form-control col-md-12" type="number" name="cantidadProduct" value="' . number_format($value, 0, '.', '') . '" step="' . $step . '" min="0" id="cantidad_' . $rows['ProductoID'] . '">
+					<button type="button" class="btn btn-outline-secondary" onclick="increaseQuantity(' . $rows['ProductoID'] . ')">+</button>
+				</div>
+				<hr>
+			    <div class="has-text-centered">
+			        <button type="submit" class="btn btn-warning btn-sm"" name="agregar">Agregar Producto</	button>
+			    </div>
+			</form>';
 		}
+
 
 		$tabla .= '
 				<div class="col-md-3">
-				<div class="card" style="margin-bottom: 10px;">';
+				<div class="card mb-2">';
 		if (is_file("./img/producto/" . $rows['image'])) {
 			$tabla .= '<img class="card-img-top mx-auto d-block img-responsive w-50" src="./img/producto/' . $rows['image'] . '">';
 		} else {
@@ -78,17 +106,7 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 							<strong>Registrado por:</strong> ' . $rows['userName'] . '<br>
                             '.$txtDisponibilidad.'
 			              </p>
-						<form action="" method="post">
-						  <input type="hidden" name="idProduct" value="' . $rows['ProductoID'] . '">
-						  <input type="hidden" name="precioProduct" value="' . $rows['PrecioUnitario'] . '">
-						  <input type="hidden" name="nameProduct" value="' . $rows['NombreProducto'] . '">
-						  <strong>Cantidad:</strong><br>
-						  <input class="form-control col-md-12" type="text" name="cantidadProduct" value="0.0">
-						<hr>
-			            	<div class="has-text-centered">
-			            	    <button type="submit" class="btn btn-warning btn-sm"" name="agregar">Agregar Producto</	button>
-			            	</div>
-						</form>
+						  '.$cantidadRequested.'
 			        </div>
 			    </div>
 				</div>';
@@ -130,3 +148,25 @@ echo $tabla;
 if ($total >= 1 && $pagina <= $Npaginas) {
 	echo paginador_tablas($pagina, $Npaginas, $url, 7);
 }
+?>
+<script>
+// Función para disminuir la cantidad
+function decreaseQuantity(productId) {
+    var cantidadInput = document.getElementById('cantidad_' + productId);
+    var currentValue = parseFloat(cantidadInput.value);
+    var step = parseFloat(cantidadInput.getAttribute('step'));
+
+    if (currentValue > 0) {
+        cantidadInput.value = (currentValue - step).toFixed(1);
+    }
+}
+
+// Función para aumentar la cantidad
+function increaseQuantity(productId) {
+    var cantidadInput = document.getElementById('cantidad_' + productId);
+    var currentValue = parseFloat(cantidadInput.value);
+    var step = parseFloat(cantidadInput.getAttribute('step'));
+
+    cantidadInput.value = (currentValue + step).toFixed(1);
+}
+</script>

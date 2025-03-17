@@ -1,15 +1,9 @@
 <?php
-if (isset($_GET['id'])) {
-    $id = $_GET['id'];
-    
-    // Elimina el producto del carrito
-    unset($_SESSION['INV'][$id]);
-    
-    // Reindexar el array para evitar huecos
-    $_SESSION['INV'] = array_values($_SESSION['INV']);
+if (isset($_GET['page']) && $_GET['page'] == 'deleteProductList' && isset($_GET['id'])) {
+    $idProducto = $_GET['id'];
+    unset($_SESSION['INV'][$idProducto]);  // Elimina el producto del carrito
+    // Redirecciona a la misma página para actualizar el carrito
+    //header("Location: index.php?page=requestProducts&category_id=" . $categoria_id);
+    echo "<script>window.setTimeout(function() { window.location = 'index.php?page=requestProducts&category_id=". $categoria_id."' }, 100);</script>";
+    exit();
 }
-
-//header("Location: index.php?vista=solicitarInsumos");
-echo "<script>window.setTimeout(function() { window.location = 'index.php?page=requestProducts' }, 100);</script>";
-exit();
-?>

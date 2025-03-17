@@ -34,3 +34,11 @@ function enviar_formulario_ajax(e){
 formularios_ajax.forEach(formularios => {
     formularios.addEventListener("submit",enviar_formulario_ajax);
 });
+
+document.getElementById('cartToggle').addEventListener('click', function() {
+    document.getElementById('cartPanel').classList.add('show');
+});
+
+document.getElementById('closeCart').addEventListener('click', function() {
+    document.getElementById('cartPanel').classList.remove('show');
+});
