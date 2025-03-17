@@ -6,6 +6,7 @@
     <div class="card">
         <div class="card-header font-weight-bold">Solicitud de Insumos a Sucursal</div>
         <div class="card-body">
+            <div class="form-rest"></div>
             <h4 class="card-title font-weight-bold">Categorías Disponibles</h4>
             <div class="row justify-content-center">
                 <div class="col-md-12">
@@ -113,7 +114,7 @@
                         ];
                     }
 
-                    echo "<script>window.setTimeout(function() { window.location = 'index.php?page=requestProducts&category_id=". $categoria_id."' }, 100);</script>";
+                    echo "<script>window.setTimeout(function() { window.location = 'index.php?page=requestProducts&category_id=" . $categoria_id . "' }, 100);</script>";
                     exit();
                 }
 
