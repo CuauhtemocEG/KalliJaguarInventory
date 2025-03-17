@@ -68,7 +68,7 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 		$cantidadRequested = '';
 		if ($rows['Cantidad'] > 0) {
 			$cantidadRequested = '
-			<form action="" method="post" class="FormularioAjax">
+			<form action="" method="post">
 				<input type="hidden" name="idProduct" value="' . $rows['ProductoID'] . '">
 				<input type="hidden" name="precioProduct" value="' . $rows['PrecioUnitario'] . '">
 				<input type="hidden" name="nameProduct" value="' . $rows['nombreProducto'] . '">
