@@ -10,9 +10,6 @@ if (!isset($_SESSION['INV']) || !is_array($_SESSION['INV']) || count($_SESSION['
     exit();
 }
 
-// Conexión a la base de datos
-$conn = conexion(); // Asumiendo que tienes una función de conexión a la BD.
-
 // Registrar los movimientos y reducir las cantidades en inventario
 foreach ($_SESSION['INV'] as $item) {
     $consultaStock = conexion();
@@ -21,6 +18,7 @@ foreach ($_SESSION['INV'] as $item) {
 
     if ($item['cantidad'] < $stockDisponible) {
         // Registrar el movimiento en la tabla de movimientos
+        $conn = conexion();
         $stmt = $conn->prepare("INSERT INTO MovimientosInventario (ComandaID, SucursalID, ProductoID, TipoMovimiento, Cantidad, FechaMovimiento, PrecioFinal, UsuarioID) 
                             VALUES (:comandaID,:sucursalID, :productoID, 'Salida', :cantidad, NOW(), :precioFinal, :usuarioID)");
 
