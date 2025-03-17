@@ -42,6 +42,14 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 
         $result = "";
 
+		$txtDisponibilidad = "";
+
+		if($rows['Cantidad'] > 1) {
+			$txtDisponibilidad = '<span class="badge badge-success">Disponible</span>';
+		} else {
+			$txtDisponibilidad = '<span class="badge badge-danger">No disponible</span>';
+		}
+
         if ($rows['Tipo'] == "Pesable") {
 			$result = "<i class='fas fa-balance-scale'></i> Kg";
 			$unidades = number_format($rows['Cantidad'], 2, '.', ''); 
@@ -77,13 +85,6 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 			</form>';
 		}
 
-        $txtDisponibilidad = "";
-
-		if($rows['Cantidad'] > 1) {
-			$txtDisponibilidad = '<span class="badge badge-success">Disponible</span>';
-		} else {
-			$txtDisponibilidad = '<span class="badge badge-danger">No disponible</span>';
-		}
 
 		$tabla .= '
 				<div class="col-md-3">
