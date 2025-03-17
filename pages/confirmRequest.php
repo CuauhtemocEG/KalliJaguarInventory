@@ -17,6 +17,13 @@ foreach ($_SESSION['INV'] as $item) {
     $stockDisponible = $consultaStock->fetchColumn();
 
     if ($item['cantidad'] <= $stockDisponible) {
+        $sucursal_id = $_POST['idSucursal'];
+
+        // Generar un ID único para la comanda basado en la fecha, sucursal y un número aleatorio
+        $fecha = date('Ymd'); // Formato de fecha: AñoMesDía (ej. 20250311)
+        $random_number = rand(100, 999); // Número aleatorio de 3 dígitos
+        $comandaID = 'COM-' . $fecha . '-' . $sucursal_id . '-' . $random_number; // Ejemplo: 20250311-1-235
+
         // Registrar el movimiento en la tabla de movimientos
         $conn = conexion();
         $stmt = $conn->prepare("INSERT INTO MovimientosInventario (ComandaID, SucursalID, ProductoID, TipoMovimiento, Cantidad, FechaMovimiento, PrecioFinal, UsuarioID) 
@@ -33,13 +40,6 @@ foreach ($_SESSION['INV'] as $item) {
                 ':precioFinal' => $precioFinales * $item['cantidad'],
                 ':usuarioID' => $_SESSION['id']
             ]);
-
-            $sucursal_id = $_POST['idSucursal'];
-
-            // Generar un ID único para la comanda basado en la fecha, sucursal y un número aleatorio
-            $fecha = date('Ymd'); // Formato de fecha: AñoMesDía (ej. 20250311)
-            $random_number = rand(100, 999); // Número aleatorio de 3 dígitos
-            $comandaID = 'COM-' . $fecha . '-' . $sucursal_id . '-' . $random_number; // Ejemplo: 20250311-1-235
 
             $dataSucursal = conexion();
             $dataSucursal = $dataSucursal->query("SELECT nombre FROM Sucursales WHERE SucursalID = '$sucursal_id'");
