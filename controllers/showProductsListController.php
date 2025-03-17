@@ -44,7 +44,7 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 
 		$txtDisponibilidad = "";
 
-		if($rows['Cantidad'] > 1) {
+		if($rows['Cantidad'] >= 1) {
 			$txtDisponibilidad = '<span class="badge badge-success">Disponible</span>';
 		} else {
 			$txtDisponibilidad = '<span class="badge badge-danger">No disponible</span>';
