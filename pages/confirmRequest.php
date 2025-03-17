@@ -15,7 +15,7 @@ $conn = conexion(); // Asumiendo que tienes una función de conexión a la BD.
 
 // Registrar los movimientos y reducir las cantidades en inventario
 foreach ($_SESSION['INV'] as $item) {
-
+    $consultaStock = conexion();
     $consultaStock = $consultaStock->query("SELECT Cantidad FROM Productos WHERE ProductosID = " . $item['producto'] . "");
     $stockDisponible = $consultaStock->fetchColumn();
 
