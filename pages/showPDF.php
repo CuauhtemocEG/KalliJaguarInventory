@@ -12,7 +12,7 @@ if (file_exists($pathPDF)) {
             <div class="col-md-12">
                 <div class="card border-left-success shadow h-100 py-2">
                     <div class="card-body">
-                        <h1>'.$comandaID.'</h1>
+                        <h3>'.$comandaID.'</h3>
                             <div id="pdf-container">
                                 <embed src="'.$pathPDF
                                 .'" type="application/pdf" width="100%" height="800px">
