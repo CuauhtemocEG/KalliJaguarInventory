@@ -8,7 +8,7 @@ if (file_exists($pathPDF)) {
     //echo '<script type="text/javascript"> window.open("' . $pathPDF . '", "_blank");</script>';
     echo '<h1>Visualizar PDF en un Div</h1>
 <div id="pdf-container">
-    <embed src="<?php echo $pathPDF; ?>" type="application/pdf" width="100%" height="100%">
+    <embed src="'.$pathPDF.'" type="application/pdf" width="100%" height="100%">
 </div>';
 } else {
     echo "El archivo no existe.";
