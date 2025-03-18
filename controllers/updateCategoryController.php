@@ -42,17 +42,17 @@ if ($nombre == "") {
 
 
 /*== Verificando integridad de los datos ==*/
-if (verificar_datos("[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]{4,50}", $nombre)) {
-    echo '
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <strong>¡Ocurrio un error!</strong><br>
-                El Nombre de la Categoría no coincide con el formato solicitado.
-            </div>';
-    exit();
-}
+//if (verificar_datos("[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]{4,50}", $nombre)) {
+//    echo '
+//            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+//                <button type="button" class="close" data-dismiss="alert" //aria-label="Close">
+//                    <span aria-hidden="true">&times;</span>
+//                </button>
+//                <strong>¡Ocurrio un error!</strong><br>
+//                El Nombre de la Categoría no coincide con el formato solicitado.
+//            </div>';
+//    exit();
+//}
 
 /*== Verificando nombre ==*/
 if ($nombre != $datos['Nombre']) {
