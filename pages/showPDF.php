@@ -9,7 +9,7 @@ if (file_exists($pathPDF)) {
     echo '
     <div class="container-fluid">
         <div class="row">
-            <div class="col-xl-6 col-md-12 mb-4">
+            <div class="col-md-12">
                 <div class="card border-left-success shadow h-100 py-2">
                     <div class="card-body">
                         <h1>Visualizar PDF en un Div</h1>
