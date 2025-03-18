@@ -40,7 +40,7 @@ $datos = $showComanda->fetchAll();
                                     Sucursal de Destino: <?php echo $nameSucursal; ?></div>
                             </div>
                             <div class="col mr-2">
-                                <a href="#"
+                                <a href="index.php?page=showPDF&ComandaID=<?php echo $row['ComandaID']; ?>"
                                     class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                                         class="fas fa-download fa-sm text-white-50"></i> Ver Solicitud</a>
                             </div>
