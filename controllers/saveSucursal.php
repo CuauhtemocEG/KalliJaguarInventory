@@ -19,33 +19,45 @@
         exit();
     }
 
-
-    /*== Verificando integridad de los datos ==*/
-    if(verificar_datos("[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]{4,50}",$nombre)){
+    if($direccion==""){
         echo '
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
                 <strong>¡Ocurrio un error!</strong><br>
-                El campo "Sucursal" no cumple con el formato solicitado.
+                No has llenado todos los campos que son obligatorios
             </div>';
         exit();
     }
 
-    if($direccion!=""){
-    	if(verificar_datos("[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]{5,150}",$direccion)){
-	        echo '
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                    </button>
-                    <strong>¡Ocurrio un error!</strong><br>
-                    El campo "Dirección" no cumple con el formato solicitado.
-                </div>';
-	        exit();
-	    }
-    }
+
+    /*== Verificando integridad de los datos ==*/
+    //if(verificar_datos("[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]{4,50}",$nombre)){
+    //    echo '
+    //        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    //            <button type="button" class="close" data-dismiss="alert" //aria-label="Close">
+    //                <span aria-hidden="true">&times;</span>
+    //            </button>
+    //            <strong>¡Ocurrio un error!</strong><br>
+    //            El campo "Sucursal" no cumple con el formato solicitado.
+    //        </div>';
+    //    exit();
+    //}
+
+    //if($direccion!=""){
+    //	if(verificar_datos("[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]{5,150}",$direccion)){
+	//        echo '
+    //            <div class="alert alert-danger alert-dismissible fade show" //role="alert">
+    //                <button type="button" class="close" data-dismiss="alert" //aria-label="Close">
+    //                <span aria-hidden="true">&times;</span>
+    //                </button>
+    //                <strong>¡Ocurrio un error!</strong><br>
+    //                El campo "Dirección" no cumple con el formato solicitado.
+    //            </div>';
+	//        exit();
+	//    }
+    //}
 
 
     /*== Verificando Sucursal ==*/
