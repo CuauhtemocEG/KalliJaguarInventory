@@ -30,7 +30,7 @@
 
 						<div class="form-group col-md-6">
 							<b><label>Nombre del Producto:</label></b>
-							<input class="form-control" type="text" name="productName" pattern="[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ().,$#\-\/ ]{1,70}" maxlength="70" required value="<?php echo $datos['Nombre']; ?>">
+							<input class="form-control" type="text" name="productName" maxlength="70" required value="<?php echo $datos['Nombre']; ?>">
 						</div>
 					</div>
 

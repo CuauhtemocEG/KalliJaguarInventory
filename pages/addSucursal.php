@@ -6,12 +6,12 @@
       <form action="./controllers/saveSucursal.php" method="POST" autocomplete="off" class="FormularioAjax">
         <div class="form-group">
           <b><label>Nombre de la Sucursal:</label></b>
-          <input class="form-control" type="text" name="sucursalName" pattern="[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]{4,50}" maxlength="50" required aria-describedby="sucursalHelp">
+          <input class="form-control" type="text" name="sucursalName" maxlength="50" required aria-describedby="sucursalHelp">
           <small id="sucursalHelp" class="form-text text-muted">Ingresa Kalli en cualquier formato Ej. "Kalli Express - Finanzas".</small>
         </div>
         <div class="form-group">
           <b><label>Dirección:</label></b>
-          <input class="form-control" type="text" name="sucursalAddress" pattern="[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]{5,150}" maxlength="150">
+          <input class="form-control" type="text" name="sucursalAddress" maxlength="150">
         </div>
         <br>
         <div class="text-center">

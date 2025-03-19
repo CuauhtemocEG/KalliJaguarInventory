@@ -6,7 +6,7 @@
       <form action="./controllers/saveCategory.php" method="POST" autocomplete="off" class="FormularioAjax">
         <div class="form-group">
           <b><label>Nombre de la Categoría:</label></b>
-          <input class="form-control" type="text" name="nameCategory" pattern="[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]{4,50}" maxlength="50" required aria-describedby="categoryHelp">
+          <input class="form-control" type="text" name="nameCategory" maxlength="50" required aria-describedby="categoryHelp">
           <small id="categoryHelp" class="form-text text-muted">Ingresa el nombre de la categoría Ej. Secos, Desechables, etc.</small>
         </div>
         <div class="has-text-centered">
