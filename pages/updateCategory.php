@@ -22,7 +22,7 @@
 					<input type="hidden" name="idCategory" value="<?php echo $datos['CategoriaID']; ?>" required>
 					<div class="form-group">
 						<b><label>Nombre de la Categoría:</label></b>
-						<input class="form-control" type="text" name="categoryName" pattern="[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]{4,50}" maxlength="50" required value="<?php echo $datos['Nombre']; ?>">
+						<input class="form-control" type="text" name="categoryName"  maxlength="50" required value="<?php echo $datos['Nombre']; ?>">
 					</div>
 					<div class="has-text-centered">
 						<button type="submit" class="btn btn-warning">Actualizar Categoría</button>
