@@ -161,16 +161,16 @@ try {
     $mail->isSMTP();
     $mail->Host = 'mx128.hostgator.mx';
     $mail->SMTPAuth = true;
-    $mail->Username = 'info@kallijaguar-inventory.com';
-    $mail->Password = '{&<eXA[x$?_q\<N';
+    $mail->Username = 'info@stagging.kallijaguar-inventory.com';
+    $mail->Password = '9< ,s?.JX"cdC{0';
     $mail->SMTPSecure = 'ssl';
     $mail->Port = 465;
 
-    $mail->setFrom('info@kallijaguar-inventory.com', 'Información Kalli');
-    $mail->addAddress($Usermail);
-    $mail->addAddress('mauricio.dominguez@kallijaguar-inventory.com');
-    $mail->addCC('julieta.ramirez@kallijaguar-inventory.com');
-    $mail->addCC('miguel.loaeza@kallijaguar-inventory.com');
+    $mail->setFrom('info@stagging.kallijaguar-inventory.com', 'Información Kalli');
+    $mail->addAddress('cencarnacion@stagging.kallijaguar-inventory.com');
+    //$mail->addAddress('mauricio.dominguez@kallijaguar-inventory.com');
+    //$mail->addCC('julieta.ramirez@kallijaguar-inventory.com');
+    //$mail->addCC('miguel.loaeza@kallijaguar-inventory.com');
 
     $mail->addAttachment($pdfPath);
 
