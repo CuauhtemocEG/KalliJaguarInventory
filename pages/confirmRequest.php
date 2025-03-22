@@ -164,7 +164,7 @@ try {
     $mail->Username = 'info@kallijaguar-inventory.com';
     $mail->Password = '{&<eXA[x$?_q\<N';
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-    $mail->Port = 587;
+    $mail->Port = 465;
 
     $mail->setFrom($Usermail);
     $mail->addAddress('mauricio.dominguez@kallijaguar-inventory.com');
