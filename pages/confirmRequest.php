@@ -163,17 +163,18 @@ try {
     $mail->SMTPAuth = true;
     $mail->Username = 'info@kallijaguar-inventory.com';
     $mail->Password = '{&<eXA[x$?_q\<N';
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+    $mail->SMTPSecure = 'ssl';
     $mail->Port = 465;
 
-    $mail->setFrom($Usermail);
+    $mail->setFrom('info@kallijaguar-inventory.com', 'Información Kalli');
+    $mail->addAddress($Usermail);
     $mail->addAddress('mauricio.dominguez@kallijaguar-inventory.com');
     $mail->addCC('julieta.ramirez@kallijaguar-inventory.com');
     $mail->addCC('miguel.loaeza@kallijaguar-inventory.com');
 
     $mail->addAttachment($pdfPath);
 
-    $mail->isHTML(true);                                  //Set email format to HTML
+    $mail->isHTML(true);
     $mail->Subject = 'Comanda Generada: ' . $comandaID;
     $mail->Body = "<p>Se ha generado una nueva comanda con el ID: <strong>{$comandaID}</strong></p><p>Adjunto se encontrará el PDF correspondiente a la comanda.</p><br><p>Recuerda revisar tu solicitud.</p>";
 
