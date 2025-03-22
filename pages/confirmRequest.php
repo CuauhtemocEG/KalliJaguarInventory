@@ -159,11 +159,11 @@ $mail = new PHPMailer(true);
 try {
     $mail->SMTPDebug = SMTP::DEBUG_SERVER;
     $mail->isSMTP();
-    $mail->Host = 'smtp.titan.email';
+    $mail->Host = 'smtp.flockmail.com';
     $mail->SMTPAuth = true;
     $mail->Username = 'info@stagging.kallijaguar-inventory.com';
     $mail->Password = 'KalliJaguar2025@';
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+    $mail->SMTPSecure = 'ssl';
     $mail->Port = 465;
 
     $mail->setFrom('info@stagging.kallijaguar-inventory.com', 'Información Kalli');
