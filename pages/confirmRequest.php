@@ -3,7 +3,7 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 require('./fpdf/fpdf.php');
-require_once "./controllers/mainController.php"; // Asegúrate de incluir tu controlador de la base de datos
+require_once "./controllers/mainController.php";
 
 if (!isset($_SESSION['INV']) || !is_array($_SESSION['INV']) || count($_SESSION['INV']) == 0 || !isset($_POST['idSucursal'])) {
     echo 'No hay productos en el carrito.';
@@ -12,10 +12,9 @@ if (!isset($_SESSION['INV']) || !is_array($_SESSION['INV']) || count($_SESSION['
 
 $sucursal_id = $_POST['idSucursal'];
 
-// Generar un ID único para la comanda basado en la fecha, sucursal y un número aleatorio
-$fecha = date('Ymd'); // Formato de fecha: AñoMesDía (ej. 20250311)
-$random_number = rand(100, 999); // Número aleatorio de 3 dígitos
-$comandaID = 'COM-' . $fecha . '-' . $sucursal_id . '-' . $random_number; // Ejemplo: 20250311-1-235
+$fecha = date('Ymd');
+$random_number = rand(100, 999);
+$comandaID = 'COM-' . $fecha . '-' . $sucursal_id . '-' . $random_number;
 
 // Registrar los movimientos y reducir las cantidades en inventario
 foreach ($_SESSION['INV'] as $item) {
@@ -51,7 +50,6 @@ foreach ($_SESSION['INV'] as $item) {
         } catch (Exception $e) {
             echo "Error: " . $e->getMessage();
         }
-        
     } else {
 
         echo '
@@ -144,7 +142,44 @@ foreach ($_SESSION['INV'] as $item) {
     }
 }
 
+$emailUser = conexion();
+$emailUser = $emailUser->query("SELECT Email FROM Usuarios WHERE UsuarioID = '$idUser'");
+$Usermail = $emailUser->fetchColumn();
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
+$mail = new PHPMailer(true);
+
+try {
+    $mail->SMTPDebug = SMTP::DEBUG_SERVER;
+    $mail->isSMTP();
+    $mail->Host = 'smtp.titan.email';
+    $mail->SMTPAuth = true;
+    $mail->Username = 'info@kallijaguar-inventory.com';
+    $mail->Password = '{&<eXA[x$?_q\<N';
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+    $mail->Port = 587;
+
+    $mail->setFrom($Usermail);
+    $mail->addAddress('mauricio.dominguez@kallijaguar-inventory.com');
+    $mail->addCC('julieta.ramirez@kallijaguar-inventory.com');
+    $mail->addCC('miguel.loaeza@kallijaguar-inventory.com');
+
+    $mail->addAttachment($pdfPath);
+
+    $mail->isHTML(true);                                  //Set email format to HTML
+    $mail->Subject = 'Comanda Generada: ' . $comandaID;
+    $mail->Body = "<p>Se ha generado una nueva comanda con el ID: <strong>{$comandaID}</strong></p><p>Adjunto se encontrará el PDF correspondiente a la comanda.</p><br><p>Recuerda revisar tu solicitud.</p>";
+
+    $mail->send();
+    echo 'El mensaje ha sido enviado con éxito.';
+} catch (Exception $e) {
+    echo "El mensaje no pudo ser enviado: {$mail->ErrorInfo}";
+}
+
 // Limpiar la sesión después de procesar la solicitud
 unset($_SESSION['INV']);
-echo "<script>window.setTimeout(function() { window.location = 'index.php?page=showRequest' }, 10);</script>";
+//echo "<script>window.setTimeout(function() { window.location = 'index.php?page=showRequest' }, 10);</script>";
 exit();
