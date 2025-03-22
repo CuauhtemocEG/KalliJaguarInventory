@@ -162,9 +162,9 @@ try {
     $mail->Host = 'mx128.hostgator.mx';
     $mail->SMTPAuth = true;
     $mail->Username = 'info@stagging.kallijaguar-inventory.com';
-    $mail->Password = '9< ,s?.JX"cdC{0';
+    $mail->Password = 'KalliJaguar2025@';
     $mail->SMTPSecure = 'ssl';
-    $mail->Port = 465;
+    $mail->Port = 587;
 
     $mail->setFrom('info@stagging.kallijaguar-inventory.com', 'Información Kalli');
     $mail->addAddress('cencarnacion@stagging.kallijaguar-inventory.com');
