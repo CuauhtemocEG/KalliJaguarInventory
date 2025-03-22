@@ -159,12 +159,13 @@ $mail = new PHPMailer(true);
 try {
     $mail->SMTPDebug = SMTP::DEBUG_SERVER;
     $mail->isSMTP();
+    $mail->Debugoutput = 'html';
     $mail->Host = 'ns128.hostgator.mx';
     $mail->SMTPAuth = true;
     $mail->Username = 'info@stagging.kallijaguar-inventory.com';
     $mail->Password = 'KalliJaguar2025@';
     $mail->SMTPSecure = 'ssl';
-    $mail->Port = 587;
+    $mail->Port = 465;
 
     $mail->setFrom('info@stagging.kallijaguar-inventory.com', 'Información Kalli');
     $mail->addAddress('cencarnacion@stagging.kallijaguar-inventory.com');
