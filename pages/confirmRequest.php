@@ -159,7 +159,7 @@ $mail = new PHPMailer(true);
 try {
     $mail->SMTPDebug = SMTP::DEBUG_SERVER;
     $mail->isSMTP();
-    $mail->Host = 'mail.kallijaguar-inventory.com';
+    $mail->Host = 'mx128.hostgator.mx';
     $mail->SMTPAuth = true;
     $mail->Username = 'info@kallijaguar-inventory.com';
     $mail->Password = '{&<eXA[x$?_q\<N';
