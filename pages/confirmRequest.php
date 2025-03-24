@@ -157,7 +157,6 @@ use PHPMailer\PHPMailer\Exception;
 $mail = new PHPMailer(true);
 
 try {
-    $mail->SMTPDebug = SMTP::DEBUG_SERVER;
     $mail->isSMTP();
     $mail->Debugoutput = 'html';
     $mail->Host = 'smtp.titan.email';
@@ -178,7 +177,6 @@ try {
     $mail->isHTML(true);
     $mail->Subject = 'Comanda Generada: ' . $comandaID;
     $mail->Body = "<p>Se ha generado una nueva comanda con el ID: <strong>{$comandaID}</strong></p><p>Adjunto se encontrará el PDF correspondiente a la comanda.</p><br><p>Recuerda revisar tu solicitud.</p>";
-    $mail->SMTPDebug = 2;
     $mail->send();
     echo 'El mensaje ha sido enviado con éxito.';
 } catch (Exception $e) {
