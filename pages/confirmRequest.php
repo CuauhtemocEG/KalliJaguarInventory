@@ -146,7 +146,7 @@ $emailUser = conexion();
 $emailUser = $emailUser->query("SELECT Email FROM Usuarios WHERE UsuarioID = '$idUser'");
 $Usermail = $emailUser->fetchColumn();
 
-require_once 'PHPMailer/PHPMailerAutoload.php';
+require './PHPMailer/PHPMailerAutoload.php';
 
 $mail = new PHPMailer(true);
 
