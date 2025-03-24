@@ -160,7 +160,7 @@ try {
     $mail->SMTPDebug = SMTP::DEBUG_SERVER;
     $mail->isSMTP();
     $mail->Debugoutput = 'html';
-    $mail->Host = 'ns128.hostgator.mx';
+    $mail->Host = 'smtp.titan.hostgator.mx';
     $mail->SMTPAuth = true;
     $mail->Username = 'info@stagging.kallijaguar-inventory.com';
     $mail->Password = 'KalliJaguar2025@';
