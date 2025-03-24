@@ -151,7 +151,7 @@ require_once './PHPMailer/PHPMailerAutoload.php';
 $mail = new PHPMailer(true);
 
 try {
-    $mail->SMTPDebug = SMTP::DEBUG_LOWLEVEL;
+    $mail->SMTPDebug = SMTP::DEBUG_SERVER;
     $mail->isSMTP();
     $mail->Debugoutput = 'html';
     $mail->Host = 'smtp.titan.email';
