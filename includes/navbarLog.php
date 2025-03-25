@@ -29,9 +29,9 @@
             </div>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="index.php?page=showRequest">
+            <a class="nav-link" href="index.php?page=showAllRequest">
                 <i class="fa fa-list-alt"></i>
-                <span>Mis Solicitudes</span></a>
+                <span>Solicitudes</span></a>
         </li>
         <hr class="sidebar-divider d-none d-md-block">
         <div class="sidebar-card d-none d-lg-flex">
