@@ -39,6 +39,8 @@ $datos = $showComanda->fetchAll();
                                 <div class="text-xs font-weight-bold text-secondary text-uppercase mt-2">
                                     Sucursal de Destino: <?php echo $nameSucursal; ?></div>
                             </div>
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-2">
+                                    Solicitante: <?php echo $row['users.Nombre']; ?></div>
                             <div class="col mr-2">
                                 <a href="index.php?page=showPDF&ComandaID=<?php echo $row['ComandaID']; ?>"
                                     class="d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
