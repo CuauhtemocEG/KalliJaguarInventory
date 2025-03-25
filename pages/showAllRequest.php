@@ -33,13 +33,14 @@ $datos = $showComanda->fetchAll();
                                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-2">
                                     fecha de la solicitud: <?php echo $row['FechaMovimiento']; ?></div>
                                 <div class="h5 mb-2 font-weight-bold text-gray-800"><?php echo $row['ComandaID']; ?></div>
-                                <div class="h6 mb-0 font-weight-bold text-gray-800">Cantidad de Productos:
+                                <div class="h6 mb-2 font-weight-bold text-gray-800">Cantidad de Productos:
                                     <?php echo $row['TotalProductos']; ?>
                                 </div>
-                                <div class="text-xs font-weight-bold text-secondary text-uppercase mt-2">
+                                <div class="text-xs font-weight-bold text-secondary text-uppercase">
                                     Sucursal de Destino: <?php echo $nameSucursal; ?></div>
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-2">
                                     Solicitante: <?php echo $row['Solicitante']; ?></div>
+                            </div>
                             <div class="col mr-2">
                                 <a href="index.php?page=showPDF&ComandaID=<?php echo $row['ComandaID']; ?>"
                                     class="d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
