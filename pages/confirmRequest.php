@@ -166,7 +166,7 @@ try {
     $mail->SMTPSecure = 'ssl';
     $mail->Port = 465;
 
-    $mail->setFrom('info@kallijaguar-inventory.com', 'Información Kalli Jaguar');
+    $mail->setFrom('info@kallijaguar-inventory.com', 'Informacion Kalli Jaguar');
     $mail->addAddress('mauricio.dominguez@kallijaguar-inventory.com');
     $mail->addCC('julieta.ramirez@kallijaguar-inventory.com');
     $mail->addCC('miguel.loaeza@kallijaguar-inventory.com');
@@ -178,7 +178,7 @@ try {
 
     $mail->isHTML(true);
     $mail->Subject = 'Comanda Generada: ' . $comandaID;
-    $mail->Body = "<p>Se ha generado una nueva comanda con el ID: <strong>{$comandaID}</strong></p><p>Adjunto se encontrará el PDF correspondiente a la comanda.</p><br><p>Recuerda revisar tu solicitud.</p>";
+    $mail->Body = "<p>Se ha generado una nueva comanda con el ID: <strong>{$comandaID}</strong></p><p>Adjunto se encontrara el PDF correspondiente a la comanda.</p><br><p>Recuerda revisar tu solicitud.</p>";
     $mail->send();
     echo 'El mensaje ha sido enviado con éxito.';
 } catch (Exception $e) {
