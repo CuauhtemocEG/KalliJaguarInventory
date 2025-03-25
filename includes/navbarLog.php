@@ -28,7 +28,7 @@
                 </div>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="index.php?page=solicitarInsumos">Lista de Pedidos</a>
+                <a class="nav-link" href="index.php?page=showRequest">Lista de Pedidos</a>
             </li>
         </ul>
         <div class="navbar-end">
