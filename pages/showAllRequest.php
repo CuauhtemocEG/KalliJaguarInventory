@@ -5,7 +5,7 @@ $userID = $_SESSION["id"];
 $nameUser = $_SESSION["nombre"];
 
 $showComanda = conexion();
-$showComanda = $showComanda->query("SELECT MAX(Mov.FechaMovimiento) AS FechaMovimiento, Mov.ComandaID, Mov.UsuarioID, MAX(Mov.SucursalID) AS SucursalID, MAX(Mov.MovimientoID) AS MovimientoID, COUNT(DISTINCT Mov.ProductoID) AS TotalProductos, SUM(Mov.Cantidad) AS TotalCantidad, users.Nombre FROM MovimientosInventario Mov INNER JOIN Usuarios users WHERE Mov.UsuarioID=users.UsuarioID AND TipoMovimiento = 'Salida' GROUP BY ComandaID ORDER BY MovimientoID DESC");
+$showComanda = $showComanda->query("SELECT MAX(Mov.FechaMovimiento) AS FechaMovimiento, Mov.ComandaID, Mov.UsuarioID, MAX(Mov.SucursalID) AS SucursalID, MAX(Mov.MovimientoID) AS MovimientoID, COUNT(DISTINCT Mov.ProductoID) AS TotalProductos, SUM(Mov.Cantidad) AS TotalCantidad, users.Nombre as Solicitante FROM MovimientosInventario Mov INNER JOIN Usuarios users WHERE Mov.UsuarioID=users.UsuarioID AND TipoMovimiento = 'Salida' GROUP BY ComandaID ORDER BY MovimientoID DESC");
 $datos = $showComanda->fetchAll();
 
 ?>
@@ -38,10 +38,10 @@ $datos = $showComanda->fetchAll();
                                 </div>
                                 <div class="text-xs font-weight-bold text-secondary text-uppercase mt-2">
                                     Sucursal de Destino: <?php echo $nameSucursal; ?></div>
-                            </div>
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-2">
-                                    Solicitante: <?php echo $row['users.Nombre']; ?></div>
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-2">
+                                    Solicitante: <?php echo $row['Solicitante']; ?></div>
                             <div class="col mr-2">
+                            </div>
                                 <a href="index.php?page=showPDF&ComandaID=<?php echo $row['ComandaID']; ?>"
                                     class="d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                                         class="fas fa-download fa-sm text-white-50"></i> Ver Solicitud</a>
