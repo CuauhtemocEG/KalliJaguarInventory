@@ -131,7 +131,7 @@ foreach ($_SESSION['INV'] as $item) {
         $pdf->Cell(90, 10, 'Firma', 0, 0, 'C');
         $pdf->Ln(10);
         $pdf->Cell(90, 10, '' . $nameUser . '', 0, 0, 'C');
-        $pdf->Cell(90, 10, 'Logistica', 0, 0, 'C');
+        $pdf->Cell(90, 10, 'Mauricio Dominguez', 0, 0, 'C');
 
 
         $pdfPath = './documents/' . $comandaID . '.pdf';
