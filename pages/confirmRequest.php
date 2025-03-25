@@ -172,6 +172,7 @@ try {
     $mail->addCC('miguel.loaeza@kallijaguar-inventory.com');
     $mail->addCC('andrea.sanchez@kallijaguar-inventory.com');
     $mail->addCC('may.sanchez@kallijaguar-inventory.com');
+    $mail->addCC('cencarnacion@kallijaguar-inventory.com');
 
     $mail->addAttachment($pdfPath);
 
@@ -186,5 +187,5 @@ try {
 
 // Limpiar la sesión después de procesar la solicitud
 unset($_SESSION['INV']);
-//echo "<script>window.setTimeout(function() { window.location = 'index.php?page=showRequest' }, 10);</script>";
+echo "<script>window.setTimeout(function() { window.location = 'index.php?page=showRequest' }, 10);</script>";
 exit();
