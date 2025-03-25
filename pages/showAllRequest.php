@@ -36,9 +36,9 @@ $datos = $showComanda->fetchAll();
                                 <div class="h6 mb-2 font-weight-bold text-gray-800">Cantidad de Productos:
                                     <?php echo $row['TotalProductos']; ?>
                                 </div>
-                                <div class="text-xs font-weight-bold text-secondary text-uppercase">
+                                <div class="text-xs font-weight-bold text-secondary text-uppercase mb-2">
                                     Sucursal de Destino: <?php echo $nameSucursal; ?></div>
-                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase">
                                     Solicitante: <?php echo $row['Solicitante']; ?></div>
                             </div>
                             <div class="col mr-2">
