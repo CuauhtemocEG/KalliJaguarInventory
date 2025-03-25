@@ -12,9 +12,7 @@ $datos = $showComanda->fetchAll();
 <div class="container-fluid">
 
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Mis Solicitudes abiertas </h1>
-        <a href="index.php?page=requestProducts" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                class="fas fa-download fa-sm text-white-50"></i> Nueva Solicitud</a>
+        <h1 class="h3 mb-0 text-gray-800">Solicitudes abiertas </h1>
     </div>
 
     <div class="row">
