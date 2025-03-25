@@ -41,7 +41,6 @@ $datos = $showComanda->fetchAll();
                                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-2">
                                     Solicitante: <?php echo $row['Solicitante']; ?></div>
                             <div class="col mr-2">
-                            </div>
                                 <a href="index.php?page=showPDF&ComandaID=<?php echo $row['ComandaID']; ?>"
                                     class="d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                                         class="fas fa-download fa-sm text-white-50"></i> Ver Solicitud</a>
