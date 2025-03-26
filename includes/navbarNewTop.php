@@ -135,7 +135,7 @@
         <div class="col-md-12 mb-2">
             <div class="card border-bottom-danger shadow h-100 py-2">
             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                    '.(int)$item["cantidad"].'
+                    '.$item["cantidad"].'
             </span>
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
