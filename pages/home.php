@@ -51,35 +51,6 @@ $totalCountProd = (int) $totalProd->fetchColumn();
 										Productos con Inventario menor a 5 de stock </div>
 									<div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $totalCount; ?></div>
 								</div>
-								<div class="accordion" id="accordionExample">
-									<div class="accordion-item">
-										<h2 class="accordion-header">
-											<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-												Despliega para ver productos
-											</button>
-										</h2>
-										<div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
-											<div class="accordion-body">
-												<?php foreach ($products as $item) {
-
-													if ($item['Tipo'] == "Pesable") {
-														$res = "Kg";
-														$unidades = $item['Cantidad'];
-													} else {
-														$res = "Unidades";
-														$unidades = (int) $rows['Cantidad'];
-													}
-
-													echo '<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-											' . $item["Nombre"] . ' - Disponible: ' . $unidades. ' '.$res.'
-											</div>';
-
-												}
-												?>
-											</div>
-										</div>
-									</div>
-								</div>
 								<div class="col-auto">
 									<i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
 								</div>
