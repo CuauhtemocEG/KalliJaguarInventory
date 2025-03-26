@@ -60,13 +60,22 @@ $totalCountProd = (int) $totalProd->fetchColumn();
 										</h2>
 										<div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
 											<div class="accordion-body">
-											<?php foreach ($products as $item) { 
-											
-											echo '<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-											'.$item["Nombre"].' - Disponible: '.$item["Cantidad"].'
+												<?php foreach ($products as $item) {
+
+													if ($item['Tipo'] == "Pesable") {
+														$res = "Kg";
+														$unidades = $item['Cantidad'];
+													} else {
+														$res = "Unidades";
+														$unidades = (int) $rows['Cantidad'];
+													}
+
+													echo '<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+											' . $item["Nombre"] . ' - Disponible: ' . $unidades. ' '.$res.'
 											</div>';
-											}
-											?>
+
+												}
+												?>
 											</div>
 										</div>
 									</div>
