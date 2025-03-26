@@ -131,7 +131,7 @@ foreach ($_SESSION['INV'] as $item) {
         $pdf->Cell(90, 10, 'Firma', 0, 0, 'C');
         $pdf->Ln(10);
         $pdf->Cell(90, 10, '' . $nameUser . '', 0, 0, 'C');
-        $pdf->Cell(90, 10, 'Logistica', 0, 0, 'C');
+        $pdf->Cell(90, 10, 'Mauricio Dominguez', 0, 0, 'C');
 
 
         $pdfPath = './documents/' . $comandaID . '.pdf';
@@ -161,22 +161,24 @@ try {
     $mail->Debugoutput = 'html';
     $mail->Host = 'smtp.titan.email';
     $mail->SMTPAuth = true;
-    $mail->Username = 'info@stagging.kallijaguar-inventory.com';
-    $mail->Password = 'KalliJaguar2025@';
+    $mail->Username = 'info@kallijaguar-inventory.com';
+    $mail->Password = '{&<eXA[x$?_q\<N';
     $mail->SMTPSecure = 'ssl';
     $mail->Port = 465;
 
-    $mail->setFrom('info@stagging.kallijaguar-inventory.com', 'Información Kalli');
-    $mail->addAddress('cencarnacion@stagging.kallijaguar-inventory.com');
-    //$mail->addAddress('mauricio.dominguez@kallijaguar-inventory.com');
-    //$mail->addCC('julieta.ramirez@kallijaguar-inventory.com');
-    //$mail->addCC('miguel.loaeza@kallijaguar-inventory.com');
+    $mail->setFrom('info@kallijaguar-inventory.com', 'Informacion Kalli Jaguar');
+    $mail->addAddress('mauricio.dominguez@kallijaguar-inventory.com');
+    $mail->addCC('julieta.ramirez@kallijaguar-inventory.com');
+    $mail->addCC('miguel.loaeza@kallijaguar-inventory.com');
+    $mail->addCC('andrea.sanchez@kallijaguar-inventory.com');
+    $mail->addCC('may.sanchez@kallijaguar-inventory.com');
+    $mail->addCC('cencarnacion@kallijaguar-inventory.com');
 
     $mail->addAttachment($pdfPath);
 
     $mail->isHTML(true);
     $mail->Subject = 'Comanda Generada: ' . $comandaID;
-    $mail->Body = "<p>Se ha generado una nueva comanda con el ID: <strong>{$comandaID}</strong></p><p>Adjunto se encontrará el PDF correspondiente a la comanda.</p><br><p>Recuerda revisar tu solicitud.</p>";
+    $mail->Body = "<p>Se ha generado una nueva comanda con el ID: <strong>{$comandaID}</strong></p><p>Adjunto se encontrara el PDF correspondiente a la comanda.</p><br><p>Recuerda revisar tu solicitud.</p>";
     $mail->send();
     echo 'El mensaje ha sido enviado con éxito.';
 } catch (Exception $e) {
@@ -185,5 +187,5 @@ try {
 
 // Limpiar la sesión después de procesar la solicitud
 unset($_SESSION['INV']);
-//echo "<script>window.setTimeout(function() { window.location = 'index.php?page=showRequest' }, 10);</script>";
+echo "<script>window.setTimeout(function() { window.location = 'index.php?page=showRequest' }, 10);</script>";
 exit();
