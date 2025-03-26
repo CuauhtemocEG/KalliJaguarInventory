@@ -133,13 +133,19 @@
 
                             echo '
         <div class="col-md-12 mb-2">
-            <div class="card border-left-danger shadow h-100 py-2">
+            <div class="card border-bottom-danger shadow h-100 py-2">
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    '.$item["cantidad"].'
+                <span class="visually-hidden">unread messages</span>
+            </span>
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">' . $item["nombre"] . '</div>
-                            <div class="h6 mb-0 font-weight-bold text-gray-800">Cantidad de articulos:'.$item["cantidad"].'</div>
-                            <a href="index.php?page=deleteProductList&id='.$key.'" class="btn btn-danger btn-sm">Eliminar</a>
+                            <div class="h6 mb-0 font-weight-bold text-gray-800">Cantidad de articulos:' . $item["cantidad"] . '</div>
+                        </div>
+                        <div class="col mr-2">
+                            <a href="index.php?page=deleteProductList&id=' . $key . '" class="btn btn-danger btn-sm">Eliminar</a>
                         </div>
                     </div>
                 </div>
@@ -147,7 +153,7 @@
         </div>';
                         }
                         echo '<strong>Total</strong>
-                        <strong>'.$totalItem.'</strong>
+                        <strong>' . $totalItem . '</strong>
                         <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#confirmModal">
                             Enviar Solicitud
                         </button>';
