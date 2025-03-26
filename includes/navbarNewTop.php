@@ -134,10 +134,10 @@
                             echo '
         <div class="col-md-12 mb-2">
             <div class="card border-bottom-danger shadow h-100 py-2">
-            <span class="badge badge-danger badge-counter">
-                    '.$item["cantidad"].'
-            </span>
                 <div class="card-body">
+                <span class="badge badge-danger badge-counter">
+                    ' . $item["cantidad"] . '
+            </span>
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">' . $item["nombre"] . '</div>
