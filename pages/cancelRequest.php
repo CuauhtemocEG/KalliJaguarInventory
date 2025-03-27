@@ -36,7 +36,7 @@ if (!isset($_GET['ComandaID'])) {
 
         $deleteComanda = conexion();
         $deleteComanda = $deleteComanda->prepare("DELETE FROM MovimientosInventario WHERE ComandaID=:id");
-        $deleteComanda->execute([":id" => $_GET['ComandaID']]);
+        $deleteComanda->execute([":id" => $comandaID]);
     }
 }
 
