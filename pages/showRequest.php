@@ -43,7 +43,7 @@ $datos = $showComanda->fetchAll();
                                 <a href="index.php?page=showPDF&ComandaID=<?php echo $row['ComandaID']; ?>"
                                     class="d-sm-inline-block btn btn-sm btn-primary shadow-sm mt-1 mb-1"><i
                                         class="fas fa-download fa-sm text-white-50"></i> Ver Solicitud</a>
-                                <a href="index.php?page=cancelRequest"
+                                <a href="index.php?page=cancelRequest&ComandaID=<?php echo $row['ComandaID']; ?>"
                                     class="d-sm-inline-block btn btn-sm btn-danger shadow-sm"><i
                                         class="fas fa-trash fa-sm text-white-50"></i> Cancelar Solicitud</a>
                             </div>
