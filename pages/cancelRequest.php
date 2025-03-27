@@ -44,6 +44,7 @@ if (!isset($_GET['ComandaID'])) {
 }
 
 $idUser = $_SESSION['id'];
+$comandaID = $_GET['ComandaID'];
 
 $emailUser = conexion();
 $emailUser = $emailUser->query("SELECT Email FROM Usuarios WHERE UsuarioID = '$idUser'");
