@@ -3,42 +3,43 @@ require_once "./controllers/mainController.php";
 
 if (!isset($_GET['ComandaID'])) {
     echo 'No se recibió una Comanda para eliminar';
-} else {
-    $comandaID = $_GET['ComandaID'];
-
-    //aqui debe estar la consulta de la cantidad de productos.
-    $conexion = conexion();
-    $datos = $conexion->query("SELECT Cantidad as QuantityAfter, ProductoID FROM MovimientosInventario WHERE ComandaID=$comandaID");
-    $datos = $datos->fetchAll();
-
-    foreach ($datos as $item) {
-
-        $product = $item['ProductoID'];
-
-        $consultStock = conexion();
-        $consultStock = $consultStock->query("SELECT Cantidad as Quantity FROM Productos WHERE ProductoID=$product");
-        $stockBefore = $consultStock->fetchColumn();
-
-        $newStock = $stockBefore['Quantity'] + $item['QuantityAfter'];
-
-        $updateProducts = conexion();
-        $updateProducts = $updateProducts->prepare("UPDATE Productos SET ,Cantidad=:stock WHERE ProductoID=:productoID");
-
-        try {
-
-            $updateProducts->execute([
-                ':stock' => $newStock,
-                ':productoID' => $item['ProductoID']
-            ]);
-        } catch (Exception $e) {
-            echo "Error al actualizar stock de los productos cancelados: " . $e->getMessage();
-        }
-
-        $deleteComanda = conexion();
-        $deleteComanda = $deleteComanda->prepare("DELETE FROM MovimientosInventario WHERE ComandaID=:id");
-        $deleteComanda->execute([":id" => $comandaID]);
-    }
 }
+
+$comandaID = $_GET['ComandaID'];
+
+//aqui debe estar la consulta de la cantidad de productos.
+$conexion = conexion();
+$datos = $conexion->query("SELECT Cantidad as QuantityAfter, ProductoID FROM MovimientosInventario WHERE ComandaID=$comandaID");
+$datos = $datos->fetchAll();
+
+foreach ($datos as $item) {
+
+    $product = $item['ProductoID'];
+
+    $consultStock = conexion();
+    $consultStock = $consultStock->query("SELECT Cantidad as Quantity FROM Productos WHERE ProductoID=$product");
+    $stockBefore = $consultStock->fetchColumn();
+
+    $newStock = $stockBefore['Quantity'] + $item['QuantityAfter'];
+
+    $updateProducts = conexion();
+    $updateProducts = $updateProducts->prepare("UPDATE Productos SET ,Cantidad=:stock WHERE ProductoID=:productoID");
+
+    try {
+
+        $updateProducts->execute([
+            ':stock' => $newStock,
+            ':productoID' => $item['ProductoID']
+        ]);
+    } catch (Exception $e) {
+        echo "Error al actualizar stock de los productos cancelados: " . $e->getMessage();
+    }
+
+    $deleteComanda = conexion();
+    $deleteComanda = $deleteComanda->prepare("DELETE FROM MovimientosInventario WHERE ComandaID=:id");
+    $deleteComanda->execute([":id" => $comandaID]);
+}
+
 
 $idUser = $_SESSION['id'];
 
