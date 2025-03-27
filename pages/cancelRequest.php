@@ -7,7 +7,6 @@ if (!isset($_GET['ComandaID'])) {
 
 $comandaID = $_GET['ComandaID'];
 
-//aqui debe estar la consulta de la cantidad de productos.
 $conexion = conexion();
 $datos = $conexion->query("SELECT Cantidad as QuantityAfter, ProductoID FROM MovimientosInventario WHERE ComandaID=$comandaID");
 $datos = $datos->fetchAll();
