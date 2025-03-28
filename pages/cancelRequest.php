@@ -17,7 +17,7 @@ foreach ($datos as $item) {
     $product = $item['ProductoID'];
 
     $consultStock = conexion();
-    $consultStock = $consultStock->query("SELECT Cantidad as Quantity FROM Productos WHERE ProductoID=$product");
+    $consultStock = $consultStock->query("SELECT Cantidad as Quantity FROM Productos WHERE ProductoID='$product'");
     $stockBefore = $consultStock->fetchColumn();
 
     $newStock = $stockBefore['Quantity'] + $item['Cantidad'];
