@@ -113,15 +113,19 @@ foreach ($_SESSION['INV'] as $item) {
         foreach ($_SESSION['INV'] as $item) {
 
             $unidadesRes = '';
-
+            $quantity = '';
+            
             if ($item['tipo'] == "Pesable") {
                 if ($item['cantidad'] >= 1.0) {
                     $unidadesRes = 'Kg';
+                    $quantity = number_format($item['cantidad'],2,'.','');
                 } else {
                     $unidadesRes = 'grs';
+                    $quantity = number_format($item['cantidad'],3,'.','');
                 }
             } else {
                 $unidadesRes = 'Un';
+                $quantity = number_format($item['cantidad'],0,'.','');
             }
 
             $totalItem = ($item['precio'] * 1.16) * $item['cantidad'];
