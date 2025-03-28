@@ -6,9 +6,10 @@ if (!isset($_GET['ComandaID'])) {
 }
 
 $comandaID = $_GET['ComandaID'];
+$idUser = $_SESSION['id'];
 
 $conexion = conexion();
-$datos = $conexion->query("SELECT Cantidad, ProductoID FROM MovimientosInventario WHERE ComandaID=$comandaID");
+$datos = $conexion->query("SELECT Cantidad, ProductoID FROM MovimientosInventario WHERE ComandaID='$comandaID'");
 $datos = $datos->fetchAll();
 
 foreach ($datos as $item) {
@@ -24,7 +25,7 @@ foreach ($datos as $item) {
     try {
         $updateProducts = conexion();
         $updateProducts = $updateProducts->prepare("UPDATE Productos SET Cantidad=:stock WHERE ProductoID=:productoID");
-        
+
         $updateProducts->execute([
             ':stock' => $newStock,
             ':productoID' => $item['ProductoID']
@@ -37,9 +38,6 @@ foreach ($datos as $item) {
     $deleteComanda = $deleteComanda->prepare("DELETE FROM MovimientosInventario WHERE ComandaID=:id");
     $deleteComanda->execute([":id" => $comandaID]);
 }
-
-
-$idUser = $_SESSION['id'];
 
 $emailUser = conexion();
 $emailUser = $emailUser->query("SELECT Email FROM Usuarios WHERE UsuarioID = '$idUser'");
