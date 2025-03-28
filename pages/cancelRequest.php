@@ -21,11 +21,10 @@ foreach ($datos as $item) {
 
     $newStock = $stockBefore['Quantity'] + $item['Cantidad'];
 
-    $updateProducts = conexion();
-    $updateProducts = $updateProducts->prepare("UPDATE Productos SET Cantidad=:stock WHERE ProductoID=:productoID");
-
     try {
-
+        $updateProducts = conexion();
+        $updateProducts = $updateProducts->prepare("UPDATE Productos SET Cantidad=:stock WHERE ProductoID=:productoID");
+        
         $updateProducts->execute([
             ':stock' => $newStock,
             ':productoID' => $item['ProductoID']
