@@ -23,6 +23,7 @@ foreach ($datos as $item) {
     $stockBefore = $consultStock->fetchColumn();
 
     $newStock = $stockBefore['Quantity'] + $item['Cantidad'];
+    echo 'campo: '.$newStock;
 
     try {
         $updateProducts = conexion();
