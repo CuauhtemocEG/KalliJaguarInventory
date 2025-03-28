@@ -81,3 +81,6 @@ try {
 } catch (Exception $e) {
     echo "El mensaje no pudo ser enviado: {$mail->ErrorInfo}";
 }
+
+echo "<script>window.setTimeout(function() { window.location = 'index.php?page=showRequest' }, 10);</script>";
+exit();
