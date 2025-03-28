@@ -8,7 +8,7 @@ if (!isset($_GET['ComandaID'])) {
 $comandaID = $_GET['ComandaID'];
 
 $conexion = conexion();
-$datos = $conexion->query("SELECT Cantidad as QuantityAfter, ProductoID FROM MovimientosInventario WHERE ComandaID=$comandaID");
+$datos = $conexion->query("SELECT Cantidad, ProductoID FROM MovimientosInventario WHERE ComandaID=$comandaID");
 $datos = $datos->fetchAll();
 
 foreach ($datos as $item) {
@@ -19,10 +19,10 @@ foreach ($datos as $item) {
     $consultStock = $consultStock->query("SELECT Cantidad as Quantity FROM Productos WHERE ProductoID=$product");
     $stockBefore = $consultStock->fetchColumn();
 
-    $newStock = $stockBefore['Quantity'] + $item['QuantityAfter'];
+    $newStock = $stockBefore['Quantity'] + $item['Cantidad'];
 
     $updateProducts = conexion();
-    $updateProducts = $updateProducts->prepare("UPDATE Productos SET ,Cantidad=:stock WHERE ProductoID=:productoID");
+    $updateProducts = $updateProducts->prepare("UPDATE Productos SET Cantidad=:stock WHERE ProductoID=:productoID");
 
     try {
 
