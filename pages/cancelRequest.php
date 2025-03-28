@@ -22,8 +22,7 @@ foreach ($datos as $item) {
     $consultStock = $consultStock->query("SELECT Cantidad as Quantity FROM Productos WHERE ProductoID='$product'");
     $stockBefore = $consultStock->fetchColumn();
 
-    $newStock = $stockBefore['Quantity'] + $item['Cantidad'];
-    echo 'campo: '.$newStock;
+    $newStock = $stockBefore + $item['Cantidad'];
 
     try {
         $updateProducts = conexion();
@@ -36,11 +35,11 @@ foreach ($datos as $item) {
     } catch (Exception $e) {
         echo "Error al actualizar stock de los productos cancelados: " . $e->getMessage();
     }
-
-    $deleteComanda = conexion();
-    $deleteComanda = $deleteComanda->prepare("DELETE FROM MovimientosInventario WHERE ComandaID=:id");
-    $deleteComanda->execute([":id" => $comandaID]);
 }
+
+$deleteComanda = conexion();
+$deleteComanda = $deleteComanda->prepare("DELETE FROM MovimientosInventario WHERE ComandaID=:id");
+$deleteComanda->execute([":id" => $comandaID]);
 
 $emailUser = conexion();
 $emailUser = $emailUser->query("SELECT Email FROM Usuarios WHERE UsuarioID = '$idUser'");
