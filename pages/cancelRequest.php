@@ -22,7 +22,7 @@ foreach ($datos as $item) {
     $consultStock = $consultStock->query("SELECT Cantidad as Quantity FROM Productos WHERE ProductoID='$product'");
     $stockBefore = $consultStock->fetchColumn();
 
-    $newStock = $stockBefore['Quantity'] + $item['Cantidad'];
+    $newStock = number_format($stockBefore['Quantity'],2) + number_format($item['Cantidad'],2);
 
     try {
         $updateProducts = conexion();
