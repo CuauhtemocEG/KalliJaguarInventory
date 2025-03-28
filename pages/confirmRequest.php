@@ -132,7 +132,7 @@ foreach ($_SESSION['INV'] as $item) {
             $totalGeneral += $totalItem;
 
             $pdf->Cell(60, 10, $item['nombre'], 1, 0, 'C');
-            $pdf->Cell(40, 10, $item['cantidad'] .' '. $unidadesRes , 1, 0, 'C');
+            $pdf->Cell(40, 10, $quantity .' '. $unidadesRes , 1, 0, 'C');
             $pdf->Cell(40, 10, '$' . number_format($totalItem, 2, '.', ''), 1, 0, 'C');
             $pdf->Cell(40, 10, '', 1);
             $pdf->Ln();
