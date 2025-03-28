@@ -11,6 +11,10 @@ $total = conexion();
 $total = $total->query("SELECT COUNT(*) FROM Productos WHERE Cantidad < 5");
 $totalCount = (int) $total->fetchColumn();
 
+$productsDown = conexion();
+$productsDown = $productsDown->query("SELECT * FROM Productos WHERE Cantidad < 5");
+$products = $productsDown->fetchAll();
+
 $totalProd = conexion();
 $totalProd = $totalProd->query("SELECT COUNT(*) FROM Productos");
 $totalCountProd = (int) $totalProd->fetchColumn();
@@ -54,7 +58,7 @@ $totalCountProd = (int) $totalProd->fetchColumn();
 						</div>
 					</div>
 				</div>
-				
+
 			</div>
 		</div>
 	</div>

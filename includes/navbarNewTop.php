@@ -76,6 +76,11 @@
                 <i class="fa fa-list-alt"></i>
                 <span>Mis Solicitudes</span></a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" href="index.php?page=showAllRequest">
+                <i class="fa fa-list-alt"></i>
+                <span>Solicitudes Generales</span></a>
+        </li>
         <hr class="sidebar-divider d-none d-md-block">
         <div class="sidebar-card d-none d-lg-flex">
             <p class="text-center mb-2"><strong>Bienvenido al nuevo landing</strong> constantemente el sitio tendrá mejoras, si detectas algún problema avisa al administrador del sitio.</p>
@@ -133,13 +138,17 @@
 
                             echo '
         <div class="col-md-12 mb-2">
-            <div class="card border-left-danger shadow h-100 py-2">
+            <div class="card border-bottom-danger shadow h-100 py-2">
                 <div class="card-body">
+                <span class="badge badge-danger badge-counter">
+                    ' . $item["cantidad"] . '
+            </span>
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">' . $item["nombre"] . '</div>
-                            <div class="h6 mb-0 font-weight-bold text-gray-800">Cantidad de articulos:'.$item["cantidad"].'</div>
-                            <a href="index.php?page=deleteProductList&id='.$key.'" class="btn btn-danger btn-sm">Eliminar</a>
+                        </div>
+                        <div class="col mr-2">
+                            <a href="index.php?page=deleteProductList&id=' . $key . '" class="btn btn-danger btn-sm">Eliminar</a>
                         </div>
                     </div>
                 </div>
@@ -147,7 +156,7 @@
         </div>';
                         }
                         echo '<strong>Total</strong>
-                        <strong>'.$totalItem.'</strong>
+                        <strong>' . $totalItem . '</strong>
                         <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#confirmModal">
                             Enviar Solicitud
                         </button>';
