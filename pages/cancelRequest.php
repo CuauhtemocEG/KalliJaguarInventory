@@ -22,14 +22,14 @@ foreach ($datos as $item) {
     $consultStock = $consultStock->query("SELECT Cantidad as Quantity FROM Productos WHERE ProductoID='$product'");
     $stockBefore = $consultStock->fetchColumn();
 
-    $newStock = (float)$stockBefore['Quantity'] + (float)$item['Cantidad'];
+    (float)$newStock = (float)$stockBefore['Quantity'] + (float)$item['Cantidad'];
 
     try {
         $updateProducts = conexion();
         $updateProducts = $updateProducts->prepare("UPDATE Productos SET Cantidad=:stock WHERE ProductoID=:productoID");
 
         $updateProducts->execute([
-            ':stock' => (float)$newStock,
+            ':stock' => $newStock,
             ':productoID' => $item['ProductoID']
         ]);
     } catch (Exception $e) {
