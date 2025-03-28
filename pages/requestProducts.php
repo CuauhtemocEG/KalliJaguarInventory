@@ -87,6 +87,7 @@
                     $precio = $_POST['precioProduct'];
                     $cantidad = $_POST['cantidadProduct'];
                     $nombre = $_POST['nameProduct'];
+                    $tipo = $_POST['typeProduct'];
 
                     // Si no existe la variable de sesión carrito, la creamos
                     if (!isset($_SESSION['INV'])) {
@@ -109,7 +110,8 @@
                             'producto' => $producto,
                             'precio' => $precio,
                             'nombre' => $nombre,
-                            'cantidad' => $cantidad
+                            'cantidad' => $cantidad,
+                            'tipo' => $tipo
                         ];
                     }
 
