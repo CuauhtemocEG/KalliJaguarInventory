@@ -137,11 +137,7 @@
                             $unidadesRes = '';
 
                             if ($item['tipo'] == "Pesable") {
-                                if ($item['cantidad'] >= 1.0) {
-                                    $unidadesRes = 'Kg';
-                                } else {
-                                    $unidadesRes = 'grs';
-                                }
+                                $unidadesRes = 'Kg';
                             } else {
                                 $unidadesRes = 'Un';
                             }
