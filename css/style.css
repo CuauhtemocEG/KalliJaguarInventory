@@ -1,10 +1,14 @@
+/* Estilos para el panel lateral del carrito */
 .cart-panel {
-    width: 100%;
-    max-width: 500px;
-    margin: 0 auto;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    right: -300px;
+    width: 300px;
+    height: 100%;
+    background-color: #fff;
+    box-shadow: -4px 0 10px rgba(0, 0, 0, 0.1);
+    transition: right 0.3s ease;
+    z-index: 999;
     padding: 20px;
 }
 
@@ -12,88 +16,31 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #343a40;
-    color: white;
-    padding: 10px 15px;
-    border-radius: 8px 8px 0 0;
 }
 
 .cart-header h4 {
     margin: 0;
 }
 
-.cart-body {
-    padding-top: 15px;
-}
-
-.cart-item {
-    margin-bottom: 15px;
-}
-
-.card {
+.cart-header button {
+    background-color: #f44336;
+    color: white;
     border: none;
-    background-color: #ffffff;
-    transition: transform 0.3s ease;
+    padding: 10px;
+    cursor: pointer;
 }
 
-.card:hover {
-    transform: translateY(-5px);
-}
-
-.item-info {
-    display: flex;
-    align-items: center;
-}
-
-.item-name {
-    font-size: 16px;
-    font-weight: 600;
-    color: #333;
-}
-
-.badge {
-    margin-left: 10px;
-    font-size: 14px;
-}
-
-.item-actions .btn-danger {
-    font-size: 12px;
-}
-
-.cart-footer {
+.cart-body {
     margin-top: 20px;
-    text-align: center;
+    max-height: calc(100% - 60px);
+    overflow-y: auto;
 }
 
-.total-info {
-    margin-bottom: 15px;
-    font-weight: 600;
-    font-size: 18px;
+/* Mostrar el panel */
+.cart-panel.show {
+    right: 0;
 }
 
-.btn {
-    border-radius: 5px;
-    font-weight: 600;
-}
-
-.btn-success {
-    background-color: #28a745;
-    border-color: #28a745;
-}
-
-.btn-danger {
-    background-color: #dc3545;
-    border-color: #dc3545;
-}
-
-.btn-block {
-    display: block;
-    width: 100%;
-}
-
-@media (max-width: 576px) {
-    .cart-panel {
-        max-width: 100%;
-        padding: 15px;
-    }
+#cartToggle {
+    cursor: pointer;
 }

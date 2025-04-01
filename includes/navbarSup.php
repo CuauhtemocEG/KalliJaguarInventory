@@ -104,7 +104,7 @@
 
             <div id="cartPanel" class="cart-panel">
                 <div class="cart-header">
-                    <h4>Lista de Solicitudes</h4>
+                    <h4>Lista de solicitud</h4>
                     <button id="closeCart" class="btn btn-danger btn-sm">Cerrar</button>
                 </div>
                 <div class="cart-body" id="cartBody">
@@ -113,42 +113,30 @@
                         $total = 0;
                         $totalItem = 0;
                         foreach ($_SESSION['INV'] as $key => $item) {
-                            $unidadesRes = '';
-
-                            if ($item['tipo'] == "Pesable") {
-                                $unidadesRes = 'Kg';
-                            } else {
-                                $unidadesRes = 'Un';
-                            }
-
                             $totalItem += $item['cantidad'];
+
                             echo '
-                <div class="cart-item mb-3">
-                    <div class="card shadow-sm border-light rounded">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div class="item-info">
-                                    <h6 class="item-name">' . $item["nombre"] . '</h6>
-                                    <span class="badge badge-primary badge-pill">' . $item["cantidad"] . ' '.$unidadesRes.' </span>
-                                </div>
-                                <div class="item-actions">
-                                    <a href="index.php?page=deleteProductList&id=' . $key . '" class="btn btn-danger btn-sm">Eliminar</a>
-                                </div>
-                            </div>
+        <div class="col-md-12 mb-2">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">' . $item["nombre"] . '</div>
+                            <div class="h6 mb-0 font-weight-bold text-gray-800">Cantidad de articulos:' . $item["cantidad"] . '</div>
+                            <a href="index.php?page=deleteProductList&id=' . $key . '" class="btn btn-danger btn-sm">Eliminar</a>
                         </div>
                     </div>
-                </div><hr>';
+                </div>
+            </div>
+        </div>';
                         }
-                        echo '<div class="cart-footer mt-3">
-                    <div class="total-info">
-                        <strong>Total de productos: ' . $totalItem . '</strong>
-                    </div>
-                    <button type="button" class="btn btn-success btn-block btn-lg" data-toggle="modal" data-target="#confirmModal">
-                        Enviar Solicitud
-                    </button>
-                </div>';
+                        echo '<strong>Total</strong>
+                        <strong>' . $totalItem . '</strong>
+                        <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#confirmModal">
+                            Enviar Solicitud
+                        </button>';
                     } else {
-                        echo '<p>No hay productos en tu lista.</p>';
+                        echo '<p>No hay productos en el carrito.</p>';
                     }
                     ?>
                 </div>

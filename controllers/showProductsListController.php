@@ -72,7 +72,6 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 				<input type="hidden" name="idProduct" value="' . $rows['ProductoID'] . '">
 				<input type="hidden" name="precioProduct" value="' . $rows['PrecioUnitario'] . '">
 				<input type="hidden" name="nameProduct" value="' . $rows['nombreProducto'] . '">
-				<input type="hidden" name="typeProduct" value="' . $rows['Tipo'] . '">
 				<strong>Cantidad a solicitar:</strong><br>
 				<div class="input-group">
 					<button type="button" class="btn btn-outline-secondary" onclick="decreaseQuantity(' . $rows['ProductoID'] . ')">-</button>
