@@ -129,17 +129,21 @@
                     if (isset($_SESSION['INV']) && count($_SESSION['INV']) > 0) {
                         $total = 0;
                         $totalItem = 0;
+                        $res = 0;
                         foreach ($_SESSION['INV'] as $key => $item) {
                             $unidadesRes = '';
 
                             if ($item['tipo'] == "Pesable") {
                                 if ($item['cantidad'] >= 1.0) {
                                     $unidadesRes = 'Kg';
+                                    $res = number_format($item["cantidad"], 3);
                                 } else {
                                     $unidadesRes = 'grs';
+                                    $res = number_format($item["cantidad"], 3);
                                 }
                             } else {
                                 $unidadesRes = 'Un';
+                                $res = number_format($item["cantidad"],0);
                             }
                             
                             $totalItem += $item['cantidad'];
