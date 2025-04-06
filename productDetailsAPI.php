@@ -4,7 +4,7 @@ header('Access-Control-Allow-Origin: *');
 
 function conexion() {
     try {
-        $conexion = new PDO("mysql:host=localhost:3306;dbname=kallijag_inventory", "kallijag_admin", "uNtiL.horSe@5");
+        $conexion = new PDO("mysql:host=localhost:3306;dbname=kallijag_inventory_stage", "kallijag_stage", "uNtiL.horSe@5");
         $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         return $conexion;
     } catch (PDOException $e) {
