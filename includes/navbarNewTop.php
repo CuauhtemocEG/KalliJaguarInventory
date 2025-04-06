@@ -154,7 +154,7 @@
         <div class="card-body d-flex flex-column position-relative">
             
             <span class="badge badge-danger badge-counter position-absolute" style="top: 0; right: 0;">
-                '.$item["cantidad"] . ' ' .$unidadesRes.'
+                '.$res . ' ' .$unidadesRes.'
             </span>
             
             <div class="text-md font-weight-bold text-dark mb-2">
