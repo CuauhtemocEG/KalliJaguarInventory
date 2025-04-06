@@ -1,6 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
 require_once "./controllers/mainController.php";
 
 if (!isset($_GET['ComandaID'])) {
@@ -65,6 +63,7 @@ try {
     $mail->SMTPSecure = 'ssl';
     $mail->Port = 465;
 
+    $mail->setFrom('info@kallijaguar-inventory.com', 'Informacion Kalli Jaguar');
     $mail->addAddress('mauricio.dominguez@kallijaguar-inventory.com');
     $mail->addCC('julieta.ramirez@kallijaguar-inventory.com');
     $mail->addCC('miguel.loaeza@kallijaguar-inventory.com');

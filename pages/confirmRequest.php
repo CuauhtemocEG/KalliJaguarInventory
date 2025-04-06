@@ -1,7 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
 require('./fpdf/fpdf.php');
 require_once "./controllers/mainController.php";
 
@@ -185,6 +182,7 @@ try {
 
     //$mail->setFrom('info@stagging.kallijaguar-inventory.com', 'Informacion Kalli Jaguar');
     //$mail->addAddress('cencarnacion@stagging.kallijaguar-inventory.com');
+    $mail->setFrom('info@kallijaguar-inventory.com', 'Informacion Kalli Jaguar');
     $mail->addAddress('mauricio.dominguez@kallijaguar-inventory.com');
     $mail->addCC('julieta.ramirez@kallijaguar-inventory.com');
     $mail->addCC('miguel.loaeza@kallijaguar-inventory.com');
