@@ -146,18 +146,25 @@
 
                             echo '
         <div class="col-md-12 mb-2">
-            <div class="card border-bottom-danger shadow h-100 py-2">
-                <div class="card-body">
-                <span class="badge badge-danger badge-counter">
-                    ' . $item["cantidad"] . ' '. $unidadesRes .'
-            </span>
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">' . $item["nombre"] . '</div>
+            <div class="card mb-3 shadow-sm">
+                 <div class="card-body d-flex justify-content-between align-items-center">
+                    <span class="badge badge-danger badge-counter py-2 px-3">
+                        '. $item["cantidad"] . ' ' . $unidadesRes .'
+                    </span>
+
+                    <div class="d-flex flex-column mr-3">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            <?php echo $item["nombre"]; ?>
                         </div>
-                        <div class="col mr-2">
-                            <a href="index.php?page=deleteProductList&id=' . $key . '" class="btn btn-danger btn-sm">Eliminar</a>
+                        <div class="text-muted">
+                            <small>Precio unitario: <?php echo number_format($item["precio"], 2); ?> €</small>
                         </div>
+                    </div>
+
+                    <div>
+                        <a href="index.php?page=deleteProductList&id=<?php echo $key; ?>" class="btn btn-danger btn-sm">
+                            Eliminar
+                        </a>
                     </div>
                 </div>
             </div>
