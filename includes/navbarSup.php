@@ -56,9 +56,9 @@
                 <span>Solicitar Insumos</span></a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="index.php?page=showAllRequest">
+            <a class="nav-link" href="index.php?page=showRequest">
                 <i class="fa fa-list-alt"></i>
-                <span>Solicitudes</span></a>
+                <span>Mis Solicitudes</span></a>
         </li>
         <hr class="sidebar-divider d-none d-md-block">
 
