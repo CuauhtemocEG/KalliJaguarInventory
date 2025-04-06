@@ -121,7 +121,7 @@
 
             <div id="cartPanel" class="cart-panel">
                 <div class="cart-header">
-                    <h4>Lista de solicitud</h4>
+                    <h4>Lista de Solicitud</h4>
                     <button id="closeCart" class="btn btn-danger btn-sm">Cerrar</button>
                 </div>
                 <div class="cart-body" id="cartBody">
@@ -143,13 +143,14 @@
                             }
                             
                             $totalItem += $item['cantidad'];
+                            $total += $item['cantidad'] * $item['precio'];
 
                             echo '<div class="col-md-12 mb-3">
     <div class="card mb-3 shadow-sm border-light">
         <div class="card-body d-flex flex-column position-relative">
             
             <span class="badge badge-danger badge-counter position-absolute" style="top: 0; right: 0;">
-                '.$item["cantidad"] . ' Un
+                '.$item["cantidad"] . ' ' .$unidadesRes.'
             </span>
             
             <div class="text-md font-weight-bold text-dark mb-2">
@@ -170,11 +171,30 @@
     </div>
 </div>';
                         }
-                        echo '<strong>Total</strong>
-                        <strong>' . $totalItem . '</strong>
-                        <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#confirmModal">
-                            Enviar Solicitud
-                        </button>';
+                        echo '
+                <div class="row justify-content-center">
+                    <div class="col-12">
+                        <div class="card shadow-lg p-4">
+                            <h6 class="card-title text-center mb-4">Resumen de la Solicitud</h6>
+                            
+                            <div class="d-flex justify-content-between mb-3">
+                                <strong>Total de productos:</strong>
+                                <span class="h5 text-primary">'.$totalItem.'</span>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mb-3">
+                                <strong>Total a pagar:</strong>
+                                <span class="h5 text-success">$'. number_format($total, 2) .'</span>
+                            </div>
+
+                            <div class="d-flex justify-content-center">
+                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#confirmModal">
+                                    <i class="fas fa-check-circle"></i> Enviar Solicitud
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>';
                     } else {
                         echo '<p>No hay productos en el carrito.</p>';
                     }
