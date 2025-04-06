@@ -154,15 +154,15 @@
 
                     <div class="d-flex flex-column mr-3">
                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                            <?php echo $item["nombre"]; ?>
+                            '.$item["nombre"].'
                         </div>
                         <div class="text-muted">
-                            <small>Precio unitario: <?php echo number_format($item["precio"], 2); ?> €</small>
+                            <small>Precio unitario: $'.number_format($item["precio"], 2).'</small>
                         </div>
                     </div>
 
                     <div>
-                        <a href="index.php?page=deleteProductList&id=<?php echo $key; ?>" class="btn btn-danger btn-sm">
+                        <a href="index.php?page=deleteProductList&id='.$key.'" class="btn btn-danger btn-sm">
                             Eliminar
                         </a>
                     </div>
