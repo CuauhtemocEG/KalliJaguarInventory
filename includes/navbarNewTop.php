@@ -147,24 +147,22 @@
                             echo '
         <div class="col-md-12 mb-2">
             <div class="card mb-3 shadow-sm">
-                 <div class="card-body d-flex justify-content-between align-items-center">
-                    <span class="badge badge-danger badge-counter py-2 px-3">
-                        '. $item["cantidad"] . ' ' . $unidadesRes .'
-                    </span>
-
-                    <div class="d-flex flex-column mr-3">
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                <div class="card-body d-flex align-items-center">
+                    <div class="col-7 d-flex flex-column ml-3">
+                        <div class="text-sm font-weight-bold text-dark mb-1">
                             '.$item["nombre"].'
                         </div>
-                        <div class="text-muted">
+                        <div class="text-muted mb-2">
                             <small>Precio unitario: $'.number_format($item["precio"], 2).'</small>
                         </div>
-                    </div>
-
-                    <div>
-                        <a href="index.php?page=deleteProductList&id='.$key.'" class="btn btn-danger btn-sm">
-                            Eliminar
-                        </a>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <span class="badge badge-danger badge-counter py-2 px-3">
+                                '. $item["cantidad"] . ' ' . $unidadesRes.'
+                            </span>
+                            <a href="index.php?page=deleteProductList&id='.$key.'" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash-alt"></i> Eliminar
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
