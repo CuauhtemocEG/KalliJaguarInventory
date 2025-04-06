@@ -149,7 +149,7 @@
             <div class="card border-bottom-danger shadow h-100 py-2">
                 <div class="card-body">
                 <span class="badge badge-danger badge-counter">
-                    ' . $item["cantidad"] . '
+                    ' . $item["cantidad"] . $unidadesRes .'
             </span>
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
