@@ -3,7 +3,7 @@
 	# Conexion a la base de datos #
 	function conexion(){
 		$pdo = new PDO('mysql:host=localhost:3306
-;dbname=kallijag_inventory', 'kallijag_admin', 'uNtiL.horSe@5');
+;dbname=kallijag_inventory_stage', 'kallijag_stage', 'uNtiL.horSe@5');
 		return $pdo;
 	}
 
