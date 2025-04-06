@@ -45,7 +45,7 @@
                     <h6 class="collapse-header">Producto:</h6>
                     <a class="collapse-item" href="index.php?page=addProduct">Agregar Productos</a>
                     <a class="collapse-item" href="index.php?page=showProduct">Lista de Productos</a>
-                    <a class="collapse-item" href="index.php?page=productsByCategory">Productos x Categoría</a>
+                    <a class="collapse-item" href="index.php?page=productsByCategory">Productos por Categoría</a>
                     <a class="collapse-item" href="index.php?page=searchProduct">Buscar Producto</a>
                 </div>
             </div>
@@ -61,9 +61,6 @@
                 <span>Solicitudes</span></a>
         </li>
         <hr class="sidebar-divider d-none d-md-block">
-        <div class="sidebar-card d-none d-lg-flex">
-            <p class="text-center mb-2"><strong>Bienvenido al nuevo landing</strong> constantemente el sitio tendrá mejoras, si detectas algún problema avisa al administrador del sitio.</p>
-        </div>
 
     </ul>
     <div id="content-wrapper" class="d-flex flex-column">
@@ -113,6 +110,18 @@
                         $total = 0;
                         $totalItem = 0;
                         foreach ($_SESSION['INV'] as $key => $item) {
+                            $unidadesRes = '';
+
+                            if ($item['tipo'] == "Pesable") {
+                                if ($item['cantidad'] >= 1.0) {
+                                    $unidadesRes = 'Kg';
+                                } else {
+                                    $unidadesRes = 'grs';
+                                }
+                            } else {
+                                $unidadesRes = 'Un';
+                            }
+                            
                             $totalItem += $item['cantidad'];
 
                             echo '

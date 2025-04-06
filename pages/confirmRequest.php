@@ -111,9 +111,10 @@ foreach ($_SESSION['INV'] as $item) {
         // Datos de los productos
         $totalGeneral = 0;
         foreach ($_SESSION['INV'] as $item) {
+
             $unidadesRes = '';
             $quantity = '';
-
+          
             if ($item['tipo'] == "Pesable") {
                 if ($item['cantidad'] >= 1.0) {
                     $unidadesRes = 'Kg';
@@ -126,7 +127,7 @@ foreach ($_SESSION['INV'] as $item) {
                 $unidadesRes = 'Un';
                 $quantity = number_format($item['cantidad'],0,'.','');
             }
-            
+          
             $totalItem = ($item['precio'] * 1.16) * $item['cantidad'];
             $totalGeneral += $totalItem;
 
