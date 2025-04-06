@@ -144,37 +144,31 @@
                             
                             $totalItem += $item['cantidad'];
 
-                            echo '
-        <div class="col-md-12 mb-3">
-            <div class="card mb-3 shadow-sm border-light">
-                <div class="card-body d-flex align-items-center">
-                    <div class="col-6 d-flex flex-column pl-3">
-                        <div class="text-md font-weight-bold text-dark mb-1">
-                            '.$item["nombre"].'
-                        </div>
-
-                        <div class="text-muted mb-2">
-                            <small>Precio unitario: $'.number_format($item["precio"], 2).'</small>
-                        </div>
-
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="badge badge-danger badge-counter py-2 px-3">
-                                '.$item["cantidad"] . ' ' . $unidadesRes.'
-                            </span>
-                            <a href="index.php?page=deleteProductList&id='.$key.'" class="btn btn-danger btn-sm">
-                                <i class="fas fa-trash-alt"></i> Eliminar
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="col-3 text-right">
-                        <div class="font-weight-bold text-dark">
-                            $'.number_format($item["precio"] * $item["cantidad"], 2).'
-                        </div>
-                    </div>
-                </div>
+                            echo '<div class="col-md-12 mb-3">
+    <div class="card mb-3 shadow-sm border-light">
+        <div class="card-body d-flex flex-column position-relative">
+            
+            <span class="badge badge-danger badge-counter position-absolute" style="top: 0; right: 0;">
+                '.$item["cantidad"] . ' Un
+            </span>
+            
+            <div class="text-md font-weight-bold text-dark mb-2">
+                '.$item["nombre"].'
             </div>
-        </div>';
+            
+            <div class="d-flex justify-content-between text-muted mb-3">
+                <small>Precio unitario: $'.number_format($item["precio"], 2).'</small>
+                <small>Total: $'. number_format($item["precio"] * $item["cantidad"], 2).'</small>
+            </div>
+            
+            <div class="d-flex justify-content-end">
+                <a href="index.php?page=deleteProductList&id='.$key.'" class="btn btn-danger btn-sm">
+                    <i class="fas fa-trash-alt"></i> Eliminar
+                </a>
+            </div>
+        </div>
+    </div>
+</div>';
                         }
                         echo '<strong>Total</strong>
                         <strong>' . $totalItem . '</strong>
