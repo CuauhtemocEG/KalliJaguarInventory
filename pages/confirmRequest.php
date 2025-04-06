@@ -114,7 +114,7 @@ foreach ($_SESSION['INV'] as $item) {
 
             $unidadesRes = '';
             $quantity = '';
-            
+          
             if ($item['tipo'] == "Pesable") {
                 if ($item['cantidad'] >= 1.0) {
                     $unidadesRes = 'Kg';
@@ -127,7 +127,7 @@ foreach ($_SESSION['INV'] as $item) {
                 $unidadesRes = 'Un';
                 $quantity = number_format($item['cantidad'],0,'.','');
             }
-
+          
             $totalItem = ($item['precio'] * 1.16) * $item['cantidad'];
             $totalGeneral += $totalItem;
 
@@ -178,19 +178,19 @@ try {
     $mail->Debugoutput = 'html';
     $mail->Host = 'smtp.titan.email';
     $mail->SMTPAuth = true;
-    $mail->Username = 'info@stagging.kallijaguar-inventory.com';
-    $mail->Password = 'KalliJaguar2025@';
+    $mail->Username = 'info@kallijaguar-inventory.com';
+    $mail->Password = '{&<eXA[x$?_q\<N';
     $mail->SMTPSecure = 'ssl';
     $mail->Port = 465;
 
-    $mail->setFrom('info@stagging.kallijaguar-inventory.com', 'Informacion Kalli Jaguar');
-    $mail->addAddress('cencarnacion@stagging.kallijaguar-inventory.com');
-    //$mail->addAddress('mauricio.dominguez@kallijaguar-inventory.com');
-    //$mail->addCC('julieta.ramirez@kallijaguar-inventory.com');
-    //$mail->addCC('miguel.loaeza@kallijaguar-inventory.com');
-    //$mail->addCC('andrea.sanchez@kallijaguar-inventory.com');
-    //$mail->addCC('may.sanchez@kallijaguar-inventory.com');
-    //$mail->addCC('cencarnacion@kallijaguar-inventory.com');
+    //$mail->setFrom('info@stagging.kallijaguar-inventory.com', 'Informacion Kalli Jaguar');
+    //$mail->addAddress('cencarnacion@stagging.kallijaguar-inventory.com');
+    $mail->addAddress('mauricio.dominguez@kallijaguar-inventory.com');
+    $mail->addCC('julieta.ramirez@kallijaguar-inventory.com');
+    $mail->addCC('miguel.loaeza@kallijaguar-inventory.com');
+    $mail->addCC('andrea.sanchez@kallijaguar-inventory.com');
+    $mail->addCC('may.sanchez@kallijaguar-inventory.com');
+    $mail->addCC('cencarnacion@kallijaguar-inventory.com');
 
     $mail->addAttachment($pdfPath);
 
