@@ -147,7 +147,8 @@
                             }
                             
                             $totalItem += $item['cantidad'];
-                            $total += $item['cantidad'] * $item['precio'];
+                            $percentage = $item['precio'] * (1 + 0.16);
+                            $total += $item['cantidad'] * $percentage;
 
                             echo '<div class="col-md-12 mb-3">
     <div class="card mb-3 shadow-sm border-light">
