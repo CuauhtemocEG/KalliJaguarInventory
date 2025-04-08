@@ -89,13 +89,13 @@ $totalUnidades = $totalUnidades->query("SELECT Nombre, Cantidad, Tipo FROM Produ
 
 								<div class="card-header" id="headingTwo">
 									<h5 class="mb-0">
-										<button class="btn" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseOne">
+										<button class="btn" type="button" data-toggle="collapse" data-target="#collapseTwoHome" aria-expanded="true" aria-controls="collapseOne">
 											Ver productos - Unidad
 										</button>
 									</h5>
 								</div>
 
-								<div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+								<div id="collapseTwoHome" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
 									<div class="card-body">
 										<?php if ($totalUnidades->rowCount() > 0) {
 											$datosUnidades = $totalUnidades->fetchAll();
