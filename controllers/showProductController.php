@@ -80,10 +80,10 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 					<div class="align-items-center align-content-center col-md-3 border-left mt-1">
 						<div class="d-flex has-text-centered">
 							<h5 class="mr-1">
-								<p class="font-weight-bold">Precio Compra:</p> $'.$rows['PrecioUnitario'].'
+								<p class="font-weight-bold">Precio Compra:</p> $'.number_format($rows['PrecioUnitario'], 2, '.', '').'
 							</h5>
 							<h5 class="mr-1">
-								<p class="font-weight-bold">Precio Venta:</p> $'. $rows['PrecioUnitario'] + ($rows['PrecioUnitario'] * 0.16).'
+								<p class="font-weight-bold">Precio Venta:</p> $'. number_format($rows['PrecioUnitario'] + ($rows['PrecioUnitario'] * 0.16), 2, '.', '').'
 							</h5>
 						</div>'
 						. $txtDisponibilidad.'
