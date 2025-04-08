@@ -47,81 +47,80 @@ $totalUnidades = $totalUnidades->query("SELECT Nombre, Cantidad, Tipo FROM Produ
 					</div>
 				</div>
 
-				v class="col-xl-3 col-md-6 mb-4">
-					<div class="card border-left-danger shadow h-100 py-2">
-						<div class="card-body">
-							<div class="row no-gutters align-items-center">
-								<div class="col mr-2">
-									<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-										Productos con Inventario menor a 5 de stock </div>
-									<div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $totalCount; ?></div>
-								</div>
-								<div class="col-auto">
-									<i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
-								</div>
+				<div class="card border-left-danger shadow h-100 py-2">
+					<div class="card-body">
+						<div class="row no-gutters align-items-center">
+							<div class="col mr-2">
+								<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+									Productos con Inventario menor a 5 de stock </div>
+								<div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $totalCount; ?></div>
 							</div>
-
-							<div id="accordion">
-								<div class="card">
-									<div class="card-header" id="headingOne">
-										<h5 class="mb-0">
-											<button class="btn" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-												Ver productos - Pesables
-											</button>
-										</h5>
-									</div>
-
-									<div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
-										<div class="card-body">
-											<?php if ($totalPesables->rowCount() > 0) {
-												$datosPesables = $totalPesables->fetchAll();
-												foreach ($datosPesables as $row) {
-
-													if ($row['Tipo'] == "Pesable") {
-														$res = "Kg";
-														$unidades = number_format($row['Cantidad'], 2, '.', '');
-													}
-
-													echo '<p>'.$row['Nombre'].' - '.$unidades.' '.$res.'</p>';
-												}
-											} ?>
-										</div>
-									</div>
-
-									<div class="card-header" id="headingTwo">
-										<h5 class="mb-0">
-											<button class="btn" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseOne">
-												Ver productos - Unidad
-											</button>
-										</h5>
-									</div>
-
-									<div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
-										<div class="card-body">
-											<?php if ($totalUnidades->rowCount() > 0) {
-												$datosUnidades = $totalUnidades->fetchAll();
-												foreach ($datosUnidades as $row) {
-
-													if ($row['Tipo'] == "Unidad") {
-														$res = "Unidades";
-														$unidades = number_format($row['Cantidad'], 0, '.', '');
-													}
-
-													echo '<p>'.$row['Nombre'].' - '.$unidades.' '.$res.'</p>';
-												}
-											} ?>
-										</div>
-									</div>
-
-								</div>
+							<div class="col-auto">
+								<i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
 							</div>
 						</div>
 
-					</div>
-				</div>
+						<div id="accordion">
+							<div class="card">
+								<div class="card-header" id="headingOne">
+									<h5 class="mb-0">
+										<button class="btn" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+											Ver productos - Pesables
+										</button>
+									</h5>
+								</div>
 
+								<div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+									<div class="card-body">
+										<?php if ($totalPesables->rowCount() > 0) {
+											$datosPesables = $totalPesables->fetchAll();
+											foreach ($datosPesables as $row) {
+
+												if ($row['Tipo'] == "Pesable") {
+													$res = "Kg";
+													$unidades = number_format($row['Cantidad'], 2, '.', '');
+												}
+
+												echo '<p>' . $row['Nombre'] . ' - ' . $unidades . ' ' . $res . '</p>';
+											}
+										} ?>
+									</div>
+								</div>
+
+								<div class="card-header" id="headingTwo">
+									<h5 class="mb-0">
+										<button class="btn" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseOne">
+											Ver productos - Unidad
+										</button>
+									</h5>
+								</div>
+
+								<div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+									<div class="card-body">
+										<?php if ($totalUnidades->rowCount() > 0) {
+											$datosUnidades = $totalUnidades->fetchAll();
+											foreach ($datosUnidades as $row) {
+
+												if ($row['Tipo'] == "Unidad") {
+													$res = "Unidades";
+													$unidades = number_format($row['Cantidad'], 0, '.', '');
+												}
+
+												echo '<p>' . $row['Nombre'] . ' - ' . $unidades . ' ' . $res . '</p>';
+											}
+										} ?>
+									</div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+
+				</div>
 			</div>
+
 		</div>
 	</div>
+</div>
 </div>
 </div>
