@@ -79,12 +79,12 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 					</div>
 					<div class="align-items-center align-content-center col-md-3 border-left mt-1">
 						<div class="d-flex has-text-centered">
-							<h4 class="mr-1 col-md-6">
+							<h5 class="mr-1">
 								<p class="font-weight-bold">Precio Compra:</p> $'.$rows['PrecioUnitario'].'
-							</h4>
-							<h4 class="mr-1 col-md-6">
+							</h5>
+							<h5 class="mr-1">
 								<p class="font-weight-bold">Precio Venta:</p> $'. $rows['PrecioUnitario'] + ($rows['PrecioUnitario'] * 0.16).'
-							</h4>
+							</h5>
 						</div>'
 						. $txtDisponibilidad.'
 						<div class="d-flex flex-column mt-4"><a href="index.php?page=updateProduct&idProductUp='.$rows['ProductoID'].'" class="btn btn-dark btn-sm" type="button">Actualizar Producto</a><a class="btn btn-secondary btn-sm mt-2 text-white" href="index.php?page=updateProductImage&idProductUp='.$rows['ProductoID'].'" type="button">Actualizar Imagen</a><a href="' . $url . $pagina . '&idProductDel=' . $rows['ProductoID'] . '" class="btn btn-danger btn-sm btn-sm mt-2">Eliminar</a></div>
