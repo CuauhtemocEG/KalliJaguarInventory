@@ -135,7 +135,7 @@ foreach ($_SESSION['INV'] as $item) {
             $pdf->Ln();
         }
         $pdf->Cell(100, 10, 'Total:', 1, 0, 'L');
-        $pdf->Cell(40, 10, '$' . $totalGeneral, 1, 0, 'C');
+        $pdf->Cell(40, 10, '$' . number_format($totalGeneral, 2, '.', ''), 1, 0, 'C');
         $pdf->Ln(20);
 
         $pdf->Cell(90, 10, '', 0, 0, 'C');
