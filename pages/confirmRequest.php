@@ -189,6 +189,7 @@ try {
     $mail->addCC('andrea.sanchez@kallijaguar-inventory.com');
     $mail->addCC('may.sanchez@kallijaguar-inventory.com');
     $mail->addCC('cencarnacion@kallijaguar-inventory.com');
+    $mail->addCC('claudia.espinoza@kallijaguar-inventory.com');
 
     $mail->addAttachment($pdfPath);
 
