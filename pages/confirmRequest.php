@@ -26,8 +26,8 @@ foreach ($_SESSION['INV'] as $item) {
 
         // Registrar el movimiento en la tabla de movimientos
         $conn = conexion();
-        $stmt = $conn->prepare("INSERT INTO MovimientosInventario (ComandaID, SucursalID, ProductoID, TipoMovimiento, Cantidad, FechaMovimiento, PrecioFinal, UsuarioID) 
-                            VALUES (:comandaID,:sucursalID, :productoID, 'Salida', :cantidad, NOW(), :precioFinal, :usuarioID)");
+        $stmt = $conn->prepare("INSERT INTO MovimientosInventario (ComandaID, SucursalID, ProductoID, TipoMovimiento, Cantidad, FechaMovimiento, PrecioFinal, UsuarioID, Status) 
+                            VALUES (:comandaID,:sucursalID, :productoID, 'Salida', :cantidad, NOW(), :precioFinal, :usuarioID, :status)");
 
         $precioFinales = $item['precio'] * (1 + 0.16);
 
@@ -38,7 +38,8 @@ foreach ($_SESSION['INV'] as $item) {
                 ':productoID' => $item['producto'],
                 ':cantidad' => $item['cantidad'],
                 ':precioFinal' => $precioFinales * $item['cantidad'],
-                ':usuarioID' => $_SESSION['id']
+                ':usuarioID' => $_SESSION['id'],
+                ':status' => 'Abierto'
             ]);
 
             // Reducir la cantidad del producto en el inventario
