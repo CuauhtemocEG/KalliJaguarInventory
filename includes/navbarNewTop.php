@@ -76,11 +76,11 @@
                 <i class="fa fa-list-alt"></i>
                 <span>Mis Solicitudes</span></a>
         </li>
-        <li class="nav-item">
+        <?php if($_SESSION['id']=='1'){?><li class="nav-item">
             <a class="nav-link" href="index.php?page=showAllRequest">
                 <i class="fa fa-list-alt"></i>
                 <span>Solicitudes Generales</span></a>
-        </li>
+        </li><?php } ?>
         <hr class="sidebar-divider d-none d-md-block">
     </ul>
     <div id="content-wrapper" class="d-flex flex-column">
