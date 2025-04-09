@@ -36,7 +36,7 @@ foreach ($datos as $item) {
 }
 
 $deleteComanda = conexion();
-$deleteComanda = $deleteComanda->prepare("DELETE FROM MovimientosInventario WHERE ComandaID=:id");
+$deleteComanda = $deleteComanda->prepare("UPDATE MovimientosInventario SET Status='Cancelado' WHERE ComandaID=:id");
 $deleteComanda->execute([":id" => $comandaID]);
 
 $emailUser = conexion();

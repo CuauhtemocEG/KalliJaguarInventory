@@ -5,7 +5,7 @@ $userID = $_SESSION["id"];
 $nameUser = $_SESSION["nombre"];
 
 $showComanda = conexion();
-$showComanda = $showComanda->query("SELECT MAX(Mov.FechaMovimiento) AS FechaMovimiento, Mov.ComandaID, Mov.UsuarioID, MAX(Mov.SucursalID) AS SucursalID, MAX(Mov.MovimientoID) AS MovimientoID, COUNT(DISTINCT Mov.ProductoID) AS TotalProductos, SUM(Mov.Cantidad) AS TotalCantidad, users.Nombre as Solicitante FROM MovimientosInventario Mov INNER JOIN Usuarios users WHERE Mov.UsuarioID=users.UsuarioID AND TipoMovimiento = 'Salida' GROUP BY ComandaID ORDER BY MovimientoID DESC");
+$showComanda = $showComanda->query("SELECT MAX(Mov.FechaMovimiento) AS FechaMovimiento, Mov.ComandaID, Mov.Status, Mov.UsuarioID, MAX(Mov.SucursalID) AS SucursalID, MAX(Mov.MovimientoID) AS MovimientoID, COUNT(DISTINCT Mov.ProductoID) AS TotalProductos, SUM(Mov.Cantidad) AS TotalCantidad, users.Nombre as Solicitante FROM MovimientosInventario Mov INNER JOIN Usuarios users WHERE Mov.UsuarioID=users.UsuarioID AND TipoMovimiento = 'Salida' GROUP BY Mov.ComandaID, Mov.Status, Mov.UsuarioID ORDER BY MovimientoID DESC");
 $datos = $showComanda->fetchAll();
 
 ?>
@@ -40,9 +40,39 @@ $datos = $showComanda->fetchAll();
                                     Solicitante: <?php echo $row['Solicitante']; ?></div>
                             </div>
                             <div class="col mr-2">
+                                <div class="col-auto mb-2">
+                                    <span class="badge <?php
+                                        switch ($row['Status']) {
+                                            case 'Abierto':
+                                                echo 'badge-info';
+                                                break;
+                                            case 'En transito':
+                                                echo 'badge-warning';
+                                                break;
+                                            case 'Cerrado':
+                                                echo 'badge-success';
+                                                break;
+                                            case 'Cancelado':
+                                                echo 'badge-danger';
+                                                break;
+                                            default:
+                                                echo 'badge-secondary';
+                                                break;
+                                        }
+                                        ?> text-uppercase"><?php echo $row['Status']; ?></span>
+                                </div>
                                 <a href="index.php?page=showPDF&ComandaID=<?php echo $row['ComandaID']; ?>"
                                     class="d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                                         class="fas fa-download fa-sm text-white-50"></i> Ver Solicitud</a>
+                                <?php if($row['Status']=== 'Abierto'){?>
+                                    <a href="index.php?page=changeToTransit&ComandaID=<?php echo $row['ComandaID']; ?>"
+                                    class="d-sm-inline-block btn btn-sm btn-secondary shadow-sm mt-2"><i
+                                        class="fas fa-genderless fa-sm text-white-50"></i> Cambiar a "En transito"</a>
+                                <?php } elseif($row['Status']=== 'En transito'){?>
+                                    <a href="index.php?page=changeToDelivered&ComandaID=<?php echo $row['ComandaID']; ?>"
+                                    class="d-sm-inline-block btn btn-sm btn-success shadow-sm mt-2"><i
+                                        class="fas fa-genderless fa-sm text-white-50"></i> Cambiar a "Entregado"</a>
+                                <?php } ?>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-truck fa-2x text-gray-300"></i>
