@@ -36,8 +36,6 @@ try {
     //$mail->addCC('may.sanchez@kallijaguar-inventory.com');
     //$mail->addCC('cencarnacion@kallijaguar-inventory.com');
 
-    $mail->addAttachment($pdfPath);
-
     $mail->isHTML(true);
     $mail->Subject = 'Comanda: ' . $comandaID.' Entregada';
     $mail->Body = "<p>La siguiente comanda: <strong>{$comandaID}</strong></p><p>Ya fue entregada en tu sucursal.</p>";
