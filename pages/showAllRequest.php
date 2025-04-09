@@ -40,7 +40,7 @@ $datos = $showComanda->fetchAll();
                                     Solicitante: <?php echo $row['Solicitante']; ?></div>
                             </div>
                             <div class="col mr-2">
-                            <div class="col-auto mb-2">
+                                <div class="col-auto mb-2">
                                     <span class="badge <?php
                                         switch ($row['Status']) {
                                             case 'Abierto':
@@ -64,6 +64,15 @@ $datos = $showComanda->fetchAll();
                                 <a href="index.php?page=showPDF&ComandaID=<?php echo $row['ComandaID']; ?>"
                                     class="d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                                         class="fas fa-download fa-sm text-white-50"></i> Ver Solicitud</a>
+                                <?php if($row['Status']=== 'Abierto'){?>
+                                    <a href="index.php?page=changeToTransit&ComandaID=<?php echo $row['ComandaID']; ?>"
+                                    class="d-sm-inline-block btn btn-sm btn-secondary shadow-sm mt-2"><i
+                                        class="fas fa-genderless fa-sm text-white-50"></i> Cambiar a "En transito"</a>
+                                <?php } elseif($row['Status']=== 'En transito'){?>
+                                    <a href="index.php?page=changeToDelivered&ComandaID=<?php echo $row['ComandaID']; ?>"
+                                    class="d-sm-inline-block btn btn-sm btn-success shadow-sm mt-2"><i
+                                        class="fas fa-genderless fa-sm text-white-50"></i> Cambiar a "Entregado"</a>
+                                <?php } ?>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-truck fa-2x text-gray-300"></i>
