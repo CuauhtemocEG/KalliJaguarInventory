@@ -223,14 +223,11 @@ $correoBody = '
               </td>
             </tr>
             <tr>
-              <td colspan="2" style="font-size: 12px; color: rgb(55, 55, 55); text-align: center; padding-top: 20px;">
+              <td colspan="2" style="font-size: 12px; color: rgb(34, 34, 34); text-align: center; padding-top: 20px;">
                 Si tienes alguna duda, contacta al administrador del sitio.</a>
               </td>
             </tr>
           </table>
-        </td>
-        <td style="color: #aaaaaa; font-size: 14px;">
-            Este correo tiene estilos si lo ves correctamente.
         </td>
       </tr>
     </table>
