@@ -195,41 +195,41 @@ $correoBody = '
 </head>
 
 <body>
-  <div style="margin:0; padding:0; background-color:rgb(0, 0, 0); color: rgb(255, 255, 255);">
+  <div style="margin:0; padding:0; background-color:#000000;">
     <table width="100%" cellpadding="0" cellspacing="0">
       <tr>
         <td align="center">
           <table width="500" cellpadding="20" cellspacing="0"
-            style="background-color:rgb(0, 0, 0); border: 2px solid rgb(249, 187, 0);">
+            style="background-color:#000000; border: 2px solid #ffb900;">
             <tr>
               <td align="left" width="50%">
                 <img src="https://stagging.kallijaguar-inventory.com/img/logo.png" alt="Logo" width="120"
                   style="display:block;">
               </td>
-              <td align="right" width="50%" style="color:rgb(249, 187, 2); font-size: 14px;">
+              <td align="right" width="50%" style="color: #ecac03; font-size: 14px;">
                 <strong>Comanda #:'.$comandaID.'</strong>
               </td>
             </tr>
             <tr>
               <td colspan="2" style="padding-top: 10px; padding-bottom: 10px;">
-                <p style="font-size: 14px; color:rgb(255, 255, 255);">¡Tu pedido ha sido recibido exitosamente!
+                <p style="font-size: 14px; color:#ffffff;">¡Tu pedido ha sido recibido exitosamente!
                 </p>
-                <p style="font-size: 14px; color:rgb(255, 255, 255);">
+                <p style="font-size: 14px; color:#ffffff;">
                   Adjunto se encontrara el PDF correspondiente a la comanda generada.
                 </p>
               </td>
             </tr>
             <tr>
               <td colspan="2" style="background-color:rgb(42, 42, 42); padding: 10px;">
-                <p style="font-size: 14px; color:rgba(249, 187, 1, 0.96);"><strong>Productos solicitados:</strong></p>
-                <ul style="color:rgb(255, 255, 255); padding-left: 20px; font-size: 14px;">
+                <p style="font-size: 14px; color: #ecac03;"><strong>Productos solicitados:</strong></p>
+                <ul style="color: #ffffff; padding-left: 20px; font-size: 14px;">
                 ' . $productosHTML . '
                 </ul>
               </td>
             </tr>
             <tr>
               <td colspan="2"
-                style="font-size: 12px; color: rgb(255, 255, 255); text-align: center; padding-top: 20px;">
+                style="font-size: 12px; color: #ffffff; text-align: center; padding-top: 20px;">
                 Si tienes alguna duda, contacta al administrador del sitio.</a>
               </td>
             </tr>
