@@ -197,12 +197,12 @@ $correoBody = '<html>
                 <img src="https://stagging.kallijaguar-inventory.com/img/logo.png" alt="Logo" width="120" style="display:block;">
               </td>
               <td align="right" width="50%" style="color: #ffc107; font-size: 14px;">
-                Comanda #:' . $comandaID . '</strong>
+                <strong>Comanda #:' . $comandaID . '</strong>
               </td>
             </tr>
             <tr>
               <td colspan="2" style="padding-top: 10px; padding-bottom: 10px;">
-                <p style="font-size: 16px; color: #ffffff;">¡Tu pedido ha sido recibido exitosamente.!
+                <p style="font-size: 16px; color: #ffffff;">¡Tu pedido ha sido recibido exitosamente!
                 </p>
                  <p style="font-size: 16px; color: #ffffff;">
                   Adjunto se encontrara el PDF correspondiente a la comanda.
@@ -214,7 +214,6 @@ $correoBody = '<html>
                 <p style="font-size: 16px; color: #ffc107;"><strong>Productos solicitados:</strong></p>
                 <ul style="color: #ffffff; padding-left: 20px;">
                 ' . $productosHTML . '
-                <li>Producto 1 - Cantidad: 2</li>
                 </ul>
               </td>
             </tr>
@@ -248,7 +247,6 @@ try {
     $mail->isSMTP();
     $mail->CharSet = 'UTF-8';
     $mail->ContentType = 'text/html';
-    $mail->Debugoutput = 'html';
     $mail->Host = 'smtp.titan.email';
     $mail->SMTPAuth = true;
     $mail->Username = 'info@stagging.kallijaguar-inventory.com';
