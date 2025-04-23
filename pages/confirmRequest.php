@@ -176,7 +176,7 @@ foreach ($_SESSION['INV'] as $items) {
             $quantityRes = number_format($items['cantidad'], 3, '.', '');
         }
     } else {
-        $unidadesResult = 'Un';
+        $unidadesResult = 'Unidad(es)';
         $quantityRes = number_format($items['cantidad'], 0, '.', '');
     }
 
@@ -186,7 +186,12 @@ foreach ($_SESSION['INV'] as $items) {
     $productosHTML .= '<li>' . htmlspecialchars($items['nombre']) . ' - Cantidad: ' . $quantityRes . ' ' . $unidadesResult . '</li>';
 }
 
-$correoBody = '<html>
+$correoBody = '
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+</head>
   <body>
     <table width="100%" cellpadding="0" cellspacing="0" style="margin:0; padding:0; font-family: Arial, sans-serif; background-color:rgb(0, 0, 0); color: rgb(255, 255, 255);">
       <tr>
@@ -223,6 +228,9 @@ $correoBody = '<html>
               </td>
             </tr>
           </table>
+        </td>
+        <td style="color: #aaaaaa; font-size: 14px;">
+            Este correo tiene estilos si lo ves correctamente.
         </td>
       </tr>
     </table>
