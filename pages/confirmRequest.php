@@ -187,8 +187,8 @@ foreach ($_SESSION['INV'] as $items) {
 }
 
 $correoBody = '<html>
-  <body style="margin:0; padding:0; font-family: Arial, sans-serif; background-color: #1a1a1a; color: #fff;">
-    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #1a1a1a;">
+  <body>
+    <table style="margin:0; padding:0; font-family: Arial, sans-serif; background-color: #1a1a1a; color: #fff;" width="100%" cellpadding="0" cellspacing="0">
       <tr>
         <td align="center">
           <table width="600" cellpadding="20" cellspacing="0" style="background-color: #1a1a1a; border: 1px solid #ffc107;">
