@@ -64,7 +64,7 @@ $datos = $showComanda->fetchAll();
                                 <a href="index.php?page=showPDF&ComandaID=<?php echo $row['ComandaID']; ?>"
                                     class="d-sm-inline-block btn btn-sm btn-primary shadow-sm mt-1 mb-1"><i
                                         class="fas fa-download fa-sm text-white-50"></i> Ver Solicitud</a>
-                                <?php if ($row['Status'] === 'Abierto') { ?><a class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" href="#" data-toggle="modal" data-target="#deleteModal"><i
+                                <?php if ($row['Status'] === 'Abierto') { ?><a class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" href="#" data-toggle="modal" data-target="#deleteModal_<?php echo $row['ComandaID']; ?>"><i
                                             class="fas fa-trash fa-sm text-white-50"></i> Cancelar Solicitud</a><?php } ?>
                             </div>
                             <div class="col-auto">
@@ -75,7 +75,7 @@ $datos = $showComanda->fetchAll();
                 </div>
             </div>
 
-            <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            <div class="modal fade" id="deleteModal_<?php echo $row['ComandaID']; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
