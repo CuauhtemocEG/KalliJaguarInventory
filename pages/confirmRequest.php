@@ -115,25 +115,25 @@ foreach ($_SESSION['INV'] as $item) {
 
             $unidadesRes = '';
             $quantity = '';
-          
+
             if ($item['tipo'] == "Pesable") {
                 if ($item['cantidad'] >= 1.0) {
                     $unidadesRes = 'Kg';
-                    $quantity = number_format($item['cantidad'],2,'.','');
+                    $quantity = number_format($item['cantidad'], 2, '.', '');
                 } else {
                     $unidadesRes = 'grs';
-                    $quantity = number_format($item['cantidad'],3,'.','');
+                    $quantity = number_format($item['cantidad'], 3, '.', '');
                 }
             } else {
                 $unidadesRes = 'Un';
-                $quantity = number_format($item['cantidad'],0,'.','');
+                $quantity = number_format($item['cantidad'], 0, '.', '');
             }
-          
+
             $totalItem = ($item['precio'] * 1.16) * $item['cantidad'];
             $totalGeneral += $totalItem;
 
             $pdf->Cell(60, 10, $item['nombre'], 1, 0, 'C');
-            $pdf->Cell(40, 10, $quantity .' '. $unidadesRes , 1, 0, 'C');
+            $pdf->Cell(40, 10, $quantity . ' ' . $unidadesRes, 1, 0, 'C');
             $pdf->Cell(40, 10, '$' . number_format($totalItem, 2, '.', ''), 1, 0, 'C');
             $pdf->Cell(40, 10, '', 1);
             $pdf->Ln();
@@ -170,14 +170,14 @@ foreach ($_SESSION['INV'] as $items) {
     if ($items['tipo'] == "Pesable") {
         if ($items['cantidad'] >= 1.0) {
             $unidadesResult = 'Kg';
-            $quantityRes = number_format($items['cantidad'],2,'.','');
+            $quantityRes = number_format($items['cantidad'], 2, '.', '');
         } else {
             $unidadesResult = 'grs';
-            $quantityRes = number_format($items['cantidad'],3,'.','');
+            $quantityRes = number_format($items['cantidad'], 3, '.', '');
         }
     } else {
         $unidadesResult = 'Un';
-        $quantityRes = number_format($items['cantidad'],0,'.','');
+        $quantityRes = number_format($items['cantidad'], 0, '.', '');
     }
 
     $totalItem = ($items['precio'] * 1.16) * $items['cantidad'];
@@ -197,13 +197,12 @@ $correoBody = '<html>
                 <img src="https://stagging.kallijaguar-inventory.com/img/logo.png" alt="Logo" width="120" style="display:block;">
               </td>
               <td align="right" width="50%" style="color: #ffc107; font-size: 14px;">
-                Comanda #:'.$comandaID.'</strong>
+                Comanda #:' . $comandaID . '</strong>
               </td>
             </tr>
             <tr>
               <td colspan="2" style="padding-top: 10px; padding-bottom: 10px;">
-                <p style="font-size: 16px; color: #ffffff;">
-                  ¡Tu pedido ha sido recibido exitosamente.!
+                <p style="font-size: 16px; color: #ffffff;">¡Tu pedido ha sido recibido exitosamente.!
                 </p>
                  <p style="font-size: 16px; color: #ffffff;">
                   Adjunto se encontrara el PDF correspondiente a la comanda.
@@ -214,7 +213,7 @@ $correoBody = '<html>
               <td colspan="2" style="background-color: #2a2a2a; border-radius: 5px; padding: 15px;">
                 <p style="font-size: 16px; color: #ffc107;"><strong>Productos solicitados:</strong></p>
                 <ul style="color: #ffffff; padding-left: 20px;">
-                '.$productosHTML.'
+                ' . $productosHTML . '
                 <li>Producto 1 - Cantidad: 2</li>
                 </ul>
               </td>
@@ -247,6 +246,8 @@ $mail = new PHPMailer(true);
 
 try {
     $mail->isSMTP();
+    $mail->CharSet = 'UTF-8';
+    $mail->ContentType = 'text/html';
     $mail->Debugoutput = 'html';
     $mail->Host = 'smtp.titan.email';
     $mail->SMTPAuth = true;
