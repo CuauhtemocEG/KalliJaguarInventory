@@ -163,27 +163,27 @@ foreach ($_SESSION['INV'] as $item) {
 $productosHTML = '';
 $totalGenerals = 0;
 
-foreach ($_SESSION['INV'] as $item) {
-    $unidadesRes = '';
-    $quantity = '';
+foreach ($_SESSION['INV'] as $items) {
+    $unidadesResult = '';
+    $quantityRes = '';
 
-    if ($item['tipo'] == "Pesable") {
-        if ($item['cantidad'] >= 1.0) {
-            $unidadesRes = 'Kg';
-            $quantity = number_format($item['cantidad'],2,'.','');
+    if ($items['tipo'] == "Pesable") {
+        if ($items['cantidad'] >= 1.0) {
+            $unidadesResult = 'Kg';
+            $quantityRes = number_format($items['cantidad'],2,'.','');
         } else {
-            $unidadesRes = 'grs';
-            $quantity = number_format($item['cantidad'],3,'.','');
+            $unidadesResult = 'grs';
+            $quantityRes = number_format($items['cantidad'],3,'.','');
         }
     } else {
-        $unidadesRes = 'Un';
-        $quantity = number_format($item['cantidad'],0,'.','');
+        $unidadesResult = 'Un';
+        $quantityRes = number_format($items['cantidad'],0,'.','');
     }
 
-    $totalItem = ($item['precio'] * 1.16) * $item['cantidad'];
+    $totalItem = ($items['precio'] * 1.16) * $items['cantidad'];
     $totalGenerals += $totalItem;
 
-    $productosHTML .= '<li>' . htmlspecialchars($item['nombre']) . ' - Cantidad: ' . $quantity . ' ' . $unidadesRes . '</li>';
+    $productosHTML .= '<li>' . htmlspecialchars($items['nombre']) . ' - Cantidad: ' . $quantityRes . ' ' . $unidadesResult . '</li>';
 }
 
 $correoBody = '<html>
