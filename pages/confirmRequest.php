@@ -196,7 +196,7 @@ $correoBody = '<html>
               <td align="left" width="50%">
                 <img src="https://stagging.kallijaguar-inventory.com/img/logo.png" alt="Logo" width="120" style="display:block;">
               </td>
-              <td align="right" width="50%" style="color: #ffc107; font-size: 18px;">
+              <td align="right" width="50%" style="color: #ffc107; font-size: 14px;">
                 Comanda #:'.$comandaID.'</strong>
               </td>
             </tr>
@@ -256,7 +256,7 @@ try {
     $mail->Port = 465;
 
     $mail->setFrom('info@stagging.kallijaguar-inventory.com', 'Informacion Kalli Jaguar');
-    $mail->addAddress($Usermail);
+    $mail->addAddress('cencarnacion@stagging.kallijaguar-inventory.com');
     //$mail->addAddress('mauricio.dominguez@kallijaguar-inventory.com');
     //$mail->addCC('julieta.ramirez@kallijaguar-inventory.com');
     //$mail->addCC('miguel.loaeza@kallijaguar-inventory.com');
