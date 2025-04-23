@@ -203,7 +203,7 @@ $correoBody = '
             style="background-color:#000000; border: 2px solid #ffb900;">
             <tr>
               <td align="left" width="50%">
-                <img src="https://stagging.kallijaguar-inventory.com/img/logo.png" alt="Logo" width="120"
+                <img src="https://stagging.kallijaguar-inventory.com/img/LogoBlack.png" alt="Logo" width="120"
                   style="display:block;">
               </td>
               <td align="right" width="50%" style="color: #ecac03; font-size: 14px;">
