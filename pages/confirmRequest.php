@@ -185,7 +185,7 @@ try {
     $mail->Port = 465;
 
     $mail->setFrom('info@stagging.kallijaguar-inventory.com', 'Informacion Kalli Jaguar');
-    $mail->addAddress('cencarnacion@stagging.kallijaguar-inventory.com');
+    $mail->addAddress($Usermail);
     //$mail->addAddress('mauricio.dominguez@kallijaguar-inventory.com');
     //$mail->addCC('julieta.ramirez@kallijaguar-inventory.com');
     //$mail->addCC('miguel.loaeza@kallijaguar-inventory.com');
