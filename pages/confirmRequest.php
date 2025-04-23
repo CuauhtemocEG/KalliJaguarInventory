@@ -160,6 +160,77 @@ foreach ($_SESSION['INV'] as $item) {
     }
 }
 
+$productosHTML = '';
+$totalGenerals = 0;
+
+foreach ($_SESSION['INV'] as $item) {
+    $unidadesRes = '';
+    $quantity = '';
+
+    if ($item['tipo'] == "Pesable") {
+        if ($item['cantidad'] >= 1.0) {
+            $unidadesRes = 'Kg';
+            $quantity = number_format($item['cantidad'],2,'.','');
+        } else {
+            $unidadesRes = 'grs';
+            $quantity = number_format($item['cantidad'],3,'.','');
+        }
+    } else {
+        $unidadesRes = 'Un';
+        $quantity = number_format($item['cantidad'],0,'.','');
+    }
+
+    $totalItem = ($item['precio'] * 1.16) * $item['cantidad'];
+    $totalGenerals += $totalItem;
+
+    $productosHTML .= '<li>' . htmlspecialchars($item['nombre']) . ' - Cantidad: ' . $quantity . ' ' . $unidadesRes . '</li>';
+}
+
+$correoBody = '<html>
+  <body style="margin:0; padding:0; font-family: Arial, sans-serif; background-color: #1a1a1a; color: #fff;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #1a1a1a;">
+      <tr>
+        <td align="center">
+          <table width="600" cellpadding="20" cellspacing="0" style="background-color: #1a1a1a; border: 1px solid #ffc107;">
+            <tr>
+              <td align="left" width="50%">
+                <img src="https://stagging.kallijaguar-inventory.com/img/logo.png" alt="Logo" width="120" style="display:block;">
+              </td>
+              <td align="right" width="50%" style="color: #ffc107; font-size: 18px;">
+                Comanda #:'.$comandaID.'</strong>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" style="padding-top: 10px; padding-bottom: 10px;">
+                <p style="font-size: 16px; color: #ffffff;">
+                  ¡Tu pedido ha sido recibido exitosamente.!
+                </p>
+                 <p style="font-size: 16px; color: #ffffff;">
+                  Adjunto se encontrara el PDF correspondiente a la comanda.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" style="background-color: #2a2a2a; border-radius: 5px; padding: 15px;">
+                <p style="font-size: 16px; color: #ffc107;"><strong>Productos solicitados:</strong></p>
+                <ul style="color: #ffffff; padding-left: 20px;">
+                '.$productosHTML.'
+                <li>Producto 1 - Cantidad: 2</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" style="font-size: 12px; color: #aaa; text-align: center; padding-top: 20px;">
+                Si tienes alguna duda, contacta al administrador del sitio.</a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>';
+
 $emailUser = conexion();
 $emailUser = $emailUser->query("SELECT Email FROM Usuarios WHERE UsuarioID = '$idUser'");
 $Usermail = $emailUser->fetchColumn();
@@ -196,8 +267,8 @@ try {
     $mail->addAttachment($pdfPath);
 
     $mail->isHTML(true);
-    $mail->Subject = 'Comanda Generada: ' . $comandaID;
-    $mail->Body = "<p>Se ha generado una nueva comanda con el ID: <strong>{$comandaID}</strong></p><p>Adjunto se encontrara el PDF correspondiente a la comanda.</p><br><p>Recuerda revisar tu solicitud.</p>";
+    $mail->Subject = 'Confirmación de tu pedido: ' . $comandaID;
+    $mail->Body = $correoBody;
     $mail->send();
     echo 'El mensaje ha sido enviado con éxito.';
 } catch (Exception $e) {
