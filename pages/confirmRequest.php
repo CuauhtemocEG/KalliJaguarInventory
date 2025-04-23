@@ -187,13 +187,7 @@ foreach ($_SESSION['INV'] as $items) {
 }
 
 $correoBody = '
-<!DOCTYPE html>
 <html>
-
-<head>
-  <meta charset="UTF-8">
-</head>
-
 <body>
   <div style="margin:0; padding:0; background-color:#000000;">
     <table width="100%" cellpadding="0" cellspacing="0">
@@ -230,7 +224,7 @@ $correoBody = '
             <tr>
               <td colspan="2"
                 style="font-size: 12px; color: #ffffff; text-align: center; padding-top: 20px;">
-                Si tienes alguna duda, contacta al administrador del sitio.</a>
+                Si tienes alguna duda, contacta al administrador del sitio.
               </td>
             </tr>
           </table>
