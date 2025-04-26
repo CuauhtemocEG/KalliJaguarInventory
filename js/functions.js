@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         const selectedSucursal = formData.get('idSucursal');
 
-        if (!selectedSucursal || selectedSucursal === 'Seleccione una Sucursal') {
+        if (!selectedSucursal) {
             Swal.fire({
                 title: 'Sucursal no seleccionada',
                 text: 'Por favor, elige una sucursal antes de confirmar.',

@@ -79,7 +79,7 @@
                         <div class="form-group col-md-12">
                             <b><label>Sucursal de Destino:</label></b>
                             <select class="form-control" id="inputSucursal" name="idSucursal">
-                                <option selected>Seleccione una Sucursal</option>
+                                <option value="" selected>Seleccione una Sucursal</option>
                                 <?php
                                 $sucursal = conexion();
                                 $sucursal = $sucursal->query("SELECT * FROM Sucursales");
@@ -93,12 +93,10 @@
                                 ?>
                             </select>
                         </div>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Confirmar Pedido</button>
+                    </form>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Confirmar Pedido</button>
-                </div>
-                </form>
             </div>
         </div>
     </div>
