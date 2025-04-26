@@ -64,6 +64,44 @@
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
     <script src="js/sb-admin-2.min.js"></script>
+    <script src="js/functions.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabel">Confirmar Solicitud a Almacén</h5>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    ¿Está seguro de que desea enviar la lista de productos solicitados?
+                    <form method="POST" action="index.php?page=confirmRequest" id="confirmForm">
+                        <div class="form-group col-md-12">
+                            <b><label>Sucursal de Destino:</label></b>
+                            <select class="form-control" id="inputSucursal" name="idSucursal">
+                                <option selected>Seleccione una Sucursal</option>
+                                <?php
+                                $sucursal = conexion();
+                                $sucursal = $sucursal->query("SELECT * FROM Sucursales");
+                                if ($sucursal->rowCount() > 0) {
+                                    $sucursal = $sucursal->fetchAll();
+                                    foreach ($sucursal as $row) {
+                                        echo '<option value="' . $row['SucursalID'] . '" >' . $row['nombre'] . '</option>';
+                                    }
+                                }
+                                $sucursal = null;
+                                ?>
+                            </select>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Confirmar Pedido</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
