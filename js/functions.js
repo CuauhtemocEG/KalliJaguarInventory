@@ -136,9 +136,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const confirmForm = document.getElementById('confirmForm');
 
     confirmForm.addEventListener('submit', function (e) {
-        e.preventDefault(); // Evita recargar la página
+        e.preventDefault();
 
         const formData = new FormData(confirmForm);
+        alert(formData);
         const selectedSucursal = formData.get('idSucursal');
 
         if (!selectedSucursal || selectedSucursal === 'Seleccione una Sucursal') {

@@ -2,7 +2,7 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-require('./fpdf/fpdf.php');
+require('../../fpdf/fpdf.php');
 require_once "../../controllers/mainController.php";
 
 if (!isset($_SESSION['INV']) || !is_array($_SESSION['INV']) || count($_SESSION['INV']) == 0 || !isset($_POST['idSucursal'])) {
