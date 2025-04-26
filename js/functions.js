@@ -131,3 +131,49 @@ function actualizarPanelCarrito() {
         }
     });
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    const confirmForm = document.getElementById('confirmForm');
+
+    confirmForm.addEventListener('submit', function (e) {
+        e.preventDefault(); // Evita recargar la página
+
+        const formData = new FormData(confirmForm);
+        const selectedSucursal = formData.get('idSucursal');
+
+        if (!selectedSucursal || selectedSucursal === 'Seleccione una Sucursal') {
+            Swal.fire({
+                title: 'Sucursal no seleccionada',
+                text: 'Por favor, elige una sucursal antes de confirmar.',
+                icon: 'warning'
+            });
+            return;
+        }
+
+        fetch('https://stagging.kallijaguar-inventory.com/pages/confirmRequest.php', {
+            method: 'POST',
+            body: formData,
+            credentials: 'include'
+        })
+        .then(response => response.text())
+        .then(data => {
+            console.log(data);
+            $('#confirmModal').modal('hide');
+            Swal.fire({
+                title: '¡Solicitud enviada!',
+                text: 'La comanda fue procesada correctamente.',
+                icon: 'success'
+            }).then(() => {
+                window.location.href = 'index.php?page=showRequest';
+            });
+        })
+        .catch(error => {
+            console.error('Error en la solicitud:', error);
+            Swal.fire({
+                title: 'Error',
+                text: 'Ocurrió un problema al enviar la solicitud.',
+                icon: 'error'
+            });
+        });
+    });
+});
