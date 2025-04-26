@@ -160,22 +160,23 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(response => response.json())
         .then(data => {
-            console.log("Data:",data);
+            console.log("Data:", data);
+            if (data.status === 'error') {
+                Swal.fire({
+                    title: 'Error',
+                    text: data.message,
+                    icon: 'error'
+                });
+                return;
+            }
+        
             $('#confirmModal').modal('hide');
             Swal.fire({
                 title: '¡Solicitud enviada!',
-                text: data.message|| 'La comanda fue procesada correctamente.',
+                text: data.message || 'La comanda fue procesada correctamente.',
                 icon: 'success'
             }).then(() => {
                 window.location.href = 'index.php?page=showRequest';
-            });
-        })
-        .catch(error => {
-            console.error('Error en la solicitud:', error);
-            Swal.fire({
-                title: 'Error',
-                text: 'Ocurrió un problema al enviar la solicitud.',
-                icon: 'error'
             });
         });
     });
