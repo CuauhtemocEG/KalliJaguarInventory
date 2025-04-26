@@ -1,4 +1,5 @@
 <?php
+session_start();
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
@@ -78,7 +79,7 @@ foreach ($_SESSION['INV'] as $item) {
         $pdf = new FPDF();
         $pdf->AddPage();
 
-        $pdf->Image('./img/logo.png', 15, 15, 50);
+        $pdf->Image('../../img/logo.png', 15, 15, 50);
         // Título en el centro superior (debes personalizar según lo que necesitas)
         $pdf->SetFont('Arial', 'B', 8);
         $pdf->SetXY(70, 11);
@@ -135,7 +136,7 @@ foreach ($_SESSION['INV'] as $item) {
         $pdf->Cell(90, 10, 'Mauricio Dominguez', 0, 0, 'C');
 
 
-        $pdfPath = './documents/' . $comandaID . '.pdf';
+        $pdfPath = '../../documents/' . $comandaID . '.pdf';
         // Salvar o enviar el PDF
         $pdf->Output('F', $pdfPath, true); // Generar PDF en pantalla
     } catch (Exception $e) {
@@ -147,9 +148,9 @@ $emailUser = conexion();
 $emailUser = $emailUser->query("SELECT Email FROM Usuarios WHERE UsuarioID = '$idUser'");
 $Usermail = $emailUser->fetchColumn();
 
-require './PHPMailer/src/PHPMailer.php';
-require './PHPMailer/src/SMTP.php';
-require './PHPMailer/src/Exception.php';
+require '../../PHPMailer/src/PHPMailer.php';
+require '../../PHPMailer/src/SMTP.php';
+require '../../PHPMailer/src/Exception.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -187,7 +188,6 @@ try {
     echo "El mensaje no pudo ser enviado: {$mail->ErrorInfo}";
 }
 
-// Limpiar la sesión después de procesar la solicitud
+echo json_encode(['status' => 'success', 'message' => 'La comanda fue procesada correctamente.']);
 unset($_SESSION['INV']);
-echo "<script>window.setTimeout(function() { window.location = 'index.php?page=showRequest' }, 10);</script>";
 exit();

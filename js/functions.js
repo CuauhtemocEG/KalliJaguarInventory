@@ -158,13 +158,13 @@ document.addEventListener('DOMContentLoaded', function () {
             body: formData,
             credentials: 'include'
         })
-        .then(response => response.text())
+        .then(response => response.json())
         .then(data => {
-            console.log(data);
+            console.log("Data:",data);
             $('#confirmModal').modal('hide');
             Swal.fire({
                 title: '¡Solicitud enviada!',
-                text: 'La comanda fue procesada correctamente.',
+                text: data.message|| 'La comanda fue procesada correctamente.',
                 icon: 'success'
             }).then(() => {
                 window.location.href = 'index.php?page=showRequest';
