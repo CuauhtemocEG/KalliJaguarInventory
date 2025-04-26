@@ -75,7 +75,7 @@
                 </div>
                 <div class="modal-body">
                     ¿Está seguro de que desea enviar la lista de productos solicitados?
-                    <form method="POST" action="index.php?page=confirmRequest" id="confirmForm">
+                    <form id="confirmForm">
                         <div class="form-group col-md-12">
                             <b><label>Sucursal de Destino:</label></b>
                             <select class="form-control" id="inputSucursal" name="idSucursal">
