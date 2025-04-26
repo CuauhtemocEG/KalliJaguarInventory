@@ -59,15 +59,11 @@ foreach ($_SESSION['INV'] as $item) {
             echo "Error: " . $e->getMessage();
         }
     } else {
-
-        echo '
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-                </button>
-                <strong>¡Ocurrio un error!</strong><br>
-                El stock del producto no es suficiente para cubrir la necesidad.
-            </div>';;
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'El stock del producto no es suficiente para cubrir la necesidad.'
+        ]);
+        exit();
     }
 
     $dataSucursal = conexion();
@@ -146,7 +142,11 @@ foreach ($_SESSION['INV'] as $item) {
         // Salvar o enviar el PDF
         $pdf->Output('F', $pdfPath, true); // Generar PDF en pantalla
     } catch (Exception $e) {
-        echo "Error al generar PDF: " . $e->getMessage();
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Error al generar PDF:' . $e->getMessage()
+        ]);
+        exit();
     }
 }
 
@@ -189,7 +189,7 @@ try {
     $mail->Subject = 'Comanda Generada: ' . $comandaID;
     $mail->Body = "<p>Se ha generado una nueva comanda con el ID: <strong>{$comandaID}</strong></p><p>Adjunto se encontrara el PDF correspondiente a la comanda.</p><br><p>Recuerda revisar tu solicitud.</p>";
     $mail->send();
-    echo 'El mensaje ha sido enviado con éxito.';
+    echo json_encode(['status' => 'success', 'message' => 'El mensaje ha sido enviado con éxito.']);
 } catch (Exception $e) {
     echo "El mensaje no pudo ser enviado: {$mail->ErrorInfo}";
 }

@@ -153,18 +153,24 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        fetch(urlAPI+'confirmRequest.php', {
+        fetch(urlAPI + 'confirmRequest.php', {
             method: 'POST',
             body: formData,
             credentials: 'include'
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error HTTP: ' + response.status);
+            }
+            return response.json();
+        })
         .then(data => {
-            console.log("Data:", data);
+            console.log("Respuesta del servidor:", data);
+        
             if (data.status === 'error') {
                 Swal.fire({
                     title: 'Error',
-                    text: data.message,
+                    text: data.message || 'Algo salió mal al procesar la solicitud.',
                     icon: 'error'
                 });
                 return;
@@ -177,6 +183,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 icon: 'success'
             }).then(() => {
                 window.location.href = 'index.php?page=showRequest';
+            });
+        })
+        .catch(error => {
+            console.error('Error al hacer fetch:', error);
+            Swal.fire({
+                title: 'Error de conexión',
+                text: 'No se pudo completar la solicitud. Revisa tu conexión o vuelve a intentar.',
+                icon: 'error'
             });
         });
     });
