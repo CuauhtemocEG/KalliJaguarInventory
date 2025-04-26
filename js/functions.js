@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        fetch('https://stagging.kallijaguar-inventory.com/pages/confirmRequest.php', {
+        fetch(urlAPI+'confirmRequest.php', {
             method: 'POST',
             body: formData,
             credentials: 'include'
