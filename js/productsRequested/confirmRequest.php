@@ -12,7 +12,7 @@ if (!isset($_SESSION['INV']) || !is_array($_SESSION['INV']) || count($_SESSION['
     exit();
 }
 
-if (!isset($_SESSION['id'])) {
+if (!isset($_POST['id'])) {
     echo json_encode(['status' => 'error', 'message' => 'Sesión no válida o expirada']);
     exit();
 }
@@ -45,7 +45,7 @@ foreach ($_SESSION['INV'] as $item) {
                 ':productoID' => $item['producto'],
                 ':cantidad' => $item['cantidad'],
                 ':precioFinal' => $precioFinales * $item['cantidad'],
-                ':usuarioID' => $_SESSION['id'],
+                ':usuarioID' => $_POST['id'],
                 ':status' => 'Abierto'
             ]);
 
@@ -74,7 +74,7 @@ foreach ($_SESSION['INV'] as $item) {
     $dataSucursal = $dataSucursal->query("SELECT nombre FROM Sucursales WHERE SucursalID = '$sucursal_id'");
     $nameSucursal = $dataSucursal->fetchColumn();
 
-    $idUser = $_SESSION['id'];
+    $idUser = $_POST['id'];
 
     $dataUser = conexion();
     $dataUser = $dataUser->query("SELECT Nombre FROM Usuarios WHERE UsuarioID = '$idUser'");
