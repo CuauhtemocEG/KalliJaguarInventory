@@ -1,4 +1,5 @@
 <?php
+session_start();
 	/*== Almacenando datos ==*/
     $usuario=limpiar_cadena($_POST['login_usuario']);
     $clave=limpiar_cadena($_POST['login_clave']);
@@ -53,7 +54,7 @@
     	$check_user=$check_user->fetch();
 
     	if($check_user['Username']==$usuario && password_verify($clave, $check_user['Password'])){
-
+            
     		$_SESSION['id']=$check_user['UsuarioID'];
     		$_SESSION['nombre']=$check_user['Nombre'];
     		$_SESSION['rol']=$check_user['Rol'];

@@ -1,5 +1,6 @@
 <?php
 session_start();
+var_dump($_SESSION);
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
@@ -7,7 +8,12 @@ require('../../fpdf/fpdf.php');
 require_once "../../controllers/mainController.php";
 
 if (!isset($_SESSION['INV']) || !is_array($_SESSION['INV']) || count($_SESSION['INV']) == 0 || !isset($_POST['idSucursal'])) {
-    echo 'No hay productos en el carrito.';
+    echo json_encode(['status' => 'error', 'message' => 'No hay productos en el carrito.']);
+    exit();
+}
+
+if (!isset($_SESSION['id'])) {
+    echo json_encode(['status' => 'error', 'message' => 'Sesión no válida o expirada']);
     exit();
 }
 
