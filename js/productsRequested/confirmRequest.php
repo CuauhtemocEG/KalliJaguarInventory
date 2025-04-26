@@ -1,9 +1,4 @@
 <?php
-session_start();
-var_dump($_SESSION);
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
 require('../../fpdf/fpdf.php');
 require_once "../../controllers/mainController.php";
 
@@ -189,11 +184,10 @@ try {
     $mail->Subject = 'Comanda Generada: ' . $comandaID;
     $mail->Body = "<p>Se ha generado una nueva comanda con el ID: <strong>{$comandaID}</strong></p><p>Adjunto se encontrara el PDF correspondiente a la comanda.</p><br><p>Recuerda revisar tu solicitud.</p>";
     $mail->send();
-    echo json_encode(['status' => 'success', 'message' => 'El mensaje ha sido enviado con éxito.']);
+    echo json_encode(['status' => 'success', 'message' => 'La comanda fue procesada correctamente.']);
 } catch (Exception $e) {
-    echo "El mensaje no pudo ser enviado: {$mail->ErrorInfo}";
+    echo json_encode(['status' => 'error', 'message' => 'El mensaje no pudo ser enviado']);
+    exit();
 }
-
-echo json_encode(['status' => 'success', 'message' => 'La comanda fue procesada correctamente.']);
 unset($_SESSION['INV']);
 exit();
