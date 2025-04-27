@@ -1,24 +1,21 @@
 <?php
 session_start();
-function conexion()
-{
-    $pdo = new PDO('mysql:host=localhost;dbname=KalliInventory', 'root', 'root');
+function conexion(){
+    $pdo = new PDO('mysql:host=localhost:3306
+;dbname=kallijag_inventory_stage', 'kallijag_stage', 'uNtiL.horSe@5');
     return $pdo;
 }
 
-// Obtenemos el término de búsqueda
 $query = isset($_GET['query']) ? $_GET['query'] : '';
 
 $campos = "Productos.ProductoID,Productos.UPC,Productos.Nombre as nombreProducto,Productos.PrecioUnitario,Productos.Cantidad,Productos.Tipo,Productos.image,Productos.CategoriaID as productCategory,Productos.UsuarioID,Categorias.CategoriaID,Categorias.Nombre as categoryName,Usuarios.UsuarioID,Usuarios.Nombre as userName";
 
-// Realizamos la consulta a la base de datos
 $consulta_datos = "SELECT $campos FROM Productos INNER JOIN Categorias ON Productos.CategoriaID=Categorias.CategoriaID INNER JOIN Usuarios ON Productos.UsuarioID=Usuarios.UsuarioID WHERE Productos.UPC LIKE '%$query%' OR Productos.Nombre LIKE '%$query%' ORDER BY Productos.Nombre";
 
 $conexion = conexion();
 $datos = $conexion->query($consulta_datos);
 $datos = $datos->fetchAll();
 
-// Generamos la lista de productos filtrados
 $tabla = '';
 $tabla .= '<div class="container-fluid mb-3">
 				<div class="row">';
