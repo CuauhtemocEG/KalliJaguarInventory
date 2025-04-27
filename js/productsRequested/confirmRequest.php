@@ -232,6 +232,7 @@ $correoBody = '
 $mail = new PHPMailer(true);
 try {
     $mail->isSMTP();
+    $mail->CharSet = 'UTF-8';
     $mail->Host = 'smtp.titan.email';
     $mail->SMTPAuth = true;
     $mail->Username = 'info@stagging.kallijaguar-inventory.com';
@@ -239,7 +240,7 @@ try {
     $mail->SMTPSecure = 'ssl';
     $mail->Port = 465;
 
-    $mail->setFrom('info@stagging.kallijaguar-inventory.com', 'Informacion Kalli Jaguar');
+    $mail->setFrom('info@stagging.kallijaguar-inventory.com', 'Información Kalli Jaguar');
     $mail->addAddress('cencarnacion@stagging.kallijaguar-inventory.com');
     $mail->addAttachment($pdfPath);
 
