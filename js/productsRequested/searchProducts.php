@@ -31,12 +31,10 @@ foreach ($datos as $row) {
 
     $tipoProducto = $row['Tipo'];
     $idProducto = $row['ProductoID'];
-    $step = ($tipoProducto === 'Pesable') ? 0.01 : 1;  // Cambiamos el step a 0.01 para productos pesables
+    $step = ($tipoProducto === 'Pesable') ? 0.01 : 1;
 
-    // Obtener el valor actual de la cantidad en la sesión (si existe)
     $value = isset($_SESSION['INV'][$idProducto]) ? $_SESSION['INV'][$idProducto]['cantidad'] : 0;
 
-    // Formatear la cantidad visible según el tipo
     if ($tipoProducto === 'Pesable') {
         $cantidadVisible = ($value < 1 && $value > 0) ? number_format($value * 1000, 0) . ' gr' : number_format($value, 2) . ' Kg';
     } else {
@@ -67,11 +65,8 @@ foreach ($datos as $row) {
             <strong>Cantidad a solicitar:</strong><br>
             <div class="input-group">
                 <button type="button" class="btn btn-outline-secondary" onclick="decreaseQuantity(' . $row['ProductoID'] . ')">-</button>
-                
-                <!-- Campo de cantidad visible -->
+            
                 <input class="form-control col-md-12" type="text" id="cantidadVisible_' . $row['ProductoID'] . '" value="' . $cantidadVisible . '" readonly>
-
-                <!-- Campo oculto para el valor real que se enviará -->
                 <input type="hidden" name="cantidadProduct" id="cantidad_' . $row['ProductoID'] . '" value="' . $value . '" step="' . $step . '">
 
                 <button type="button" class="btn btn-outline-secondary" onclick="increaseQuantity(' . $row['ProductoID'] . ')">+</button>
@@ -116,10 +111,10 @@ echo $tabla;
     function increaseQuantity(productId) {
         const input = document.getElementById('cantidad_' + productId);
         let value = parseFloat(input.value);
-        const step = parseFloat(input.getAttribute('step'));  // Cambiar step dinámicamente
+        const step = parseFloat(input.getAttribute('step'));
 
         value += step;
-        input.value = value.toFixed(step === 1 ? 0 : 2);  // Formatear la cantidad con dos decimales si es pesable
+        input.value = value.toFixed(step === 1 ? 0 : 2); 
 
         updateVisible(productId);
         toggleButton(input);
@@ -128,13 +123,11 @@ echo $tabla;
     function decreaseQuantity(productId) {
         const input = document.getElementById('cantidad_' + productId);
         let value = parseFloat(input.value);
-        const step = parseFloat(input.getAttribute('step'));  // Cambiar step dinámicamente
-        
+        const step = parseFloat(input.getAttribute('step'));
         value -= step;
         if (value < 0) value = 0;
         
-        input.value = value.toFixed(step === 1 ? 0 : 2);  // Formatear la cantidad con dos decimales si es pesable
-
+        input.value = value.toFixed(step === 1 ? 0 : 2);
         updateVisible(productId);
         toggleButton(input);
     }
@@ -147,14 +140,12 @@ echo $tabla;
         const step = parseFloat(input.getAttribute('step'));
 
         if (step === 0.01) {
-            // Pesable: mostrar gr o Kg según el valor
             if (value < 1 && value > 0) {
-                visible.value = Math.round(value * 1000) + ' gr';  // Mostrar gramos correctamente
+                visible.value = Math.round(value * 1000) + ' gr'; 
             } else {
-                visible.value = value.toFixed(2) + ' Kg';  // Mostrar Kg correctamente
+                visible.value = value.toFixed(2) + ' Kg';
             }
         } else {
-            // No pesable: solo unidades
             visible.value = parseInt(value) + ' Un';
         }
     }
