@@ -1,33 +1,49 @@
 <?php
 session_start();
-function conexion(){
-    $pdo = new PDO('mysql:host=localhost:3306
-;dbname=kallijag_inventory_stage', 'kallijag_stage', 'uNtiL.horSe@5');
+function conexion()
+{
+    $pdo = new PDO('mysql:host=localhost;dbname=KalliInventory', 'root', 'root');
     return $pdo;
 }
 
+// Obtenemos el término de búsqueda
 $query = isset($_GET['query']) ? $_GET['query'] : '';
 
 $campos = "Productos.ProductoID,Productos.UPC,Productos.Nombre as nombreProducto,Productos.PrecioUnitario,Productos.Cantidad,Productos.Tipo,Productos.image,Productos.CategoriaID as productCategory,Productos.UsuarioID,Categorias.CategoriaID,Categorias.Nombre as categoryName,Usuarios.UsuarioID,Usuarios.Nombre as userName";
 
+// Realizamos la consulta a la base de datos
 $consulta_datos = "SELECT $campos FROM Productos INNER JOIN Categorias ON Productos.CategoriaID=Categorias.CategoriaID INNER JOIN Usuarios ON Productos.UsuarioID=Usuarios.UsuarioID WHERE Productos.UPC LIKE '%$query%' OR Productos.Nombre LIKE '%$query%' ORDER BY Productos.Nombre";
 
 $conexion = conexion();
 $datos = $conexion->query($consulta_datos);
 $datos = $datos->fetchAll();
 
+// Generamos la lista de productos filtrados
 $tabla = '';
 $tabla .= '<div class="container-fluid mb-3">
 				<div class="row">';
 foreach ($datos as $row) {
     $result = "";
-
     $txtDisponibilidad = "";
 
     if ($row['Cantidad'] >= 1) {
         $txtDisponibilidad = '<span class="badge badge-success">Disponible</span>';
     } else {
         $txtDisponibilidad = '<span class="badge badge-danger">No disponible</span>';
+    }
+
+    $tipoProducto = $row['Tipo'];
+    $idProducto = $row['ProductoID'];
+    $step = ($tipoProducto === 'Pesable') ? 0.01 : 1;  // Cambiamos el step a 0.01 para productos pesables
+
+    // Obtener el valor actual de la cantidad en la sesión (si existe)
+    $value = isset($_SESSION['INV'][$idProducto]) ? $_SESSION['INV'][$idProducto]['cantidad'] : 0;
+
+    // Formatear la cantidad visible según el tipo
+    if ($tipoProducto === 'Pesable') {
+        $cantidadVisible = ($value < 1 && $value > 0) ? number_format($value * 1000, 0) . ' gr' : number_format($value, 2) . ' Kg';
+    } else {
+        $cantidadVisible = (int)$value . ' Un';
     }
 
     if ($row['Tipo'] == "Pesable") {
@@ -43,12 +59,6 @@ foreach ($datos as $row) {
         $step = '1';
     }
 
-    if (isset($_SESSION['INV'][$row['ProductoID']])) {
-        $value = $_SESSION['INV'][$row['ProductoID']]['cantidad'];
-    } else {
-        $value = ($row['Tipo'] == "Pesable") ? '0.0' : '0';
-    }
-
     $cantidadRequested = '';
     if ($row['Cantidad'] > 0) {
         $cantidadRequested = '
@@ -60,7 +70,13 @@ foreach ($datos as $row) {
             <strong>Cantidad a solicitar:</strong><br>
             <div class="input-group">
                 <button type="button" class="btn btn-outline-secondary" onclick="decreaseQuantity(' . $row['ProductoID'] . ')">-</button>
-                <input class="form-control col-md-12" type="number" name="cantidadProduct" value="' . $value . '" step="' . $step . '" min="0" id="cantidad_' . $row['ProductoID'] . '">
+                
+                <!-- Campo de cantidad visible -->
+                <input class="form-control col-md-12" type="text" id="cantidadVisible_' . $row['ProductoID'] . '" value="' . $cantidadVisible . '" readonly>
+
+                <!-- Campo oculto para el valor real que se enviará -->
+                <input type="hidden" name="cantidadProduct" id="cantidad_' . $row['ProductoID'] . '" value="' . $value . '" step="' . $step . '">
+
                 <button type="button" class="btn btn-outline-secondary" onclick="increaseQuantity(' . $row['ProductoID'] . ')">+</button>
             </div>
             <hr>
@@ -98,50 +114,70 @@ $tabla .= '</div>
 
 echo $tabla;
 ?>
+
 <script>
-	function increaseQuantity(productId) {
-		const input = document.getElementById('cantidad_' + productId);
-		const step = parseFloat(input.step);
-		let value = parseFloat(input.value);
+    function increaseQuantity(productId) {
+        const input = document.getElementById('cantidad_' + productId);
+        let value = parseFloat(input.value);
+        const step = parseFloat(input.getAttribute('step'));  // Cambiar step dinámicamente
 
-		value += step;
-		input.value = formatValue(value, step);
-		toggleButton(input);
-	}
+        value += step;
+        input.value = value.toFixed(step === 1 ? 0 : 2);  // Formatear la cantidad con dos decimales si es pesable
 
-	function decreaseQuantity(productId) {
-		const input = document.getElementById('cantidad_' + productId);
-		const step = parseFloat(input.step);
-		let value = parseFloat(input.value);
+        updateVisible(productId);
+        toggleButton(input);
+    }
 
-		value -= step;
-		if (value < 0) value = 0;
+    function decreaseQuantity(productId) {
+        const input = document.getElementById('cantidad_' + productId);
+        let value = parseFloat(input.value);
+        const step = parseFloat(input.getAttribute('step'));  // Cambiar step dinámicamente
+        
+        value -= step;
+        if (value < 0) value = 0;
+        
+        input.value = value.toFixed(step === 1 ? 0 : 2);  // Formatear la cantidad con dos decimales si es pesable
 
-		input.value = formatValue(value, step);
-		toggleButton(input);
-	}
+        updateVisible(productId);
+        toggleButton(input);
+    }
 
-	function formatValue(value, step) {
-		return (step < 1) ? value.toFixed(2) : parseInt(value);
-	}
+    function updateVisible(productId) {
+        const input = document.getElementById('cantidad_' + productId);
+        const visible = document.getElementById('cantidadVisible_' + productId);
+        const value = parseFloat(input.value);
 
-	document.addEventListener('DOMContentLoaded', function() {
+        const step = parseFloat(input.getAttribute('step'));
 
-		document.querySelectorAll('input[name="cantidadProduct"]').forEach(input => {
-			toggleButton(input);
-			input.addEventListener('input', () => toggleButton(input));
-		});
-	});
+        if (step === 0.01) {
+            // Pesable: mostrar gr o Kg según el valor
+            if (value < 1 && value > 0) {
+                visible.value = Math.round(value * 1000) + ' gr';  // Mostrar gramos correctamente
+            } else {
+                visible.value = value.toFixed(2) + ' Kg';  // Mostrar Kg correctamente
+            }
+        } else {
+            // No pesable: solo unidades
+            visible.value = parseInt(value) + ' Un';
+        }
+    }
 
-	function toggleButton(input) {
-		const form = input.closest('form');
-		const btn = form.querySelector('.btn-add-to-cart');
-		const value = parseFloat(input.value);
+    function toggleButton(input) {
+        const form = input.closest('form');
+        const btn = form.querySelector('.btn-add-to-cart');
+        const value = parseFloat(input.value);
 
-		if (!isNaN(value) && value > 0) {
-			btn.removeAttribute('disabled');
-		} else {
-			btn.setAttribute('disabled', true);
-		}
-	}
+        if (!isNaN(value) && value > 0) {
+            btn.removeAttribute('disabled');
+        } else {
+            btn.setAttribute('disabled', true);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('input[name="cantidadProduct"]').forEach(input => {
+            toggleButton(input);
+            input.addEventListener('input', () => toggleButton(input));
+        });
+    });
 </script>
