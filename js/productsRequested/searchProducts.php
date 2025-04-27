@@ -1,6 +1,7 @@
 <?php
 session_start();
-function conexion(){
+function conexion()
+{
     $pdo = new PDO('mysql:host=localhost:3306
 ;dbname=kallijag_inventory_stage', 'kallijag_stage', 'uNtiL.horSe@5');
     return $pdo;
@@ -45,7 +46,7 @@ foreach ($datos as $row) {
         $result = "<i class='fas fa-balance-scale'></i> Kg";
         $unidades = number_format($row['Cantidad'], 2, '.', '');
         $tipoClass = 'text-success';
-        $step = '0.1';
+        $step = '0.01';
     } else {
         $result = "Unidades";
         $unidades = (int) $row['Cantidad'];
@@ -114,7 +115,7 @@ echo $tabla;
         const step = parseFloat(input.getAttribute('step'));
 
         value += step;
-        input.value = value.toFixed(step === 1 ? 0 : 2); 
+        input.value = value.toFixed(2);
 
         updateVisible(productId);
         toggleButton(input);
@@ -124,10 +125,12 @@ echo $tabla;
         const input = document.getElementById('cantidad_' + productId);
         let value = parseFloat(input.value);
         const step = parseFloat(input.getAttribute('step'));
+
         value -= step;
         if (value < 0) value = 0;
-        
-        input.value = value.toFixed(step === 1 ? 0 : 2);
+
+        input.value = value.toFixed(2);
+
         updateVisible(productId);
         toggleButton(input);
     }
@@ -140,12 +143,14 @@ echo $tabla;
         const step = parseFloat(input.getAttribute('step'));
 
         if (step === 0.01) {
+            
             if (value < 1 && value > 0) {
-                visible.value = Math.round(value * 1000) + ' gr'; 
+                visible.value = Math.round(value * 1000) + ' gr';
             } else {
                 visible.value = value.toFixed(2) + ' Kg';
             }
         } else {
+            
             visible.value = parseInt(value) + ' Un';
         }
     }
@@ -155,6 +160,7 @@ echo $tabla;
         const btn = form.querySelector('.btn-add-to-cart');
         const value = parseFloat(input.value);
 
+        
         if (!isNaN(value) && value > 0) {
             btn.removeAttribute('disabled');
         } else {
@@ -164,7 +170,7 @@ echo $tabla;
 
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('input[name="cantidadProduct"]').forEach(input => {
-            toggleButton(input);
+            toggleButton(input); 
             input.addEventListener('input', () => toggleButton(input));
         });
     });
