@@ -142,7 +142,7 @@ echo $tabla;
 
         const step = parseFloat(input.getAttribute('step'));
 
-        if (step === 0.01) {
+        if (step === 0.25) {
             
             if (value < 1 && value > 0) {
                 visible.value = Math.round(value * 1000) + ' gr';
