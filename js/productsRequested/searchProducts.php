@@ -46,7 +46,7 @@ foreach ($datos as $row) {
         $result = "<i class='fas fa-balance-scale'></i> Kg";
         $unidades = number_format($row['Cantidad'], 2, '.', '');
         $tipoClass = 'text-success';
-        $step = '0.01';
+        $step = '0.25';
     } else {
         $result = "Unidades";
         $unidades = (int) $row['Cantidad'];
