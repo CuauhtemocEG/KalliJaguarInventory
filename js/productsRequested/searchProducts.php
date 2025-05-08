@@ -26,7 +26,7 @@ foreach ($datos as $row) {
 
     if ($row['Cantidad'] >= 1 && $row['Tipo'] == 'Unidad' ) {
         $txtDisponibilidad = '<span class="badge badge-success">Disponible</span>';
-    } elseif ($row['Cantidad'] >= 0.1 && $row['Tipo'] == 'Pesable') {
+    } elseif ($row['Cantidad'] > 0 && $row['Tipo'] == 'Pesable') {
         $txtDisponibilidad = '<span class="badge badge-success">Disponible</span>';
     } else {
         $txtDisponibilidad = '<span class="badge badge-danger">No disponible</span>';
