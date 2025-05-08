@@ -41,7 +41,7 @@ if (isset($_SESSION['INV']) && count($_SESSION['INV']) > 0) {
             
             <div class="d-flex justify-content-between text-muted mb-3">
                 <small>Precio unitario: $' . number_format($item["precio"], 2) . '</small>
-                <small>Total: $' . number_format($total * $item["cantidad"], 2) . '</small>
+                <small>Total: $' . number_format($item["precio"] * $item["cantidad"], 2) . '</small>
             </div>
             
             <div class="d-flex justify-content-end">
