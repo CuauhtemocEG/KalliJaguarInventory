@@ -8,7 +8,7 @@ $(document).ready(function () {
         fetchProducts(query);
     });
 
-    $('#searchInput').keyup(function() {
+    $('#searchInput').on('input', function() {
         let query = $(this).val();
         fetchProducts(query);
     });
