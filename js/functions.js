@@ -17,7 +17,7 @@ $(document).ready(function () {
 
 function fetchProducts(query) {
     $.ajax({
-        url: urlAPI+'searchProducts.php',
+        url: 'https://kallijaguar-inventory.com/js/productsRequested/searchProducts.php',
         method: 'GET',
         data: { query: query },
         success: function(response) {
@@ -36,7 +36,7 @@ $(document).on('submit', '.add-product-form', function(e) {
     let formData = form.serialize();
 
     $.ajax({
-        url: urlAPI+'addProductToSession.php',
+        url: 'https://kallijaguar-inventory.com/js/productsRequested/addProductToSession.php',
         method: 'POST',
         data: formData,
         success: function(response) {
@@ -86,7 +86,7 @@ $(document).on('click', '.btn-delete-item', function(e) {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: urlAPI+'deleteProductFromCart.php',
+                url: 'https://kallijaguar-inventory.com/js/productsRequested/deleteProductFromCart.php',
                 method: 'POST',
                 data: { id: id },
                 success: function(response) {
@@ -121,7 +121,7 @@ $(document).on('click', '.btn-delete-item', function(e) {
 
 function actualizarPanelCarrito() {
     $.ajax({
-        url: urlAPI +'renderCartPanel.php',
+        url: 'https://kallijaguar-inventory.com/js/productsRequested/renderCartPanel.php',
         method: 'GET',
         success: function (response) {
             $('#cartBody').html(response);
@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        fetch(urlAPI + 'confirmRequest.php', {
+        fetch('https://kallijaguar-inventory.com/js/productsRequested/confirmRequest.php', {
             method: 'POST',
             body: formData,
             credentials: 'include'
