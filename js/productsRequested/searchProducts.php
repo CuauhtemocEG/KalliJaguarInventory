@@ -82,7 +82,7 @@ foreach ($datos as $row) {
     $tabla .= '
 				<div class="col-md-3">
 				<div class="card mb-2">';
-    if (is_file("./img/producto/" . $row['image'])) {
+    if (is_file("../../img/producto" . $row['image'])) {
         $tabla .= '<img class="card-img-top mx-auto d-block img-responsive w-50" src="../../img/producto' . $row['image'] . '">';
     } else {
         $tabla .= '<img class="card-img-top mx-auto d-block img-responsive w-50" src="./img/producto.png">';
