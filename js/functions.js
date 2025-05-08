@@ -1,11 +1,4 @@
-let urlAPI;
-
-if (navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome')) {
-    // Si es Safari, usa el backup
-    urlAPI = 'https://www.kallijaguar-inventory.com/js/productsRequested/';
-} else {
-    urlAPI = 'https://kallijaguar-inventory.com/js/productsRequested/';
-}
+let urlAPI = 'https://www.kallijaguar-inventory.com/js/productsRequested/';
 
 $(document).ready(function () {
     actualizarPanelCarrito();
