@@ -2,7 +2,7 @@
 session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',
-    'domain' => '.kallijaguar-inventory.com', // importante el punto
+    'domain' => 'kallijaguar-inventory.com',
     'secure' => true,
     'httponly' => true,
     'samesite' => 'Lax'
