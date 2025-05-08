@@ -143,14 +143,14 @@ echo $tabla;
         const step = parseFloat(input.getAttribute('step'));
 
         if (step === 0.25) {
-            
+
             if (value < 1 && value > 0) {
                 visible.value = Math.round(value * 1000) + ' gr';
             } else {
                 visible.value = value.toFixed(2) + ' Kg';
             }
         } else {
-            
+
             visible.value = parseInt(value) + ' Un';
         }
     }
@@ -160,7 +160,7 @@ echo $tabla;
         const btn = form.querySelector('.btn-add-to-cart');
         const value = parseFloat(input.value);
 
-        
+
         if (!isNaN(value) && value > 0) {
             btn.removeAttribute('disabled');
         } else {
@@ -170,7 +170,7 @@ echo $tabla;
 
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('input[name="cantidadProduct"]').forEach(input => {
-            toggleButton(input); 
+            toggleButton(input);
             input.addEventListener('input', () => toggleButton(input));
         });
     });
