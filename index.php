@@ -15,6 +15,7 @@ session_start(); ?>
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
 </head>
 
 <body id="page-top">
@@ -67,6 +68,8 @@ session_start(); ?>
     <script src="js/sb-admin-2.min.js"></script>
     <script src="js/functions.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.es.min.js"></script>
     <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -94,6 +97,16 @@ session_start(); ?>
                                 $sucursal = null;
                                 ?>
                             </select>
+                            <br>
+                            <b><label>Fecha de entrega:</label></b>
+                            <div class="input-group date" id="datepicker">
+                                <input type="text" class="form-control" id="date" name="date" />
+                                <span class="input-group-append">
+                                    <span class="input-group-text bg-light d-block">
+                                        <i class="fa fa-calendar"></i>
+                                    </span>
+                                </span>
+                            </div>
                         </div>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-primary">Confirmar Pedido</button>
@@ -103,5 +116,15 @@ session_start(); ?>
         </div>
     </div>
 </body>
+<script>
+    $(function() {
+        $('#datepicker').datepicker({
+            format: 'dd/mm/yyyy',
+            language: 'es',
+            autoclose: true,
+            todayHighlight: true
+        });
+    });
+</script>
 
 </html>
