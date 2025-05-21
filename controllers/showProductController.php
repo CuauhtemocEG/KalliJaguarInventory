@@ -87,7 +87,9 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 							</h4>
 						</div>'
 						. $txtDisponibilidad.'
-						<div class="d-flex flex-column mt-4"><a href="index.php?page=updateProduct&idProductUp='.$rows['ProductoID'].'" class="btn btn-dark btn-sm" type="button">Actualizar Producto</a><a class="btn btn-secondary btn-sm mt-2 text-white" href="index.php?page=updateProductImage&idProductUp='.$rows['ProductoID'].'" type="button">Actualizar Imagen</a><a href="' . $url . $pagina . '&idProductDel=' . $rows['ProductoID'] . '" class="btn btn-danger btn-sm btn-sm mt-2">Eliminar</a></div>
+						<div class="d-flex flex-column mt-4"><a href="index.php?page=updateProduct&idProductUp='.$rows['ProductoID'].'" class="btn btn-dark btn-sm" type="button">Actualizar Producto</a><a class="btn btn-secondary btn-sm mt-2 text-white" href="index.php?page=updateProductImage&idProductUp='.$rows['ProductoID'].'" type="button">Actualizar Imagen</a><a href="' . $url . $pagina . '&idProductDel=' . $rows['ProductoID'] . '" class="btn btn-danger btn-sm btn-sm mt-2">Eliminar</a>
+						<a class="btn btn-primary btn-sm mt-2 text-white" href="index.php?page=generateBarcode&upc='.$rows['UPC'].'&nombre='.urlencode($rows['productName']).'" target="_blank">Generar Código de Barras</a>
+						</div>
 					</div>
 			    </div>
 			</div>
