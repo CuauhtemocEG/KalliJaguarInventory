@@ -9,6 +9,8 @@ require '../../PHPMailer/src/Exception.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+require_once "../../includes/contactabilityController.php";
+
 // Validaciones iniciales
 if (!isset($_SESSION['INV']) || !is_array($_SESSION['INV']) || count($_SESSION['INV']) === 0) {
   echo json_encode(['status' => 'error', 'message' => 'No hay productos en el carrito.']);
@@ -19,14 +21,14 @@ if (!isset($_POST['idSucursal']) || !isset($_POST['id'])) {
   exit();
 }
 
-if (!isset($_POST['date'])) {
+if (!isset($_POST['fecha'])) {
   echo json_encode(['status' => 'error', 'message' => 'Fecha de entrega vacia, selecciona una.']);
   exit();
 }
 
 $idUser = $_POST['id'];
 $sucursal_id = $_POST['idSucursal'];
-$fechaDelivery = $_POST['date'];
+$fechaDelivery = $_POST['fecha'];
 $fechaMysql = DateTime::createFromFormat('d/m/Y', $fechaDelivery)->format('Y-m-d');
 $fechaObj = new DateTime($fechaMysql);
 $formatter = new IntlDateFormatter(
@@ -196,6 +198,8 @@ foreach ($_SESSION['INV'] as $items) {
 
   $productosHTML .= '<li>' . htmlspecialchars($items['nombre']) . ' - Cantidad: ' . $quantityRes . ' ' . $unidadesResult . '</li>';
 }
+
+$asunto= 'Confirmación de tu pedido: ' . $comandaID;
 
 $correoBody = '
 <!DOCTYPE html>

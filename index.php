@@ -100,7 +100,7 @@ session_start(); ?>
                             <br>
                             <b><label>Fecha de entrega:</label></b>
                             <div class="input-group date" id="datepicker">
-                                <input type="text" class="form-control" id="date" name="date" />
+                                <input type="text" class="form-control" id="date" name="fecha" />
                                 <span class="input-group-append">
                                     <span class="input-group-text bg-light d-block">
                                         <i class="fa fa-calendar"></i>

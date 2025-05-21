@@ -5,7 +5,7 @@
     ?>
 
     <div class="card">
-        <div class="card-header font-weight-bold">Solicitud de Insumos a Sucursal</div>
+        <div class="card-header font-weight-bold">Solicitud de Insumos a Almacén</div>
         <div class="card-body">
             <div class="input-group mb-3">
                 <input type="text" class="form-control" id="searchInput" placeholder="Buscar productos..." aria-label="Buscar productos..." aria-describedby="searchButton">
