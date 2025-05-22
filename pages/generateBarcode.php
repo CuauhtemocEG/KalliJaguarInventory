@@ -14,7 +14,7 @@ $generator = new BarcodeGeneratorPNG();
 $barcode = $generator->getBarcode($upc, $generator::TYPE_EAN_13, 3, 100);
 
 // Cargar logo
-$logoPath = __DIR__ . '/logo.png'; // cambia según tu ruta
+$logoPath = '../img/404.png'; // cambia según tu ruta
 $logo = imagecreatefrompng($logoPath);
 
 // Crear imagen final
