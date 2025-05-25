@@ -125,6 +125,27 @@ session_start(); ?>
             todayHighlight: true
         });
     });
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('button[id^="downloadBtn_"]').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const productId = btn.id.split('_')[1];
+                const image = document.getElementById('barcodeImage_' + productId);
+
+                if (!image || !image.src.startsWith('data:image/png;base64,')) {
+                    alert('No se pudo encontrar la imagen o no está en formato base64.');
+                    return;
+                }
+
+                const a = document.createElement('a');
+                a.href = image.src;
+                a.download = 'codigo_barras_' + productId + '.png';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            });
+        });
+    });
 </script>
 
 </html>
