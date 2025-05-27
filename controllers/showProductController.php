@@ -169,7 +169,7 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 		}
 
 		$nombreProducto = $rows['productName'];
-		$logoPath = __DIR__ . '/../img/Login.png';
+		$logoPath = __DIR__ . '/../img/Login.jpg';
 		$fontPath = __DIR__ . '/../fonts/arial.ttf';
 
 		$barcodeImgBase64 = generarCodigoConLogo($validUpc, $nombreProducto, $logoPath, $fontPath);
