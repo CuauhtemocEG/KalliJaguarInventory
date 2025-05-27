@@ -20,7 +20,7 @@ function generateValidEan13($code12)
 function generarCodigoConLogo($ean13, $nombreProducto, $logoPath, $fontPath, $scale = 1.5)
 {
 	$generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
-	$barcodeData = $generator->getBarcode($ean13, $generator::TYPE_EAN_13, 1.7 * $scale, 70 * $scale);
+	$barcodeData = $generator->getBarcode($ean13, $generator::TYPE_EAN_13, 2 * $scale, 50 * $scale);
 
 	$barcodeImage = imagecreatefromstring($barcodeData);
 	$barcodeWidth = imagesx($barcodeImage);
