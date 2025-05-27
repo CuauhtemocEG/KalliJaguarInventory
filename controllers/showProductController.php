@@ -20,7 +20,7 @@ function generateValidEan13($code12)
 function generarCodigoConLogo($ean13, $nombreProducto, $logoPath, $fontPath, $scale = 1.5)
 {
 	$generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
-	$barcodeData = $generator->getBarcode($ean13, $generator::TYPE_EAN_13, 2.5 * $scale, 70 * $scale);
+	$barcodeData = $generator->getBarcode($ean13, $generator::TYPE_EAN_13, 2 * $scale, 70 * $scale);
 
 	$barcodeImage = imagecreatefromstring($barcodeData);
 	$barcodeWidth = imagesx($barcodeImage);
@@ -64,14 +64,14 @@ function generarCodigoConLogo($ean13, $nombreProducto, $logoPath, $fontPath, $sc
 	$logoY = $padding + (int)(($barcodeHeight - $logoHeight) / 2);
 	imagecopy($finalImage, $logo, $barcodeWidth + 2 * $padding, $logoY, 0, 0, $logoWidth, $logoHeight);
 
-	$fontSize = 14;
+	$fontSize = 19;
 	$textBox = imagettfbbox($fontSize, 0, $fontPath, $nombreProducto);
 	$textWidth = $textBox[2] - $textBox[0];
 	$textX = (int)(($finalWidth - $textWidth) / 2);
 	$textY = max($barcodeHeight, $logoHeight) + $padding + 18;
 	imagettftext($finalImage, $fontSize, 0, $textX, $textY, $black, $fontPath, $nombreProducto);
 
-	$eanFontSize = 12;
+	$eanFontSize = 16;
 	$textBox2 = imagettfbbox($eanFontSize, 0, $fontPath, $ean13);
 	$textWidth2 = $textBox2[2] - $textBox2[0];
 	$textX2 = (int)(($finalWidth - $textWidth2) / 2);
