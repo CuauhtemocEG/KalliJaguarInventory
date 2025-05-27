@@ -20,7 +20,7 @@ function generateValidEan13($code12)
 function generarCodigoConLogo($ean13, $nombreProducto, $logoPath, $fontPath, $scale = 1.5)
 {
 	$generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
-	$barcodeData = $generator->getBarcode($ean13, $generator::TYPE_EAN_13, 3 * $scale, 70 * $scale);
+	$barcodeData = $generator->getBarcode($ean13, $generator::TYPE_EAN_13, 2.5 * $scale, 70 * $scale);
 
 	$barcodeImage = imagecreatefromstring($barcodeData);
 	$barcodeWidth = imagesx($barcodeImage);
@@ -169,7 +169,7 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 		}
 
 		$nombreProducto = $rows['productName'];
-		$logoPath = __DIR__ . '/../img/404.png';
+		$logoPath = __DIR__ . '/../img/Login.png';
 		$fontPath = __DIR__ . '/../fonts/arial.ttf';
 
 		$barcodeImgBase64 = generarCodigoConLogo($validUpc, $nombreProducto, $logoPath, $fontPath);
