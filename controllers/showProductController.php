@@ -52,7 +52,7 @@ function generarCodigoConLogo($ean13, $nombreProducto, $logoPath, $fontPath, $sc
 
 	$finalWidth = $barcodeWidth + $logoWidth + ($padding * 3);
 	$textHeight = 30;
-	$finalHeight = max($barcodeHeight, $logoHeight) + $textHeight + ($padding * 2);
+	$finalHeight = max($barcodeHeight, $logoHeight) + $textHeight + ($padding * 2) + 20;
 
 	$finalImage = imagecreatetruecolor($finalWidth, $finalHeight);
 	$white = imagecolorallocate($finalImage, 255, 255, 255);
@@ -75,7 +75,7 @@ function generarCodigoConLogo($ean13, $nombreProducto, $logoPath, $fontPath, $sc
 	$textBox2 = imagettfbbox($eanFontSize, 0, $fontPath, $ean13);
 	$textWidth2 = $textBox2[2] - $textBox2[0];
 	$textX2 = (int)(($finalWidth - $textWidth2) / 2);
-	$textY2 = $textY + 14;
+	$textY2 = $textY + 30;
 	imagettftext($finalImage, $eanFontSize, 0, $textX2, $textY2, $black, $fontPath, $ean13);
 
 	ob_start();
