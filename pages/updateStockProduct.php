@@ -98,22 +98,14 @@ if (!$producto) {
 
         const datos = new FormData(this);
 
-        fetch('index.php?page=updateStockProduct', {
+        fetch('../api/updateStock.php', {
                 method: 'POST',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 },
-                body: datos
+                body: new FormData(this)
             })
-            .then(async res => {
-                const text = await res.text();
-                try {
-                    const data = JSON.parse(text);
-                    return data;
-                } catch (e) {
-                    throw new Error('Respuesta no es JSON válido: ' + text);
-                }
-            })
+            .then(res => res.json())
             .then(data => {
                 Swal.fire({
                     title: data.status === "ok" ? "¡Éxito!" : "Error",
@@ -123,12 +115,11 @@ if (!$producto) {
 
                 if (data.status === "ok") {
                     document.getElementById("stock-actual").textContent = document.getElementById("nuevo_stock").value;
-                    document.getElementById("boton-nuevo-escanear").style.display = "block";
                 }
             })
             .catch(err => {
                 Swal.fire("Error", "No se pudo actualizar el stock. Intenta nuevamente.", "error");
-                console.error('Fetch error:', err);
+                console.error(err);
             });
     });
 </script>
