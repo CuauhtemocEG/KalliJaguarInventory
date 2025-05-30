@@ -47,7 +47,7 @@
       // Oculta lector y carga formulario
       document.getElementById("scanner-section").style.display = "none";
 
-      fetch("updateStockProduct.php?codigo=" + encodeURIComponent(code))
+      fetch("index.php?page=updateStockProduct&codigo=" + encodeURIComponent(code))
         .then(res => res.text())
         .then(html => {
           document.getElementById("form-section").innerHTML = html;
