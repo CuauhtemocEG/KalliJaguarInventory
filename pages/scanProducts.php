@@ -72,7 +72,7 @@
             const datos = new FormData(form);
 
             // 🔧 POST directo al archivo PHP del backend
-            fetch('pages/updateStockProduct.php', {
+            fetch('updateStockProduct.php', {
                 method: "POST",
                 body: datos
               })
