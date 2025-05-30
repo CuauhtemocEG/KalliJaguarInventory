@@ -48,7 +48,7 @@ if (!$codigo) {
     exit();
 }
 
-$stmt = $pdo->prepare("SELECT * FROM productos WHERE codigo_barras = :codigo");
+$stmt = $pdo->prepare("SELECT * FROM Productos WHERE UPC = :codigo");
 $stmt->execute([':codigo' => $codigo]);
 $producto = $stmt->fetch(PDO::FETCH_ASSOC);
 
