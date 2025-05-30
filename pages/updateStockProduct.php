@@ -4,6 +4,7 @@ $pdo = conexion();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json');
+    ob_start(); // Inicia buffering para capturar output inesperado
 
     $codigo = limpiar_cadena($_POST['codigo'] ?? '');
     $nuevo_stock = intval($_POST['nuevo_stock'] ?? -1);
@@ -14,6 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $producto = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$producto) {
+            ob_end_clean(); // Limpia buffer para no mandar nada más
             echo json_encode(['status' => 'error', 'message' => 'Producto no encontrado.']);
             exit();
         }
@@ -28,24 +30,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ':anterior' => $stock_actual,
                 ':nuevo' => $nuevo_stock
             ]);
+            ob_end_clean();
             echo json_encode(['status' => 'ok', 'message' => '¡Stock actualizado exitosamente!']);
-            exit();
         } else {
+            ob_end_clean();
             echo json_encode(['status' => 'error', 'message' => 'Error al actualizar stock.']);
-            exit();
         }
     } else {
+        ob_end_clean();
         echo json_encode(['status' => 'error', 'message' => 'Datos inválidos.']);
-        exit();
     }
+    exit();
 }
 
-// --- Solo llegamos aquí si NO es POST ---
-// Validamos que tengamos código en GET
+// Si es GET, mostrar formulario
 $codigo = $_GET['codigo'] ?? '';
 if (!$codigo) {
     echo "<div class='alert alert-danger'>Código no proporcionado.</div>";
-    exit();
+    return;
 }
 
 $stmt = $pdo->prepare("SELECT * FROM Productos WHERE UPC = :codigo");
@@ -54,7 +56,7 @@ $producto = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$producto) {
     echo "<div class='alert alert-danger'>Producto no encontrado.</div>";
-    exit();
+    return;
 }
 ?>
 
@@ -100,9 +102,14 @@ if (!$producto) {
       method: 'POST',
       body: datos
     })
-    .then(res => {
-      if (!res.ok) throw new Error('Error en la respuesta del servidor');
-      return res.json();
+    .then(async res => {
+      const text = await res.text();
+      try {
+        const data = JSON.parse(text);
+        return data;
+      } catch (e) {
+        throw new Error('Respuesta no es JSON válido: ' + text);
+      }
     })
     .then(data => {
       Swal.fire({
@@ -118,7 +125,7 @@ if (!$producto) {
     })
     .catch(err => {
       Swal.fire("Error", "No se pudo actualizar el stock. Intenta nuevamente.", "error");
-      console.error(err);
+      console.error('Fetch error:', err);
     });
   });
 </script>
