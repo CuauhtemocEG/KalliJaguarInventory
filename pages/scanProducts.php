@@ -1,7 +1,12 @@
+<?php require './controllers/mainController.php'; ?>
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
+  <meta charset="UTF-8">
+  <title>Escanear y Actualizar Producto</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     #reader {
       width: 100%;
@@ -10,7 +15,6 @@
       border: 2px solid #ccc;
       border-radius: 8px;
     }
-
     #lector-input {
       opacity: 0;
       position: absolute;
@@ -18,91 +22,97 @@
     }
   </style>
 </head>
-
 <body class="bg-light">
-  <!-- Dentro de <body> -->
-  <div class="container py-4 text-center">
-    <div id="scanner-section">
-      <h2>Escanea el producto</h2>
-      <div id="reader"></div>
-      <p><strong>Código detectado:</strong> <span id="resultado"></span></p>
-    </div>
 
-    <div id="form-section"></div>
+<div class="container py-4 text-center">
+  <div id="scanner-section">
+    <h2 class="mb-4">Escanea el producto</h2>
+    <div id="reader" class="mb-3"></div>
+    <p class="fw-bold">Código detectado: <span id="resultado" class="text-primary"></span></p>
+    <input type="text" id="lector-input" autofocus />
   </div>
 
-  <script>
-    const scanner = new Html5Qrcode("reader");
-    const config = {
-      fps: 10,
-      qrbox: {
-        width: 250,
-        height: 250
-      }
-    };
+  <div id="form-section" class="mt-4"></div>
+</div>
 
-    function procesarCodigo(code) {
-      document.getElementById("resultado").textContent = code;
+<script>
+  const scanner = new Html5Qrcode("reader");
+  const config = { fps: 10, qrbox: { width: 250, height: 250 } };
 
-      scanner.stop();
+  function procesarCodigo(code) {
+    document.getElementById("resultado").textContent = code;
+    scanner.stop();
 
-      // Oculta lector y carga formulario
-      document.getElementById("scanner-section").style.display = "none";
+    document.getElementById("scanner-section").style.display = "none";
 
-      fetch("index.php?page=updateStockProduct&codigo=" + encodeURIComponent(code))
-        .then(res => res.text())
-        .then(html => {
-          document.getElementById("form-section").innerHTML = html;
+    // Cargar formulario desde PHP pasando el código escaneado
+    fetch("updateStockProduct.php?codigo=" + encodeURIComponent(code))
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("form-section").innerHTML = html;
 
-          // Reejecutar scripts del formulario cargado dinámicamente
-          const script = document.createElement('script');
-          script.innerHTML = `
-          document.getElementById("form-actualizar").addEventListener("submit", function(e) {
-            e.preventDefault();
-            const datos = new FormData(this);
-            fetch("updateStockProduct.php", {
-              method: "POST",
-              body: datos
-            })
-            .then(res => res.json())
-            .then(data => {
-              Swal.fire({
-                title: data.status === "ok" ? "¡Éxito!" : "Error",
-                text: data.message,
-                icon: data.status === "ok" ? "success" : "error",
-                confirmButtonText: "Aceptar"
-              });
+        const form = document.getElementById("form-actualizar");
+        if (!form) {
+          Swal.fire("Error", "Producto no encontrado o error en el formulario.", "error");
+          return;
+        }
 
-              if (data.status === "ok") {
-                document.getElementById("stock-actual").textContent = document.getElementById("nuevo_stock").value;
+        form.addEventListener("submit", function(e) {
+          e.preventDefault();
+          const datos = new FormData(form);
 
-                // Mostrar botón para nuevo escaneo
-                const btn = document.createElement('button');
-                btn.textContent = "Escanear nuevo producto";
-                btn.className = "btn btn-primary mt-3";
-                btn.onclick = () => location.reload();
-                document.getElementById("form-section").appendChild(btn);
-              }
+          fetch("updateStockProduct.php", {
+            method: "POST",
+            body: datos
+          })
+          .then(res => res.json())
+          .then(data => {
+            Swal.fire({
+              title: data.status === "ok" ? "¡Éxito!" : "Error",
+              text: data.message,
+              icon: data.status === "ok" ? "success" : "error",
+              confirmButtonText: "Aceptar"
             });
+
+            if (data.status === "ok") {
+              document.getElementById("stock-actual").textContent = document.getElementById("nuevo_stock").value;
+
+              const btn = document.createElement('button');
+              btn.textContent = "Escanear nuevo producto";
+              btn.className = "btn btn-primary mt-3";
+              btn.onclick = () => location.reload();
+              document.getElementById("form-section").appendChild(btn);
+            }
           });
-        `;
-          document.body.appendChild(script);
         });
+      });
+  }
+
+  Html5Qrcode.getCameras().then(cameras => {
+    if (cameras && cameras.length) {
+      scanner.start({ facingMode: "environment" }, config, code => {
+        scanner.pause();
+        procesarCodigo(code);
+      });
+    } else {
+      alert("No se encontró cámara.");
     }
+  });
 
-    Html5Qrcode.getCameras().then(cameras => {
-      if (cameras && cameras.length) {
-        scanner.start({
-          facingMode: "environment"
-        }, config, code => {
-          scanner.pause();
-          procesarCodigo(code);
-        });
-      } else {
-        alert("No se encontró cámara.");
-      }
-    });
-  </script>
+  const input = document.getElementById("lector-input");
+  input.focus();
+  let buffer = "";
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      procesarCodigo(buffer.trim());
+      buffer = "";
+    } else {
+      buffer += e.key;
+    }
+  });
+
+  document.addEventListener("click", () => input.focus());
+</script>
 </body>
-
 </html>
