@@ -2,7 +2,6 @@
 require './controllers/mainController.php';
 $pdo = conexion();
 
-// Si es POST, procesamos actualización de stock
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json');
 
@@ -30,20 +29,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ':nuevo' => $nuevo_stock
             ]);
             echo json_encode(['status' => 'ok', 'message' => '¡Stock actualizado exitosamente!']);
+            exit();
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Error al actualizar stock.']);
+            exit();
         }
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Datos inválidos.']);
+        exit();
     }
-    exit();
 }
 
-// Si es GET, mostrar formulario
+// --- Solo llegamos aquí si NO es POST ---
+// Validamos que tengamos código en GET
 $codigo = $_GET['codigo'] ?? '';
 if (!$codigo) {
     echo "<div class='alert alert-danger'>Código no proporcionado.</div>";
-    return;
+    exit();
 }
 
 $stmt = $pdo->prepare("SELECT * FROM Productos WHERE UPC = :codigo");
@@ -52,7 +54,7 @@ $producto = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$producto) {
     echo "<div class='alert alert-danger'>Producto no encontrado.</div>";
-    return;
+    exit();
 }
 ?>
 
@@ -98,7 +100,10 @@ if (!$producto) {
       method: 'POST',
       body: datos
     })
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) throw new Error('Error en la respuesta del servidor');
+      return res.json();
+    })
     .then(data => {
       Swal.fire({
         title: data.status === "ok" ? "¡Éxito!" : "Error",
@@ -108,13 +113,12 @@ if (!$producto) {
 
       if (data.status === "ok") {
         document.getElementById("stock-actual").textContent = document.getElementById("nuevo_stock").value;
-
-        const btn = document.createElement("button");
-        btn.textContent = "Escanear nuevo producto";
-        btn.className = "btn btn-primary mt-3";
-        btn.onclick = () => window.location.href = "index.php?page=scanProducts";
-        document.querySelector(".card-body").appendChild(btn);
+        document.getElementById("boton-nuevo-escanear").style.display = "block";
       }
+    })
+    .catch(err => {
+      Swal.fire("Error", "No se pudo actualizar el stock. Intenta nuevamente.", "error");
+      console.error(err);
     });
   });
 </script>
