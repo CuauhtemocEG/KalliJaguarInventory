@@ -55,7 +55,7 @@
       document.getElementById("scanner-section").style.display = "none";
 
       // 🔧 Llamar directamente al archivo PHP que devuelve el HTML del formulario
-      fetch('updateStockProduct.php?codigo=' + encodeURIComponent(code))
+      fetch('./updateStockProduct.php?codigo=' + encodeURIComponent(code))
         .then(res => res.text())
         .then(html => {
           document.getElementById("form-section").innerHTML = html;
@@ -71,7 +71,7 @@
             const datos = new FormData(form);
 
             // 🔧 POST directo al archivo PHP del backend
-            fetch('updateStockProduct.php', {
+            fetch('./updateStockProduct.php', {
                 method: "POST",
                 body: datos
               })
