@@ -94,7 +94,7 @@ if (!$producto) {
 
     const datos = new FormData(this);
 
-    fetch('../pages/updateStockProduct.php', {
+    fetch('index.php?page=updateStockProduct', {
       method: 'POST',
       body: datos
     })
@@ -107,16 +107,14 @@ if (!$producto) {
       });
 
       if (data.status === "ok") {
-        // Actualiza el stock actual en pantalla
-        const nuevo = document.getElementById("nuevo_stock").value;
-        document.getElementById("stock-actual").textContent = nuevo;
+        document.getElementById("stock-actual").textContent = document.getElementById("nuevo_stock").value;
 
-        // Muestra botón para escanear nuevo producto
-        document.getElementById("boton-nuevo-escanear").style.display = "block";
+        const btn = document.createElement("button");
+        btn.textContent = "Escanear nuevo producto";
+        btn.className = "btn btn-primary mt-3";
+        btn.onclick = () => window.location.href = "index.php?page=scanProducts";
+        document.querySelector(".card-body").appendChild(btn);
       }
-    })
-    .catch(err => {
-      Swal.fire("Error", "No se pudo actualizar el stock. Intenta nuevamente.", "error");
     });
   });
 </script>
