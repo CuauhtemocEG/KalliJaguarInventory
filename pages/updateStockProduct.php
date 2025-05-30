@@ -66,7 +66,7 @@ if (!$producto) {
       <p><strong>Código de barras (UPC):</strong> <?= htmlspecialchars($producto['UPC']) ?></p>
       <p><strong>Stock actual:</strong> <span id="stock-actual" class="badge bg-info text-dark"><?= $producto['Cantidad'] ?></span></p>
 
-      <form id="form-actualizar" class="row g-3 mt-3">
+      <form id="form-actualizar-stock" class="row g-3 mt-3">
         <div class="col-md-6">
           <label for="nuevo_stock" class="form-label">Nuevo stock</label>
           <input type="number" class="form-control" id="nuevo_stock" name="nuevo_stock" min="0" required>
@@ -89,7 +89,7 @@ if (!$producto) {
 </div>
 
 <script>
-  document.getElementById("form-actualizar").addEventListener("submit", function(e) {
+  document.getElementById("form-actualizar-stock").addEventListener("submit", function(e) {
     e.preventDefault();
 
     const datos = new FormData(this);
