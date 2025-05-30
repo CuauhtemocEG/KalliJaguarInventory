@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <style>
     #reader {
@@ -9,6 +10,7 @@
       border: 2px solid #ccc;
       border-radius: 8px;
     }
+
     #lector-input {
       opacity: 0;
       position: absolute;
@@ -16,71 +18,89 @@
     }
   </style>
 </head>
-<body class="bg-light">
 
-  <div class="container py-4 text-center">
-    <h2 class="mb-4">Escanea el producto</h2>
-    <div id="reader" class="mb-3"></div>
-    <p class="fw-bold">Código detectado: <span id="resultado" class="text-primary"></span></p>
-    <input type="text" id="lector-input" autofocus />
+<body class="bg-light">
+  <!-- Dentro de <body> -->
+  <div id="scanner-section">
+    <h2>Escanea el producto</h2>
+    <div id="reader"></div>
+    <p><strong>Código detectado:</strong> <span id="resultado"></span></p>
   </div>
 
+  <div id="form-section"></div>
+
   <script>
-    // Función común para procesar código escaneado
+    const scanner = new Html5Qrcode("reader");
+    const config = {
+      fps: 10,
+      qrbox: {
+        width: 250,
+        height: 250
+      }
+    };
+
     function procesarCodigo(code) {
       document.getElementById("resultado").textContent = code;
 
-      // Redirigir usando AJAX al archivo PHP
-      fetch("../js/scanProducts/saveCode.php", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: "codigo=" + encodeURIComponent(code),
-      }).then(() => {
-        // Detener escáner de cámara
-        scanner.stop().catch(err => console.error("Error al detener cámara:", err));
-      });
-    }
+      scanner.stop();
 
-    // Iniciar escáner de cámara
-    const scanner = new Html5Qrcode("reader");
-    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+      // Oculta lector y carga formulario
+      document.getElementById("scanner-section").style.display = "none";
+
+      fetch("updateStockProduct.php?codigo=" + encodeURIComponent(code))
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById("form-section").innerHTML = html;
+
+          // Reejecutar scripts del formulario cargado dinámicamente
+          const script = document.createElement('script');
+          script.innerHTML = `
+          document.getElementById("form-actualizar").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const datos = new FormData(this);
+            fetch("updateStockProduct.php", {
+              method: "POST",
+              body: datos
+            })
+            .then(res => res.json())
+            .then(data => {
+              Swal.fire({
+                title: data.status === "ok" ? "¡Éxito!" : "Error",
+                text: data.message,
+                icon: data.status === "ok" ? "success" : "error",
+                confirmButtonText: "Aceptar"
+              });
+
+              if (data.status === "ok") {
+                document.getElementById("stock-actual").textContent = document.getElementById("nuevo_stock").value;
+
+                // Mostrar botón para nuevo escaneo
+                const btn = document.createElement('button');
+                btn.textContent = "Escanear nuevo producto";
+                btn.className = "btn btn-primary mt-3";
+                btn.onclick = () => location.reload();
+                document.getElementById("form-section").appendChild(btn);
+              }
+            });
+          });
+        `;
+          document.body.appendChild(script);
+        });
+    }
 
     Html5Qrcode.getCameras().then(cameras => {
       if (cameras && cameras.length) {
-        scanner.start(
-          { facingMode: "environment" },
-          config,
-          (code) => {
-            scanner.pause(); // Pausar para evitar lecturas múltiples
-            procesarCodigo(code);
-          },
-          (error) => {
-            // Ignorar errores de escaneo en tiempo real
-          }
-        );
+        scanner.start({
+          facingMode: "environment"
+        }, config, code => {
+          scanner.pause();
+          procesarCodigo(code);
+        });
       } else {
         alert("No se encontró cámara.");
       }
     });
-
-    // Input oculto para lectores físicos
-    const input = document.getElementById("lector-input");
-    input.focus();
-    let buffer = "";
-
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        procesarCodigo(buffer.trim());
-        buffer = "";
-      } else {
-        buffer += e.key;
-      }
-    });
-
-    // Mantener el input enfocado incluso si el usuario toca otro elemento
-    document.addEventListener("click", () => input.focus());
   </script>
 </body>
+
 </html>
