@@ -21,13 +21,15 @@
 
 <body class="bg-light">
   <!-- Dentro de <body> -->
-  <div id="scanner-section">
-    <h2>Escanea el producto</h2>
-    <div id="reader"></div>
-    <p><strong>Código detectado:</strong> <span id="resultado"></span></p>
-  </div>
+  <div class="container py-4 text-center">
+    <div id="scanner-section">
+      <h2>Escanea el producto</h2>
+      <div id="reader"></div>
+      <p><strong>Código detectado:</strong> <span id="resultado"></span></p>
+    </div>
 
-  <div id="form-section"></div>
+    <div id="form-section"></div>
+  </div>
 
   <script>
     const scanner = new Html5Qrcode("reader");
