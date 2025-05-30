@@ -1,5 +1,5 @@
 <?php
-require '../controllers/mainController.php';
+require './controllers/mainController.php';
 $pdo = conexion();
 
 // Si es POST, procesamos actualización de stock
