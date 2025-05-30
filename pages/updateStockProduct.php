@@ -58,9 +58,73 @@ if (!$producto) {
 
 <div class="container py-4">
   <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <i class="fas fa-boxes me-2"></i>Actualizar Stock
+    </div>
+    <div class="card-body">
+      <p><strong>Producto:</strong> <?= htmlspecialchars($producto['Nombre']) ?></p>
+      <p><strong>Código de barras (UPC):</strong> <?= htmlspecialchars($producto['UPC']) ?></p>
+      <p><strong>Stock actual:</strong> <span id="stock-actual" class="badge bg-info text-dark"><?= $producto['Cantidad'] ?></span></p>
+
+      <form id="form-actualizar" class="row g-3 mt-3">
+        <div class="col-md-6">
+          <label for="nuevo_stock" class="form-label">Nuevo stock</label>
+          <input type="number" class="form-control" id="nuevo_stock" name="nuevo_stock" min="0" required>
+          <input type="hidden" name="codigo" value="<?= htmlspecialchars($producto['UPC']) ?>">
+        </div>
+        <div class="col-12">
+          <button type="submit" class="btn btn-success w-100">
+            <i class="fas fa-save me-2"></i>Actualizar
+          </button>
+        </div>
+      </form>
+
+      <div id="boton-nuevo-escanear" class="mt-4" style="display: none;">
+        <a href="index.php?page=scanProducts" class="btn btn-primary w-100">
+          <i class="fas fa-barcode me-2"></i>Escanear nuevo producto
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById("form-actualizar").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const datos = new FormData(this);
+
+    fetch('index.php?page=updateStockProduct', {
+      method: 'POST',
+      body: datos
+    })
+    .then(res => res.json())
+    .then(data => {
+      Swal.fire({
+        title: data.status === "ok" ? "¡Éxito!" : "Error",
+        text: data.message,
+        icon: data.status === "ok" ? "success" : "error"
+      });
+
+      if (data.status === "ok") {
+        // Actualiza el stock actual en pantalla
+        const nuevo = document.getElementById("nuevo_stock").value;
+        document.getElementById("stock-actual").textContent = nuevo;
+
+        // Muestra botón para escanear nuevo producto
+        document.getElementById("boton-nuevo-escanear").style.display = "block";
+      }
+    })
+    .catch(err => {
+      Swal.fire("Error", "No se pudo actualizar el stock. Intenta nuevamente.", "error");
+    });
+  });
+</script>
+<div class="container py-4">
+  <div class="card shadow-sm">
     <div class="card-header bg-primary text-white">Actualizar Stock</div>
     <div class="card-body">
-      <p><strong>Producto:</strong> <?= htmlspecialchars($producto['nombre']) ?></p>
+      <p><strong>Producto:</strong> <?= htmlspecialchars($producto['Nombre']) ?></p>
       <p><strong>Código de barras:</strong> <?= htmlspecialchars($producto['UPC']) ?></p>
       <p><strong>Stock actual:</strong> <span id="stock-actual"><?= $producto['Cantidad'] ?></span></p>
 
