@@ -94,7 +94,7 @@ if (!$producto) {
 
     const datos = new FormData(this);
 
-    fetch('updateStockProduct.php', {
+    fetch('./updateStockProduct.php', {
       method: 'POST',
       body: datos
     })
