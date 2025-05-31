@@ -79,13 +79,13 @@ if (!$producto) {
                 <hr>
                 <div class="col-12">
                     <button type="submit" class="btn btn-success w-100">
-                        <i class="fas fa-save me-2"></i>Actualizar stock
+                        <i class="fas fa-save me-2"></i> Actualizar stock
                     </button>
                 </div>
             </form>
             <div id="boton-nuevo-escanear" class="mt-4" style="display: none;">
                 <a href="index.php?page=scanProducts" class="btn btn-primary w-100">
-                    <i class="fas fa-barcode me-2"></i>Escanear nuevo producto
+                    <i class="fas fa-barcode me-2"></i> Escanear nuevo producto
                 </a>
             </div>
         </div>
