@@ -173,7 +173,7 @@ try {
   $mail->Host = 'smtp.titan.email';
   $mail->SMTPAuth = true;
   $mail->Username = 'info@stagging.kallijaguar-inventory.com';
-  $mail->Password = 'prueba';
+  $mail->Password = 'KalliJaguar2025@';
   $mail->SMTPSecure = 'ssl';
   $mail->Port = 465;
 
