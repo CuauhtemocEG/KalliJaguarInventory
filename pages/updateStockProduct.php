@@ -76,13 +76,13 @@ if (!$producto) {
                     <input type="number" class="form-control" id="nuevo_stock" name="nuevo_stock" min="0" required>
                     <input type="hidden" name="codigo" value="<?= htmlspecialchars($producto['UPC']) ?>">
                 </div>
+                <br>
                 <div class="col-12">
                     <button type="submit" class="btn btn-success w-100">
-                        <i class="fas fa-save me-2"></i>Actualizar
+                        <i class="fas fa-save me-2"></i>Actualizar stock
                     </button>
                 </div>
             </form>
-            <br>
             <div id="boton-nuevo-escanear" class="mt-4" style="display: none;">
                 <a href="index.php?page=scanProducts" class="btn btn-primary w-100">
                     <i class="fas fa-barcode me-2"></i>Escanear nuevo producto
