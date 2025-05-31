@@ -4,7 +4,7 @@ $pdo = conexion();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
     header('Content-Type: application/json');
-    ob_start(); // Inicia buffering para capturar output inesperado
+    ob_start();
 
     $codigo = limpiar_cadena($_POST['codigo'] ?? '');
     $nuevo_stock = intval($_POST['nuevo_stock'] ?? -1);
@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SERVER['HTTP_X_REQUESTED_W
         $producto = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$producto) {
-            ob_end_clean(); // Limpia buffer para no mandar nada más
+            ob_end_clean();
             echo json_encode(['status' => 'error', 'message' => 'Producto no encontrado.']);
             exit();
         }
@@ -76,7 +76,7 @@ if (!$producto) {
                     <input type="number" class="form-control" id="nuevo_stock" name="nuevo_stock" min="0" required>
                     <input type="hidden" name="codigo" value="<?= htmlspecialchars($producto['UPC']) ?>">
                 </div>
-                <br>
+                <hr>
                 <div class="col-12">
                     <button type="submit" class="btn btn-success w-100">
                         <i class="fas fa-save me-2"></i>Actualizar stock
@@ -115,6 +115,7 @@ if (!$producto) {
 
                 if (data.status === "ok") {
                     document.getElementById("stock-actual").textContent = document.getElementById("nuevo_stock").value;
+                    document.getElementById("boton-nuevo-escanear").style.display = "block";
                 }
             })
             .catch(err => {
