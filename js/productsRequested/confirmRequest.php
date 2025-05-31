@@ -1,11 +1,6 @@
 <?php
 session_start();
 header('Content-Type: application/json');
-// Mostrar errores de PHP
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 // Validar que los archivos requeridos existen antes de incluirlos
 $requiredFiles = [
   '../../fpdf/fpdf.php',
@@ -30,6 +25,25 @@ require '../../PHPMailer/src/Exception.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+
+function fechaEnEspañol($fechaObj) {
+  $meses = [
+    '01' => 'enero', '02' => 'febrero', '03' => 'marzo', '04' => 'abril',
+    '05' => 'mayo', '06' => 'junio', '07' => 'julio', '08' => 'agosto',
+    '09' => 'septiembre', '10' => 'octubre', '11' => 'noviembre', '12' => 'diciembre'
+  ];
+  $dias = [
+    'Monday' => 'lunes', 'Tuesday' => 'martes', 'Wednesday' => 'miércoles',
+    'Thursday' => 'jueves', 'Friday' => 'viernes', 'Saturday' => 'sábado', 'Sunday' => 'domingo'
+  ];
+
+  $diaSemana = $dias[$fechaObj->format('l')];
+  $dia = $fechaObj->format('j');
+  $mes = $meses[$fechaObj->format('m')];
+  $anio = $fechaObj->format('Y');
+
+  return ucfirst("$diaSemana $dia de $mes del $anio");
+}
 
 // Validaciones de entrada
 if (!isset($_SESSION['INV']) || !is_array($_SESSION['INV']) || count($_SESSION['INV']) === 0) {
@@ -113,7 +127,7 @@ $nameSucursal = $conn->query("SELECT nombre FROM Sucursales WHERE SucursalID = '
 $nameUser = $conn->query("SELECT Nombre FROM Usuarios WHERE UsuarioID = '$idUser'")->fetchColumn();
 
 // Fecha larga (formato alternativo si IntlDateFormatter falla)
-$fechaLarga = $fechaObj->format('d/m/Y');
+$fechaLarga = fechaEnEspañol($fechaObj);
 
 // Generar PDF
 $pdfPath = '../../documents/' . $comandaID . '.pdf';
@@ -130,12 +144,12 @@ try {
   $pdf->Cell(60, 10, $comandaID, 1, 0, 'C');
   $pdf->SetXY(130, 21);
   $pdf->Cell(60, 10, $nameUser, 1, 0, 'C');
-  $pdf->Ln(5);
+  $pdf->Ln(10);
   $pdf->SetFont('Arial', '', 9);
-  $pdf->Cell(190, 10, utf8_decode("Fecha de entrega: $fechaLarga"), 0, 1, 'C');
+  $pdf->Cell(190, 10, utf8_decode("Fecha de entrega: $fechaLarga"), 0, 1, 'L');
   $pdf->Ln(20);
   $pdf->SetFont('Arial', '', 8);
-  $pdf->MultiCell(180, 5, utf8_decode('A continuación se debe capturar las observaciones del producto al ser recepcionado...'), 0, 'C');
+  $pdf->MultiCell(180, 5, utf8_decode('A continuación se debe capturar las observaciones del producto al ser recepcionado por el solicitante, verificar que todos los productos solicitados están siendo entregados y contar con 3 copias de este documento para cada una de las áreas.'), 0, 'C');
   $pdf->Ln(5);
   $pdf->SetFont('Arial', 'B', 8);
   $pdf->Cell(190, 10, utf8_decode('Listado de productos solicitados a Almacén:'), 0, 1, 'L');
@@ -233,6 +247,7 @@ $correoBody = '
             <tr>
               <td colspan="2" style="padding:20px;">
                 <p style="font-size:14px; color:#ffffff; margin:0 0 10px 0;">¡Tu pedido ha sido recibido exitosamente!</p>
+                <p style="font-size:14px; color:#ffffff; margin:0;">Fecha de entrega: <strong>' . utf8_decode($fechaLarga) . '</strong></p>
                 <p style="font-size:14px; color:#ffffff; margin:0;">Adjunto se encontrará el PDF correspondiente a la comanda generada.</p>
               </td>
             </tr>
