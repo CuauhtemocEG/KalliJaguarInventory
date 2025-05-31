@@ -8,29 +8,28 @@ error_reporting(E_ALL);
 
 // Validar que los archivos requeridos existen antes de incluirlos
 $requiredFiles = [
-    '../../fpdf/fpdf.php',
-    '../../controllers/mainController.php',
-    '../../PHPMailer/src/PHPMailer.php',
-    '../../PHPMailer/src/SMTP.php',
-    '../../PHPMailer/src/Exception.php',
-    '../../includes/contactabilityController.php'
+  '../../fpdf/fpdf.php',
+  '../../controllers/mainController.php',
+  '../../PHPMailer/src/PHPMailer.php',
+  '../../PHPMailer/src/SMTP.php',
+  '../../PHPMailer/src/Exception.php',
 ];
 
 foreach ($requiredFiles as $file) {
-    if (!file_exists($file)) {
-        echo json_encode(['status' => 'error', 'message' => "Archivo no encontrado: $file"]);
-        exit();
-    }
+  if (!file_exists($file)) {
+    echo json_encode(['status' => 'error', 'message' => "Archivo no encontrado: $file"]);
+    exit();
+  }
 }
 
 require('../../fpdf/fpdf.php');
 require_once "../../controllers/mainController.php";
-require './PHPMailer/src/PHPMailer.php';
+require '../../PHPMailer/src/PHPMailer.php';
 require '../../PHPMailer/src/SMTP.php';
 require '../../PHPMailer/src/Exception.php';
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-require_once "../../includes/contactabilityController.php";
 
 // Validaciones de entrada
 if (!isset($_SESSION['INV']) || !is_array($_SESSION['INV']) || count($_SESSION['INV']) === 0) {
@@ -101,7 +100,6 @@ try {
   }
 
   $conn->commit();
-
 } catch (Exception $e) {
   if ($conn->inTransaction()) {
     $conn->rollBack();
@@ -183,6 +181,110 @@ try {
 }
 
 // Enviar email (puedes añadir validación aquí también)
+$productosHTML = '';
+$totalGenerals = 0;
+
+foreach ($_SESSION['INV'] as $items) {
+  $unidadesResult = '';
+  $quantityRes = '';
+
+  if ($items['tipo'] == "Pesable") {
+    if ($items['cantidad'] >= 1.0) {
+      $unidadesResult = 'Kg';
+      $quantityRes = number_format($items['cantidad'], 2, '.', '');
+    } else {
+      $unidadesResult = 'grs';
+      $quantityRes = number_format($items['cantidad'], 3, '.', '');
+    }
+  } else {
+    $unidadesResult = 'Unidad(es)';
+    $quantityRes = number_format($items['cantidad'], 0, '.', '');
+  }
+
+  $totalItem = ($items['precio'] * 1.16) * $items['cantidad'];
+  $totalGenerals += $totalItem;
+
+  $productosHTML .= '<li>' . htmlspecialchars($items['nombre']) . ' - Cantidad: ' . $quantityRes . ' ' . $unidadesResult . '</li>';
+}
+
+$correoBody = '
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Comanda</title>
+  </head>
+  <body>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0; padding:0; background-color:#000000;">
+      <tr>
+        <td align="center">
+          <table width="450" cellpadding="0" cellspacing="0" border="0" style="background-color:#000000; border:2px solid #ffb900;">
+            <!-- Encabezado con logo y número de comanda -->
+            <tr>
+              <td align="left" width="50%" style="padding:20px;">
+                <img src="https://stagging.kallijaguar-inventory.com/img/LogoBlack.png" alt="Logo" width="120" style="display:block;">
+              </td>
+              <td align="right" width="50%" style="padding:20px; color:#ffce17; font-size:14px;">
+                <strong>Comanda #: ' . $comandaID . '</strong>
+              </td>
+            </tr>
+
+            <!-- Mensaje principal -->
+            <tr>
+              <td colspan="2" style="padding:20px;">
+                <p style="font-size:14px; color:#ffffff; margin:0 0 10px 0;">¡Tu pedido ha sido recibido exitosamente!</p>
+                <p style="font-size:14px; color:#ffffff; margin:0;">Adjunto se encontrará el PDF correspondiente a la comanda generada.</p>
+              </td>
+            </tr>
+
+            <!-- Lista de productos -->
+            <tr>
+              <td colspan="2" style="background-color:#2a2a2a; padding:20px;">
+                <p style="font-size:14px; color:#ffce17; margin:0 0 10px 0;"><strong>Productos solicitados:</strong></p>
+                <ul style="font-size:14px; color:#ffffff; padding-left:20px; margin:0;">
+                  ' . $productosHTML . '
+                </ul>
+              </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+              <td colspan="2" style="font-size:12px; color:#ffffff; text-align:center; padding:20px;">
+                Si tienes alguna duda, contacta al administrador del sitio.
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>';
+
+// Enviar correo
+$mail = new PHPMailer(true);
+try {
+  $mail->isSMTP();
+  $mail->CharSet = 'UTF-8';
+  $mail->Host = 'smtp.titan.email';
+  $mail->SMTPAuth = true;
+  $mail->Username = 'info@stagging.kallijaguar-inventory.com';
+  $mail->Password = 'KalliJaguar2025@';
+  $mail->SMTPSecure = 'ssl';
+  $mail->Port = 465;
+
+  $mail->setFrom('info@stagging.kallijaguar-inventory.com', 'Información Kalli Jaguar');
+  $mail->addAddress('cencarnacion@stagging.kallijaguar-inventory.com');
+  $mail->addAttachment($pdfPath);
+
+  $mail->isHTML(true);
+  $mail->Subject = 'Confirmación de tu pedido: ' . $comandaID;
+  $mail->Body = $correoBody;
+
+  $mail->send();
+} catch (Exception $e) {
+  echo json_encode(['status' => 'error', 'message' => 'Error al enviar correo: ' . $mail->ErrorInfo]);
+  exit();
+}
 
 $_SESSION['INV'] = []; // limpiar carrito
 
