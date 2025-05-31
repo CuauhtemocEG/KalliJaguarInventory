@@ -62,7 +62,7 @@ if (!$producto) {
 
 <div class="container py-4">
     <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg-dark text-white">
             <i class="fas fa-boxes me-2"></i>Actualizar Stock
         </div>
         <div class="card-body">
@@ -82,7 +82,7 @@ if (!$producto) {
                     </button>
                 </div>
             </form>
-
+            <br>
             <div id="boton-nuevo-escanear" class="mt-4" style="display: none;">
                 <a href="index.php?page=scanProducts" class="btn btn-primary w-100">
                     <i class="fas fa-barcode me-2"></i>Escanear nuevo producto
