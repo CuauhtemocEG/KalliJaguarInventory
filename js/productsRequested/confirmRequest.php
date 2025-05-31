@@ -25,7 +25,7 @@ foreach ($requiredFiles as $file) {
 
 require('../../fpdf/fpdf.php');
 require_once "../../controllers/mainController.php";
-require '../../PHPMailer/src/PHPMailer.php';
+require './PHPMailer/src/PHPMailer.php';
 require '../../PHPMailer/src/SMTP.php';
 require '../../PHPMailer/src/Exception.php';
 use PHPMailer\PHPMailer\PHPMailer;
