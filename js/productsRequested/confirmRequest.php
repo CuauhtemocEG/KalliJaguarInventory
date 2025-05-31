@@ -145,9 +145,9 @@ try {
   $pdf->SetXY(130, 21);
   $pdf->Cell(60, 10, $nameUser, 1, 0, 'C');
   $pdf->Ln(10);
-  $pdf->SetFont('Arial', '', 9);
-  $pdf->Cell(190, 10, utf8_decode("Fecha de entrega: $fechaLarga"), 0, 1, 'L');
-  $pdf->Ln(20);
+  $pdf->SetFont('Arial', '', 8);
+  $pdf->Cell(180, 10, utf8_decode("Fecha de entrega: $fechaLarga"), 0, 1, 'L');
+  $pdf->Ln(5);
   $pdf->SetFont('Arial', '', 8);
   $pdf->MultiCell(180, 5, utf8_decode('A continuación se debe capturar las observaciones del producto al ser recepcionado por el solicitante, verificar que todos los productos solicitados están siendo entregados y contar con 3 copias de este documento para cada una de las áreas.'), 0, 'C');
   $pdf->Ln(5);
