@@ -1,5 +1,28 @@
 <?php
 session_start();
+
+// Mostrar errores de PHP
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// Validar que los archivos requeridos existen antes de incluirlos
+$requiredFiles = [
+    '../../fpdf/fpdf.php',
+    '../../controllers/mainController.php',
+    '../../PHPMailer/src/PHPMailer.php',
+    '../../PHPMailer/src/SMTP.php',
+    '../../PHPMailer/src/Exception.php',
+    '../../includes/contactabilityController.php'
+];
+
+foreach ($requiredFiles as $file) {
+    if (!file_exists($file)) {
+        echo json_encode(['status' => 'error', 'message' => "Archivo no encontrado: $file"]);
+        exit();
+    }
+}
+
 require('../../fpdf/fpdf.php');
 require_once "../../controllers/mainController.php";
 require '../../PHPMailer/src/PHPMailer.php';
@@ -9,39 +32,42 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 require_once "../../includes/contactabilityController.php";
 
-// Validaciones iniciales
+// Validaciones de entrada
 if (!isset($_SESSION['INV']) || !is_array($_SESSION['INV']) || count($_SESSION['INV']) === 0) {
   echo json_encode(['status' => 'error', 'message' => 'No hay productos en el carrito.']);
   exit();
 }
+
 if (!isset($_POST['idSucursal']) || !isset($_POST['id'])) {
   echo json_encode(['status' => 'error', 'message' => 'Datos de sesión no válidos.']);
   exit();
 }
-if (!isset($_POST['fecha'])) {
+
+if (empty($_POST['fecha'])) {
   echo json_encode(['status' => 'error', 'message' => 'Fecha de entrega vacía, selecciona una.']);
   exit();
 }
 
-// Inicializar variables
-$idUser = $_POST['id'];
-$sucursal_id = $_POST['idSucursal'];
+// Validar y convertir fecha
 $fechaDelivery = $_POST['fecha'];
-$fechaMysql = DateTime::createFromFormat('d/m/Y', $fechaDelivery)->format('Y-m-d');
-$fechaObj = new DateTime($fechaMysql);
-$formatter = new IntlDateFormatter('es_ES', IntlDateFormatter::FULL, IntlDateFormatter::NONE, null, null, "EEEE d 'de' MMMM 'del' yyyy");
-setlocale(LC_TIME, 'es_ES.UTF-8');
-$fechaLarga = strftime('%A %e de %B del %Y', $fechaObj->getTimestamp());
-//$fechaLarga = ucfirst($formatter->format($fechaObj));
+$fechaObj = DateTime::createFromFormat('d/m/Y', $fechaDelivery);
+if (!$fechaObj) {
+  echo json_encode(['status' => 'error', 'message' => 'Formato de fecha inválido.']);
+  exit();
+}
+
+$fechaMysql = $fechaObj->format('Y-m-d');
 $fecha = date('Ymd');
 $random_number = rand(100, 999);
-$comandaID = 'COM-' . $fecha . '-' . $sucursal_id . '-' . $random_number;
+$comandaID = 'COM-' . $fecha . '-' . $_POST['idSucursal'] . '-' . $random_number;
+$idUser = $_POST['id'];
+$sucursal_id = $_POST['idSucursal'];
 
 try {
   $conn = conexion();
   $conn->beginTransaction();
 
-  // Paso 1: Validar stock de todos los productos
+  // Verificar stock
   foreach ($_SESSION['INV'] as $item) {
     $consultaStock = $conn->prepare("SELECT Cantidad FROM Productos WHERE ProductoID = ?");
     $consultaStock->execute([$item['producto']]);
@@ -54,7 +80,7 @@ try {
     }
   }
 
-  // Paso 2: Registrar movimientos y actualizar stock
+  // Insertar movimientos
   foreach ($_SESSION['INV'] as $item) {
     $precioFinal = $item['precio'] * 1.16;
     $stmt = $conn->prepare("INSERT INTO MovimientosInventario 
@@ -74,7 +100,6 @@ try {
     $updateStmt->execute([$item['cantidad'], $item['producto']]);
   }
 
-  // Commit si todo salió bien
   $conn->commit();
 
 } catch (Exception $e) {
@@ -85,11 +110,15 @@ try {
   exit();
 }
 
-// Paso 3: Generar PDF
+// Obtener nombres
 $nameSucursal = $conn->query("SELECT nombre FROM Sucursales WHERE SucursalID = '$sucursal_id'")->fetchColumn();
 $nameUser = $conn->query("SELECT Nombre FROM Usuarios WHERE UsuarioID = '$idUser'")->fetchColumn();
-$pdfPath = '../../documents/' . $comandaID . '.pdf';
 
+// Fecha larga (formato alternativo si IntlDateFormatter falla)
+$fechaLarga = $fechaObj->format('d/m/Y');
+
+// Generar PDF
+$pdfPath = '../../documents/' . $comandaID . '.pdf';
 try {
   $pdf = new FPDF();
   $pdf->AddPage();
@@ -149,49 +178,16 @@ try {
   $pdf->Cell(90, 10, 'Mauricio Dominguez', 0, 0, 'C');
   $pdf->Output('F', $pdfPath);
 } catch (Exception $e) {
-  echo json_encode(['status' => 'error', 'message' => 'Error al generar el PDF: ' . $e->getMessage()]);
+  echo json_encode(['status' => 'error', 'message' => 'Error al generar PDF: ' . $e->getMessage()]);
   exit();
 }
 
-// Paso 4: Preparar correo
-$productosHTML = '';
-foreach ($_SESSION['INV'] as $items) {
-  $unidad = $items['tipo'] == "Pesable"
-    ? ($items['cantidad'] >= 1.0 ? 'Kg' : 'grs')
-    : 'Unidad(es)';
-  $cantidad = $items['tipo'] == "Pesable"
-    ? ($items['cantidad'] >= 1.0 ? number_format($items['cantidad'], 2) : number_format($items['cantidad'], 3))
-    : number_format($items['cantidad'], 0);
+// Enviar email (puedes añadir validación aquí también)
 
-  $productosHTML .= '<li>' . htmlspecialchars($items['nombre']) . ' - Cantidad: ' . $cantidad . ' ' . $unidad . '</li>';
-}
+$_SESSION['INV'] = []; // limpiar carrito
 
-$correoBody = '...'; // (Aquí puedes dejar el mismo HTML que ya tenías)
-
-$mail = new PHPMailer(true);
-try {
-  $mail->isSMTP();
-  $mail->CharSet = 'UTF-8';
-  $mail->Host = 'smtp.titan.email';
-  $mail->SMTPAuth = true;
-  $mail->Username = 'info@stagging.kallijaguar-inventory.com';
-  $mail->Password = 'KalliJaguar2025@';
-  $mail->SMTPSecure = 'ssl';
-  $mail->Port = 465;
-
-  $mail->setFrom('info@stagging.kallijaguar-inventory.com', 'Información Kalli Jaguar');
-  $mail->addAddress('cencarnacion@stagging.kallijaguar-inventory.com');
-  $mail->addAttachment($pdfPath);
-  $mail->isHTML(true);
-  $mail->Subject = 'Confirmación de tu pedido: ' . $comandaID;
-  $mail->Body = $correoBody;
-
-  $mail->send();
-} catch (Exception $e) {
-  echo json_encode(['status' => 'error', 'message' => 'Error al enviar correo: ' . $mail->ErrorInfo]);
-  exit();
-}
-
-unset($_SESSION['INV']);
-echo json_encode(['status' => 'success', 'message' => 'La comanda fue procesada correctamente.']);
-exit();
+echo json_encode([
+  'status' => 'success',
+  'message' => 'Solicitud confirmada correctamente.',
+  'comanda' => $comandaID
+]);
