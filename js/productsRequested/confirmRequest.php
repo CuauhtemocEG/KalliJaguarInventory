@@ -322,3 +322,4 @@ echo json_encode([
   'message' => 'Solicitud confirmada correctamente.',
   'comanda' => $comandaID
 ]);
+exit();
