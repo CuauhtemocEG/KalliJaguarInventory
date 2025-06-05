@@ -159,9 +159,6 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
 
         const formData = new FormData(confirmForm);
-        for (let [key, value] of formData.entries()) {
-            console.log(key + ': ' + value);
-        }
         const selectedSucursal = formData.get('idSucursal');
 
         if (!selectedSucursal) {
