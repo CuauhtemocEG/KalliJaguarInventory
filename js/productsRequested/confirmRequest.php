@@ -77,6 +77,13 @@ if (empty($_POST['fecha'])) {
   exit();
 }
 
+$fechaDelivery = $_POST['fecha'];
+$fechaObj = DateTime::createFromFormat('d/m/Y', $fechaDelivery);
+if (!$fechaObj) {
+  echo json_encode(['status' => 'error', 'message' => 'Formato de fecha inválido.']);
+  exit();
+}
+
 $fechaMysql = $fechaObj->format('Y-m-d');
 $fecha = date('Ymd');
 $random_number = rand(100, 999);
