@@ -114,6 +114,7 @@ if (!$producto) {
 
                 if (data.status === "ok") {
                     document.getElementById("stock-actual").textContent = document.getElementById("nuevo_stock").value;
+                    document.getElementById("boton-nuevo-escanear").style.display = "block";
                 }
             })
             .catch(err => {
