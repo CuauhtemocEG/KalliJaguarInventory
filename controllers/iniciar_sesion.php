@@ -1,13 +1,15 @@
 <?php
-session_set_cookie_params([
-    'lifetime' => 0,
-    'path' => '/',
-    'domain' => 'kallijaguar-inventory.com',
-    'secure' => true,
-    'httponly' => true,
-    'samesite' => 'Lax'
-]);
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'domain' => 'kallijaguar-inventory.com',
+        'secure' => true,
+        'httponly' => true,
+        'samesite' => 'Lax'
+    ]);
+    session_start();
+}
 	/*== Almacenando datos ==*/
     $usuario=limpiar_cadena($_POST['login_usuario']);
     $clave=limpiar_cadena($_POST['login_clave']);

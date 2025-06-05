@@ -81,7 +81,7 @@
                     ¿Está seguro de que desea enviar la lista de productos solicitados?
                     <form id="confirmForm">
                         <div class="form-group col-md-12">
-                        <input type="hidden" name="id" value="<?php echo $_SESSION['id']?>">
+                        <input type="hidden" name="id" value="<?php echo isset($_SESSION['id']) ? $_SESSION['id'] : ''; ?>">
                             <b><label>Sucursal de Destino:</label></b>
                             <select class="form-control" id="inputSucursal" name="idSucursal">
                                 <option value="" selected>Seleccione una Sucursal</option>
