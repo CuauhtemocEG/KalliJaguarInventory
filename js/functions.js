@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        fetch('https://wwww.kallijaguar-inventory.com/js/productsRequested/confirmRequest.php', {
+        fetch('https://www.kallijaguar-inventory.com/js/productsRequested/confirmRequest.php', {
             method: 'POST',
             body: formData,
             credentials: 'include'
