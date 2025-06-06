@@ -178,40 +178,40 @@ document.addEventListener('DOMContentLoaded', function () {
             body: formData,
             credentials: 'include'
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Error HTTP: ' + response.status);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log("Respuesta del servidor:", data);
-        
-            if (data.status === 'error') {
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error HTTP: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Respuesta del servidor:", data);
+
+                if (data.status === 'error') {
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.message || 'Algo salió mal al procesar la solicitud.',
+                        icon: 'error'
+                    });
+                    return;
+                }
+
+                $('#confirmModal').modal('hide');
                 Swal.fire({
-                    title: 'Error',
-                    text: data.message || 'Algo salió mal al procesar la solicitud.',
+                    title: '¡Solicitud enviada!',
+                    text: data.message || 'La comanda fue procesada correctamente.',
+                    icon: 'success'
+                }).then(() => {
+                    window.location.href = 'index.php?page=showRequest';
+                });
+            })
+            .catch(error => {
+                console.error('Error al hacer fetch:', error);
+                Swal.fire({
+                    title: 'Error de conexión',
+                    text: 'No se pudo completar la solicitud. Revisa tu conexión o vuelve a intentar.',
                     icon: 'error'
                 });
-                return;
-            }
-        
-            $('#confirmModal').modal('hide');
-            Swal.fire({
-                title: '¡Solicitud enviada!',
-                text: data.message || 'La comanda fue procesada correctamente.',
-                icon: 'success'
-            }).then(() => {
-                window.location.href = 'index.php?page=showRequest';
             });
-        })
-        .catch(error => {
-            console.error('Error al hacer fetch:', error);
-            Swal.fire({
-                title: 'Error de conexión',
-                text: 'No se pudo completar la solicitud. Revisa tu conexión o vuelve a intentar.',
-                icon: 'error'
-            });
-        });
     });
 });
