@@ -6,7 +6,7 @@ $(document).ready(function () {
     $('#searchButton').click(function () {
         let query = $('#searchInput').val();
         $.ajax({
-            url: urlAPI+'searchProducts.php',
+            url: urlAPI + 'searchProducts.php',
             method: 'GET',
             data: { query: query },
             success: function (response) {
@@ -21,7 +21,7 @@ $(document).ready(function () {
     $('#searchInput').on('input', function () {
         let query = $(this).val();
         $.ajax({
-            url: urlAPI+'searchProducts.php',
+            url: urlAPI + 'searchProducts.php',
             method: 'GET',
             data: { query: query },
             success: function (response) {
@@ -56,7 +56,7 @@ $(document).on('submit', '.add-product-form', function (e) {
     let formData = form.serialize();
 
     $.ajax({
-        url: urlAPI+'addProductToSession.php',
+        url: urlAPI + 'addProductToSession.php',
         method: 'POST',
         data: formData,
         success: function (response) {
@@ -106,7 +106,7 @@ $(document).on('click', '.btn-delete-item', function (e) {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: urlAPI+'deleteProductFromCart.php',
+                url: urlAPI + 'deleteProductFromCart.php',
                 method: 'POST',
                 data: { id: id },
                 success: function (response) {
@@ -141,7 +141,7 @@ $(document).on('click', '.btn-delete-item', function (e) {
 
 function actualizarPanelCarrito() {
     $.ajax({
-        url: urlAPI+'renderCartPanel.php',
+        url: urlAPI + 'renderCartPanel.php',
         method: 'GET',
         success: function (response) {
             $('#cartBody').html(response);
@@ -159,6 +159,9 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
 
         const formData = new FormData(confirmForm);
+        for (let [key, value] of formData.entries()) {
+            console.log(key + ': ' + value);
+        }
         const selectedSucursal = formData.get('idSucursal');
 
         if (!selectedSucursal) {
@@ -175,40 +178,40 @@ document.addEventListener('DOMContentLoaded', function () {
             body: formData,
             credentials: 'include'
         })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error HTTP: ' + response.status);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log("Respuesta del servidor:", data);
-
-                if (data.status === 'error') {
-                    Swal.fire({
-                        title: 'Error',
-                        text: data.message || 'Algo salió mal al procesar la solicitud.',
-                        icon: 'error'
-                    });
-                    return;
-                }
-
-                $('#confirmModal').modal('hide');
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error HTTP: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("Respuesta del servidor:", data);
+        
+            if (data.status === 'error') {
                 Swal.fire({
-                    title: '¡Solicitud enviada!',
-                    text: data.message || 'La comanda fue procesada correctamente.',
-                    icon: 'success'
-                }).then(() => {
-                    window.location.href = 'index.php?page=showRequest';
-                });
-            })
-            .catch(error => {
-                console.error('Error al hacer fetch:', error);
-                Swal.fire({
-                    title: 'Error de conexión',
-                    text: 'No se pudo completar la solicitud. Revisa tu conexión o vuelve a intentar.',
+                    title: 'Error',
+                    text: data.message || 'Algo salió mal al procesar la solicitud.',
                     icon: 'error'
                 });
+                return;
+            }
+        
+            $('#confirmModal').modal('hide');
+            Swal.fire({
+                title: '¡Solicitud enviada!',
+                text: data.message || 'La comanda fue procesada correctamente.',
+                icon: 'success'
+            }).then(() => {
+                window.location.href = 'index.php?page=showRequest';
             });
+        })
+        .catch(error => {
+            console.error('Error al hacer fetch:', error);
+            Swal.fire({
+                title: 'Error de conexión',
+                text: 'No se pudo completar la solicitud. Revisa tu conexión o vuelve a intentar.',
+                icon: 'error'
+            });
+        });
     });
 });
