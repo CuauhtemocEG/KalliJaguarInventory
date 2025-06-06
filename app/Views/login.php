@@ -31,8 +31,8 @@
 
 					<?php
 					if (isset($_POST['login_usuario']) && isset($_POST['login_clave'])) {
-						require_once "./controllers/mainController.php";
-						require_once "./controllers/iniciar_sesion.php";
+						require_once "../../config/database.php";
+						require_once "../Controllers/iniciar_sesion.php";
 					}
 					?>
 				</form>

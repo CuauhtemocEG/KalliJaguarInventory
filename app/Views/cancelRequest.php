@@ -1,5 +1,5 @@
 <?php
-require_once "./controllers/mainController.php";
+require_once "../../config/database.php";
 
 if (!isset($_GET['ComandaID'])) {
     echo 'No se recibió una Comanda para eliminar';
@@ -58,7 +58,7 @@ try {
     $mail->Debugoutput = 'html';
     $mail->Host = 'smtp.titan.email';
     $mail->SMTPAuth = true;
-    $mail->Username = 'info@kallijaguar-inventory.com';
+    $mail->Username = 'innfo@kallijaguar-inventory.com';
     $mail->Password = '{&<eXA[x$?_q\<N';
     $mail->SMTPSecure = 'ssl';
     $mail->Port = 465;

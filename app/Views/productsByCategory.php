@@ -3,7 +3,7 @@
         <div class="card-header font-weight-bold">Búsqueda de Productos por Categoría</div>
         <div class="card-body">
             <?php
-            require_once "./controllers/mainController.php";
+            require_once "../../config/database.php";
             ?>
             <div class="row">
                 <div class="col-md-4">
@@ -47,7 +47,7 @@
 
                         #<p class="has-text-centered pb-6" >' . $check_categoria['categoria_ubicacion'] . '</p>
 
-                        require_once "./controllers/mainController.php";
+                        require_once "../../config/database.php";
 
                         # Eliminar producto #
                         if (isset($_GET['idProductDel'])) {

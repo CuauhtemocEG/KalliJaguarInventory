@@ -1,11 +1,11 @@
 <?php
-require_once "./controllers/mainController.php";
+require_once "../../config/database.php";
 
 $comandaID = $_GET['ComandaID'];
 
-$toTransit = conexion();
-$toTransit = $toTransit->prepare("UPDATE MovimientosInventario SET Status='En transito' WHERE ComandaID=:id");
-$toTransit->execute([":id" => $comandaID]);
+$toDelivered = conexion();
+$toDelivered = $toDelivered->prepare("UPDATE MovimientosInventario SET Status='Cerrado' WHERE ComandaID=:id");
+$toDelivered->execute([":id" => $comandaID]);
 
 require './PHPMailer/src/PHPMailer.php';
 require './PHPMailer/src/SMTP.php';
@@ -22,7 +22,7 @@ try {
     $mail->Debugoutput = 'html';
     $mail->Host = 'smtp.titan.email';
     $mail->SMTPAuth = true;
-    $mail->Username = 'info@kallijaguar-inventory.com';
+    $mail->Username = 'innfo@kallijaguar-inventory.com';
     $mail->Password = '{&<eXA[x$?_q\<N';
     $mail->SMTPSecure = 'ssl';
     $mail->Port = 465;
@@ -37,8 +37,8 @@ try {
     $mail->addCC('claudia.espinoza@kallijaguar-inventory.com');
 
     $mail->isHTML(true);
-    $mail->Subject = 'Comanda: ' . $comandaID.' en transito';
-    $mail->Body = "<p>La siguiente comanda: <strong>{$comandaID}</strong></p><p>Ya va en camino, recuerda verificar tu pedido en cuanto llegue a sucursal.</p>";
+    $mail->Subject = 'Comanda: ' . $comandaID.' Entregada';
+    $mail->Body = "<p>La siguiente comanda: <strong>{$comandaID}</strong></p><p>Ya fue entregada en tu sucursal.</p>";
     $mail->send();
     //echo 'El mensaje ha sido enviado con éxito.';
 } catch (Exception $e) {

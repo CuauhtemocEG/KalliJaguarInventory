@@ -3,7 +3,7 @@
 		<div class="card-header font-weight-bold">Agregar Productos</div>
 		<div class="card-body">
 			<?php
-			require_once "./controllers/mainController.php";
+			require_once "../../config/database.php";
 			?>
 			<div class="form-rest"></div>
 			<form action="./controllers/saveProduct.php" method="POST" class="FormularioAjax" autocomplete="off" enctype="multipart/form-data">
