@@ -28,12 +28,18 @@ document.getElementById("formReportePDF").addEventListener("submit", function(e)
         body: formData
     })
     .then(res => {
-        if(!res.ok) throw new Error('Error en la respuesta');
+        if (!res.ok) throw new Error('Error en la respuesta');
         return res.blob();
     })
     .then(blob => {
         const url = URL.createObjectURL(blob);
-        window.open(url, '_blank');
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "reporte_solicitudes.pdf";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
     })
     .catch(err => {
         console.error('Error al generar PDF:', err);
