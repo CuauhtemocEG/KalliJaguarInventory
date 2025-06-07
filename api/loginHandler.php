@@ -52,7 +52,7 @@ try {
 			$_SESSION['rol'] = $user['Rol'];
 			$_SESSION['usuario'] = $user['Username'];
 
-			echo json_encode(["success" => true]);
+			echo json_encode(["success" => true, "message" => "Login completado"]);
 			exit;
 		}
 	}
