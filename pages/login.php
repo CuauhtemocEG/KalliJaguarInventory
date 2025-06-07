@@ -10,12 +10,12 @@
 
 					<div class="mb-3">
 						<label class="label font-weight-bold">Usuario:</label>
-						<input class="form-control" type="text" name="login_usuario" id="login_usuario" required>
+						<input class="form-control" type="text" name="login_usuario" id="login_usuario">
 					</div>
 
 					<div class="mb-4">
 						<label class="label font-weight-bold">Password:</label>
-						<input class="form-control" type="password" name="login_clave" id="login_clave" required>
+						<input class="form-control" type="password" name="login_clave" id="login_clave">
 					</div>
 
 					<div id="loginMessage" class="mb-3"></div>
