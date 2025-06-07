@@ -81,6 +81,9 @@
             <a class="nav-link" href="index.php?page=showAllRequest">
                 <i class="fa fa-list-alt"></i>
                 <span>Solicitudes Generales</span></a>
+            <a class="nav-link" href="index.php?page=reportOrders">
+                <i class="fa fa-list-alt"></i>
+                <span>Generar Reporte</span></a>
         </li><?php } ?>
         <hr class="sidebar-divider d-none d-md-block">
     </ul>
