@@ -3,26 +3,30 @@
 		<div class="col-md-6 offset-md-3">
 			<h2 class="text-center h2 text-dark mt-5">Kalli Jaguar Inventory</h2>
 			<div class="card my-3">
-				<form class="card-body cardbody-color p-lg-5" action="./controllers/iniciar_sesion.php" method="POST" autocomplete="off">
+				<form id="loginForm" class="card-body cardbody-color p-lg-5" autocomplete="off">
 					<div class="text-center">
 						<img src="./img/Login.jpg" class="img-fluid img-thumbnail my-4" width="130px" alt="profile">
 					</div>
 
 					<div class="mb-3">
 						<label class="label font-weight-bold">Usuario:</label>
-						<input class="form-control" type="text" name="login_usuario" pattern="[a-zA-Z0-9]{4,20}" maxlength="20" required>
+						<input class="form-control" type="text" name="login_usuario" id="login_usuario" required>
 					</div>
 
 					<div class="mb-4">
 						<label class="label font-weight-bold">Password:</label>
-						<input class="form-control" type="password" name="login_clave" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100" required>
+						<input class="form-control" type="password" name="login_clave" id="login_clave" required>
 					</div>
 
+					<div id="loginMessage" class="mb-3"></div>
+
 					<div class="text-center">
-						<button type="submit" class="btn btn-warning mb-3 w-100 font-weight-bold">Iniciar sesión</button>
+						<button type="submit" class="btn btn-warning w-100 font-weight-bold">Iniciar sesión</button>
 					</div>
 				</form>
 			</div>
 		</div>
 	</div>
 </div>
+
+<script src="../js/login.js"></script>
