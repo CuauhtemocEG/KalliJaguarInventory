@@ -59,7 +59,7 @@ if (!$fechaInicio || !$fechaFin) {
         $totales = [];
 
         foreach ($rows as $row) {
-            $sucursal = $row['NombreSucursal'];
+            $sucursal = $row['nombre'];
             $comanda = $row['ComandaID'];
 
             if (!isset($datos[$sucursal])) $datos[$sucursal] = [];
@@ -89,7 +89,7 @@ if (!$fechaInicio || !$fechaFin) {
                 $totalComanda = 0;
 
                 foreach ($items as $item) {
-                    $pdf->Cell(80, 6, utf8_decode($item['NombreProducto']), 1);
+                    $pdf->Cell(80, 6, utf8_decode($item['Nombre']), 1);
                     $pdf->Cell(30, 6, $item['Cantidad'], 1, 0, 'C');
                     $pdf->Cell(30, 6, '$' . number_format($item['PrecioFinal'], 2), 1, 0, 'C');
                     $pdf->Cell(30, 6, '$' . number_format($item['Subtotal'], 2), 1, 1, 'C');
