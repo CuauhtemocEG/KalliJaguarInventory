@@ -153,6 +153,12 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
+        Swal.fire({
+            title: 'Procesando...',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+
         fetch('https://stagging.kallijaguar-inventory.com/js/productsRequested/confirmRequest.php', {
             method: 'POST',
             body: formData,
@@ -165,12 +171,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 return response.json();
             })
             .then(data => {
-                Swal.fire({
-                    title: 'Procesando...',
-                    allowOutsideClick: false,
-                    didOpen: () => Swal.showLoading()
-                });
-                
+
                 console.log("Respuesta del servidor:", data);
 
                 if (data.status === 'error') {
