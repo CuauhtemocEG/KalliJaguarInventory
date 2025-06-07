@@ -16,7 +16,7 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
 	formData.append("login_usuario", usuario);
 	formData.append("login_clave", clave);
 
-	fetch("https://stagging.kallijaguar-inventory.com/js/loginHandler.php", {
+	fetch("https://stagging.kallijaguar-inventory.com/api/loginHandler.php", {
 		method: "POST",
 		body: formData
 	})
