@@ -77,7 +77,7 @@ $totalUnidades = $totalUnidades->query("SELECT Nombre, Cantidad, Tipo FROM Produ
 											foreach ($totalPesables as $row) {
 												echo '<li class="list-group-item d-flex justify-content-between align-items-center">
                                                         ' . $row['Nombre'] . '
-                                                        <span class="badge badge-warning badge-pill">' . number_format($row['Cantidad'], 2) . ' Kg</span>
+                                                        <span class="badge badge-warning badge-pill">' . number_format($row['Cantidad'], 3) . ' Kg/grms</span>
                                                       </li>';
 											}
 										} else {
