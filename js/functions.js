@@ -3,12 +3,12 @@ let urlAPI = "https://stagging.kallijaguar-inventory.com/js/productsRequested/";
 $(document).ready(function () {
     actualizarPanelCarrito();
 
-    $('#searchButton').click(function() {
+    $('#searchButton').click(function () {
         let query = $('#searchInput').val();
         fetchProducts(query);
     });
 
-    $('#searchInput').keyup(function() {
+    $('#searchInput').keyup(function () {
         let query = $(this).val();
         fetchProducts(query);
     });
@@ -17,29 +17,29 @@ $(document).ready(function () {
 
 function fetchProducts(query) {
     $.ajax({
-        url: urlAPI+'searchProducts.php',
+        url: urlAPI + 'searchProducts.php',
         method: 'GET',
         data: { query: query },
-        success: function(response) {
+        success: function (response) {
             $('#productList').html(response);
         },
-        error: function() {
+        error: function () {
             Swal.fire('Error', 'Ocurrió un error en la búsqueda.', 'error');
         }
     });
 }
 
-$(document).on('submit', '.add-product-form', function(e) {
+$(document).on('submit', '.add-product-form', function (e) {
     e.preventDefault();
 
     let form = $(this);
     let formData = form.serialize();
 
     $.ajax({
-        url: urlAPI+'addProductToSession.php',
+        url: urlAPI + 'addProductToSession.php',
         method: 'POST',
         data: formData,
-        success: function(response) {
+        success: function (response) {
             let res = JSON.parse(response);
             if (res.status === 'success') {
                 Swal.fire({
@@ -59,7 +59,7 @@ $(document).on('submit', '.add-product-form', function(e) {
                 });
             }
         },
-        error: function() {
+        error: function () {
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
@@ -69,9 +69,9 @@ $(document).on('submit', '.add-product-form', function(e) {
     });
 });
 
-$(document).on('click', '.btn-delete-item', function(e) {
+$(document).on('click', '.btn-delete-item', function (e) {
     e.preventDefault();
-    
+
     let id = $(this).data('id');
 
     Swal.fire({
@@ -86,10 +86,10 @@ $(document).on('click', '.btn-delete-item', function(e) {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: urlAPI+'deleteProductFromCart.php',
+                url: urlAPI + 'deleteProductFromCart.php',
                 method: 'POST',
                 data: { id: id },
-                success: function(response) {
+                success: function (response) {
                     let res = JSON.parse(response);
                     if (res.status === 'Success') {
                         Swal.fire(
@@ -106,7 +106,7 @@ $(document).on('click', '.btn-delete-item', function(e) {
                         );
                     }
                 },
-                error: function() {
+                error: function () {
                     Swal.fire(
                         'Error',
                         'Ocurrió un error al intentar eliminar el producto.',
@@ -121,7 +121,7 @@ $(document).on('click', '.btn-delete-item', function(e) {
 
 function actualizarPanelCarrito() {
     $.ajax({
-        url: urlAPI +'renderCartPanel.php',
+        url: urlAPI + 'renderCartPanel.php',
         method: 'GET',
         success: function (response) {
             $('#cartBody').html(response);
@@ -158,40 +158,46 @@ document.addEventListener('DOMContentLoaded', function () {
             body: formData,
             credentials: 'include'
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Error HTTP: ' + response.status);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log("Respuesta del servidor:", data);
-        
-            if (data.status === 'error') {
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error HTTP: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
                 Swal.fire({
-                    title: 'Error',
-                    text: data.message || 'Algo salió mal al procesar la solicitud.',
+                    title: 'Procesando...',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+                
+                console.log("Respuesta del servidor:", data);
+
+                if (data.status === 'error') {
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.message || 'Algo salió mal al procesar la solicitud.',
+                        icon: 'error'
+                    });
+                    return;
+                }
+
+                $('#confirmModal').modal('hide');
+                Swal.fire({
+                    title: '¡Solicitud enviada!',
+                    text: data.message || 'La comanda fue procesada correctamente.',
+                    icon: 'success'
+                }).then(() => {
+                    window.location.href = 'index.php?page=showRequest';
+                });
+            })
+            .catch(error => {
+                console.error('Error al hacer fetch:', error);
+                Swal.fire({
+                    title: 'Error de conexión',
+                    text: 'No se pudo completar la solicitud. Revisa tu conexión o vuelve a intentar.',
                     icon: 'error'
                 });
-                return;
-            }
-        
-            $('#confirmModal').modal('hide');
-            Swal.fire({
-                title: '¡Solicitud enviada!',
-                text: data.message || 'La comanda fue procesada correctamente.',
-                icon: 'success'
-            }).then(() => {
-                window.location.href = 'index.php?page=showRequest';
             });
-        })
-        .catch(error => {
-            console.error('Error al hacer fetch:', error);
-            Swal.fire({
-                title: 'Error de conexión',
-                text: 'No se pudo completar la solicitud. Revisa tu conexión o vuelve a intentar.',
-                icon: 'error'
-            });
-        });
     });
 });
