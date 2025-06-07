@@ -1,119 +1,108 @@
 <?php
 
-function conexion()
-{
-	try {
-		$pdo = new PDO("mysql:host=localhost:3306;dbname=kallijag_inventory_stage", "kallijag_stage", "uNtiL.horSe@5");
-		$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		$pdo->exec("SET NAMES utf8mb4");
+	# Conexion a la base de datos #
+	function conexion(){
+		$pdo = new PDO('mysql:host=localhost:3306
+;dbname=kallijag_inventory_stage', 'kallijag_stage', 'uNtiL.horSe@5');
 		return $pdo;
-	} catch (PDOException $e) {
-		die("Error en conexión: " . $e->getMessage());
 	}
-}
 
-
-
-# Verificar datos #
-function verificar_datos($filtro, $cadena)
-{
-	if (preg_match("/^" . $filtro . "$/", $cadena)) {
-		return false;
-	} else {
-		return true;
+	# Verificar datos #
+	function verificar_datos($filtro,$cadena){
+		if(preg_match("/^".$filtro."$/", $cadena)){
+			return false;
+        }else{
+            return true;
+        }
 	}
-}
 
 
-# Limpiar cadenas de texto #
-function limpiar_cadena($cadena)
-{
-	$cadena = trim($cadena);
-	$cadena = stripslashes($cadena);
-	$cadena = str_ireplace("<script>", "", $cadena);
-	$cadena = str_ireplace("</script>", "", $cadena);
-	$cadena = str_ireplace("<script src", "", $cadena);
-	$cadena = str_ireplace("<script type=", "", $cadena);
-	$cadena = str_ireplace("SELECT * FROM", "", $cadena);
-	$cadena = str_ireplace("DELETE FROM", "", $cadena);
-	$cadena = str_ireplace("INSERT INTO", "", $cadena);
-	$cadena = str_ireplace("DROP TABLE", "", $cadena);
-	$cadena = str_ireplace("DROP DATABASE", "", $cadena);
-	$cadena = str_ireplace("TRUNCATE TABLE", "", $cadena);
-	$cadena = str_ireplace("SHOW TABLES;", "", $cadena);
-	$cadena = str_ireplace("SHOW DATABASES;", "", $cadena);
-	$cadena = str_ireplace("<?php", "", $cadena);
-	$cadena = str_ireplace("?>", "", $cadena);
-	$cadena = str_ireplace("--", "", $cadena);
-	$cadena = str_ireplace("^", "", $cadena);
-	$cadena = str_ireplace("<", "", $cadena);
-	$cadena = str_ireplace("[", "", $cadena);
-	$cadena = str_ireplace("]", "", $cadena);
-	$cadena = str_ireplace("==", "", $cadena);
-	$cadena = str_ireplace(";", "", $cadena);
-	$cadena = str_ireplace("::", "", $cadena);
-	$cadena = trim($cadena);
-	$cadena = stripslashes($cadena);
-	return $cadena;
-}
+	# Limpiar cadenas de texto #
+	function limpiar_cadena($cadena){
+		$cadena=trim($cadena);
+		$cadena=stripslashes($cadena);
+		$cadena=str_ireplace("<script>", "", $cadena);
+		$cadena=str_ireplace("</script>", "", $cadena);
+		$cadena=str_ireplace("<script src", "", $cadena);
+		$cadena=str_ireplace("<script type=", "", $cadena);
+		$cadena=str_ireplace("SELECT * FROM", "", $cadena);
+		$cadena=str_ireplace("DELETE FROM", "", $cadena);
+		$cadena=str_ireplace("INSERT INTO", "", $cadena);
+		$cadena=str_ireplace("DROP TABLE", "", $cadena);
+		$cadena=str_ireplace("DROP DATABASE", "", $cadena);
+		$cadena=str_ireplace("TRUNCATE TABLE", "", $cadena);
+		$cadena=str_ireplace("SHOW TABLES;", "", $cadena);
+		$cadena=str_ireplace("SHOW DATABASES;", "", $cadena);
+		$cadena=str_ireplace("<?php", "", $cadena);
+		$cadena=str_ireplace("?>", "", $cadena);
+		$cadena=str_ireplace("--", "", $cadena);
+		$cadena=str_ireplace("^", "", $cadena);
+		$cadena=str_ireplace("<", "", $cadena);
+		$cadena=str_ireplace("[", "", $cadena);
+		$cadena=str_ireplace("]", "", $cadena);
+		$cadena=str_ireplace("==", "", $cadena);
+		$cadena=str_ireplace(";", "", $cadena);
+		$cadena=str_ireplace("::", "", $cadena);
+		$cadena=trim($cadena);
+		$cadena=stripslashes($cadena);
+		return $cadena;
+	}
 
 
-# Funcion renombrar fotos #
-function renombrar_fotos($nombre)
-{
-	$nombre = str_ireplace(" ", "_", $nombre);
-	$nombre = str_ireplace("/", "_", $nombre);
-	$nombre = str_ireplace("#", "_", $nombre);
-	$nombre = str_ireplace("-", "_", $nombre);
-	$nombre = str_ireplace("$", "_", $nombre);
-	$nombre = str_ireplace(".", "_", $nombre);
-	$nombre = str_ireplace(",", "_", $nombre);
-	$nombre = $nombre . "_" . rand(0, 100);
-	return $nombre;
-}
+	# Funcion renombrar fotos #
+	function renombrar_fotos($nombre){
+		$nombre=str_ireplace(" ", "_", $nombre);
+		$nombre=str_ireplace("/", "_", $nombre);
+		$nombre=str_ireplace("#", "_", $nombre);
+		$nombre=str_ireplace("-", "_", $nombre);
+		$nombre=str_ireplace("$", "_", $nombre);
+		$nombre=str_ireplace(".", "_", $nombre);
+		$nombre=str_ireplace(",", "_", $nombre);
+		$nombre=$nombre."_".rand(0,100);
+		return $nombre;
+	}
 
 
-# Funcion paginador de tablas #
-function paginador_tablas($pagina, $Npaginas, $url, $botones)
-{
-	$tabla = '<ul class="pagination d-flex justify-content-center">';
+	# Funcion paginador de tablas #
+	function paginador_tablas($pagina,$Npaginas,$url,$botones){
+		$tabla='<ul class="pagination d-flex justify-content-center">';
 
-	if ($pagina <= 1) {
-		$tabla .= '
+		if($pagina<=1){
+			$tabla.='
 			<a class="pagination-previous btn btn-warning disabled" >Anterior</a>';
-	} else {
-		$tabla .= '
-			<a class="pagination-previous btn btn-warning" href="' . $url . ($pagina - 1) . '" >Anterior</a>
-				<li><a class="paginate_button page-item btn btn-light" href="' . $url . '1">1</a></li>
+		}else{
+			$tabla.='
+			<a class="pagination-previous btn btn-warning" href="'.$url.($pagina-1).'" >Anterior</a>
+				<li><a class="paginate_button page-item btn btn-light" href="'.$url.'1">1</a></li>
 				<li><span class="pagination-ellipsis">&hellip;</span></li>
 			';
-	}
-
-	$ci = 0;
-	for ($i = $pagina; $i <= $Npaginas; $i++) {
-		if ($ci >= $botones) {
-			break;
 		}
-		if ($pagina == $i) {
-			$tabla .= '<li><a class="paginate_button page-item active btn btn-dark" href="' . $url . $i . '">' . $i . '</a></li>';
-		} else {
-			//$tabla.='<li><a class="pagination-link" href="'.$url.$i.'">'.$i.'</a></li>';
-		}
-		$ci++;
-	}
 
-	if ($pagina == $Npaginas) {
-		$tabla .= '
+		$ci=0;
+		for($i=$pagina; $i<=$Npaginas; $i++){
+			if($ci>=$botones){
+				break;
+			}
+			if($pagina==$i){
+				$tabla.='<li><a class="paginate_button page-item active btn btn-dark" href="'.$url.$i.'">'.$i.'</a></li>';
+			}else{
+				//$tabla.='<li><a class="pagination-link" href="'.$url.$i.'">'.$i.'</a></li>';
+			}
+			$ci++;
+		}
+
+		if($pagina==$Npaginas){
+			$tabla.='
 			<a class="paginate_button page-item next disabled btn btn-warning" >Siguiente</a>
 			';
-	} else {
-		$tabla .= '
+		}else{
+			$tabla.='
 				<li><span class="pagination-ellipsis">&hellip;</span></li>
-				<li><a class="paginate_button page-item btn btn-light" href="' . $url . $Npaginas . '">' . $Npaginas . '</a></li>
-			<a class="paginate_button page-item next btn btn-warning" href="' . $url . ($pagina + 1) . '" >Siguiente</a>
+				<li><a class="paginate_button page-item btn btn-light" href="'.$url.$Npaginas.'">'.$Npaginas.'</a></li>
+			<a class="paginate_button page-item next btn btn-warning" href="'.$url.($pagina+1).'" >Siguiente</a>
 			';
-	}
+		}
 
-	$tabla .= '</ul>';
-	return $tabla;
-}
+		$tabla.='</ul>';
+		return $tabla;
+	}
