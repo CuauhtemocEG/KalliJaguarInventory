@@ -1,6 +1,7 @@
 <?php
+ob_start();
 ini_set('display_errors', 1);
-error_reporting(E_ALL);
+error_reporting(E_ALL & ~E_DEPRECATED);
 
 require_once('../fpdf/fpdf.php');
 require_once('../controllers/mainController.php');
@@ -118,7 +119,7 @@ if (!$fechaInicio || !$fechaFin) {
         $pdf->Cell(0, 10, utf8_decode('Error de conexión o consulta: ') . $e->getMessage(), 0, 1);
     }
 }
-
+ob_end_clean();
 header('Content-Type: application/pdf');
 header('Content-Disposition: inline; filename="reporte_solicitudes.pdf"');
 $pdf->Output('I', 'reporte_solicitudes.pdf');
