@@ -23,7 +23,7 @@ document.getElementById("formReportePDF").addEventListener("submit", function(e)
 
     const formData = new FormData(this);
 
-    fetch('https://stagging.kallijaguar-inventory.com/api/generarReportePDF.php', {
+    fetch('https://www.kallijaguar-inventory.com/api/generarReportePDF.php', {
         method: 'POST',
         body: formData
     })
