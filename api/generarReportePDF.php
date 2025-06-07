@@ -36,14 +36,14 @@ if (!$fechaInicio || !$fechaFin) {
             SELECT 
                 m.ComandaID,
                 m.SucursalID,
-                s.NombreSucursal,
-                p.NombreProducto,
+                s.nombre,
+                p.Nombre,
                 m.Cantidad,
                 m.PrecioFinal,
                 (m.Cantidad * m.PrecioFinal) AS Subtotal
-            FROM movimientos m
-            JOIN productos p ON m.ProductoID = p.ProductoID
-            JOIN sucursales s ON m.SucursalID = s.SucursalID
+            FROM MovimientosInventario m
+            JOIN Productos p ON m.ProductoID = p.ProductoID
+            JOIN Sucursales s ON m.SucursalID = s.SucursalID
             WHERE m.TipoMovimiento = 'Salida'
               AND m.FechaMovimiento BETWEEN :fechaInicio AND :fechaFin
             ORDER BY m.SucursalID, m.ComandaID
