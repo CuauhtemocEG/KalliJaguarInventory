@@ -23,7 +23,7 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
 	.then(response => response.json())
 	.then(data => {
 		if (data.success) {
-			window.location.href = "./index.php?page=home";
+			window.location.href = "index.php?page=home";
 		} else {
 			msgDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
 		}
