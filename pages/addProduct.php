@@ -82,10 +82,7 @@ document.querySelector('.FormularioAjaxAdd').addEventListener('submit', async fu
 
     const form = e.target;
     const formData = new FormData(form);
-    const responseContainer = document.querySelector('.form-rest');
     const submitBtn = document.getElementById('submitBtn');
-
-    responseContainer.innerHTML = '';
 
     const requiredFields = ['productUPC', 'productName', 'productPrecio', 'productStock'];
     for (const fieldName of requiredFields) {
