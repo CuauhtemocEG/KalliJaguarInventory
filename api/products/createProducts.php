@@ -2,8 +2,7 @@
 header("Content-Type: application/json");
 require_once "../../includes/session_start.php";
 require_once "../../controllers/mainController.php";
-
-$response = ['status' => 'error', 'message' => 'Error desconocido'];
+require_once '../../helpers/responseHelper.php';
 
 try {
     // Validar existencia de campos

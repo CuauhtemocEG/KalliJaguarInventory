@@ -71,7 +71,7 @@
 					</div>
 				</div>
 				<p class="has-text-centered">
-					<button type="submit" class="btn btn-warning">Guardar Producto</button>
+					<button type="submit" id="submitBtn" class="btn btn-warning">Guardar Producto</button>
 				</p>
 			</form>
 		</div>
@@ -80,10 +80,35 @@
 <script>
 document.querySelector('.FormularioAjax').addEventListener('submit', async function(e) {
     e.preventDefault();
+
     const form = e.target;
     const formData = new FormData(form);
     const responseContainer = document.querySelector('.form-rest');
-    responseContainer.innerHTML = "Procesando...";
+    const submitBtn = document.getElementById('submitBtn');
+
+    responseContainer.innerHTML = '';
+
+    const requiredFields = ['productUPC', 'productName', 'productPrecio', 'productStock'];
+    for (const fieldName of requiredFields) {
+        const field = form.querySelector(`[name="${fieldName}"]`);
+        if (!field.value.trim()) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Campo requerido',
+                text: `Por favor completa el campo: ${fieldName}`
+            });
+            return;
+        }
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Guardando...";
+
+    Swal.fire({
+        title: 'Procesando...',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
 
     try {
         const res = await fetch('../api/products/createProducts.php', {
@@ -92,22 +117,36 @@ document.querySelector('.FormularioAjax').addEventListener('submit', async funct
         });
 
         const data = await res.json();
+        Swal.close();
 
-        responseContainer.innerHTML = `
-            <div class="alert alert-${data.status === 'success' ? 'success' : 'danger'} alert-dismissible fade show" role="alert">
-                ${data.message}
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-            </div>
-        `;
-
-        if (data.status === 'success') form.reset();
+        if (data.status === 'success') {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: data.message,
+                timer: 2000,
+                showConfirmButton: false
+            });
+            form.reset();
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message
+            });
+        }
     } catch (error) {
-        responseContainer.innerHTML = `
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                Error de conexión con el servidor.
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-            </div>
-        `;
+        console.error(error);
+        Swal.close();
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de red',
+            text: 'No se pudo conectar con el servidor.'
+        });
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Guardar producto";
     }
 });
+
 </script>
