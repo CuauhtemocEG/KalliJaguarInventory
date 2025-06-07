@@ -5,8 +5,7 @@
 			<?php
 			require_once "./controllers/mainController.php";
 			?>
-			<div class="form-rest"></div>
-			<form class="FormularioAjax" method="POST" autocomplete="off" enctype="multipart/form-data">
+			<form class="FormularioAjaxAdd" method="POST" autocomplete="off" enctype="multipart/form-data">
 
 				<div class="form-row">
 					<div class="form-group col-md-6">
@@ -78,7 +77,7 @@
 	</div>
 </div>
 <script>
-document.querySelector('.FormularioAjax').addEventListener('submit', async function(e) {
+document.querySelector('.FormularioAjaxAdd').addEventListener('submit', async function(e) {
     e.preventDefault();
 
     const form = e.target;
