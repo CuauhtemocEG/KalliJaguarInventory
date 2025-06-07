@@ -5,29 +5,28 @@
 			<?php
 			require_once "./controllers/mainController.php";
 			?>
-			<div class="form-rest"></div>
-			<form action="./controllers/saveProduct.php" method="POST" class="FormularioAjax" autocomplete="off" enctype="multipart/form-data">
+			<form class="FormularioAjaxAdd" method="POST" autocomplete="off" enctype="multipart/form-data">
 
 				<div class="form-row">
 					<div class="form-group col-md-6">
 						<b><label>Código de barra (UPC):</label></b>
-						<input class="form-control" type="text" name="productUPC" pattern="[a-zA-Z0-9- ]{1,70}" maxlength="70" required>
+						<input class="form-control" type="text" name="productUPC" maxlength="13">
 					</div>
 
 					<div class="form-group col-md-6">
 						<b><label>Nombre del Producto:</label></b>
-						<input class="form-control" type="text" name="productName" maxlength="70" required>
+						<input class="form-control" type="text" name="productName" maxlength="70">
 					</div>
 				</div>
 
 				<div class="form-row">
 					<div class="form-group col-md-4">
 						<b><label>Precio:</label></b>
-						<input class="form-control" type="text" name="productPrecio" pattern="[0-9.]{1,25}" maxlength="25" required>
+						<input class="form-control" type="text" name="productPrecio" maxlength="25">
 					</div>
 					<div class="form-group col-md-4">
 						<b><label>Stock:</label></b>
-						<input class="form-control" type="text" name="productStock" required>
+						<input class="form-control" type="text" name="productStock">
 					</div>
 					<div class="form-group col-md-4">
 						<b><label>Tipo de Inventario (Unitario, Pesable):</label></b>
@@ -71,9 +70,78 @@
 					</div>
 				</div>
 				<p class="has-text-centered">
-					<button type="submit" class="btn btn-warning">Guardar Producto</button>
+					<button type="submit" id="submitBtn" class="btn btn-warning">Guardar Producto</button>
 				</p>
 			</form>
 		</div>
 	</div>
 </div>
+<script>
+document.querySelector('.FormularioAjaxAdd').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const formData = new FormData(form);
+    const submitBtn = document.getElementById('submitBtn');
+
+    const requiredFields = ['productUPC', 'productName', 'productPrecio', 'productStock'];
+    for (const fieldName of requiredFields) {
+        const field = form.querySelector(`[name="${fieldName}"]`);
+        if (!field.value.trim()) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Campo requerido',
+                text: `Por favor completa el campo: ${fieldName}`
+            });
+            return;
+        }
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Guardando...";
+
+    Swal.fire({
+        title: 'Procesando...',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+
+    try {
+        const res = await fetch('../api/products/createProducts.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await res.json();
+        Swal.close();
+
+        if (data.status === 'success') {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: data.message,
+                timer: 2000,
+                showConfirmButton: false
+            });
+            form.reset();
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message
+            });
+        }
+    } catch (error) {
+        console.error(error);
+        Swal.close();
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de red',
+            text: 'No se pudo conectar con el servidor.'
+        });
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Guardar producto";
+    }
+});
+</script>
