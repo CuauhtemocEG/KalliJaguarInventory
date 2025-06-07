@@ -1,11 +1,6 @@
 <?php
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-session_start();
-
-if (!isset($_SESSION['id'])) {
-    header("Location: https://stagging.kallijaguar-inventory.com/index.php?page=login");
-    exit;
-} ?>
+session_start(); ?>
 <!DOCTYPE html>
 <html>
 
