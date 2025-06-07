@@ -1,14 +1,19 @@
 <?php
+header("Content-Type: application/json");
 require_once "../controllers/mainController.php";
 
 if (session_status() === PHP_SESSION_NONE) {
 	session_start();
 }
 
-header("Content-Type: application/json");
+// Validar si se están recibiendo los datos
+if (!isset($_POST['login_usuario']) || !isset($_POST['login_clave'])) {
+	echo json_encode(["success" => false, "message" => "Datos no recibidos"]);
+	exit;
+}
 
-$usuario = limpiar_cadena($_POST['login_usuario'] ?? '');
-$clave = limpiar_cadena($_POST['login_clave'] ?? '');
+$usuario = limpiar_cadena($_POST['login_usuario']);
+$clave = limpiar_cadena($_POST['login_clave']);
 
 if ($usuario === "" || $clave === "") {
 	echo json_encode(["success" => false, "message" => "Todos los campos son obligatorios."]);
@@ -27,6 +32,12 @@ if (verificar_datos("[a-zA-Z0-9$@.-]{7,100}", $clave)) {
 
 try {
 	$pdo = conexion();
+
+	if (!$pdo) {
+		echo json_encode(["success" => false, "message" => "Error de conexión a la base de datos"]);
+		exit;
+	}
+
 	$stmt = $pdo->prepare("SELECT * FROM Usuarios WHERE Username = :usuario LIMIT 1");
 	$stmt->bindParam(':usuario', $usuario, PDO::PARAM_STR);
 	$stmt->execute();
@@ -48,5 +59,5 @@ try {
 
 	echo json_encode(["success" => false, "message" => "Usuario o contraseña incorrectos."]);
 } catch (PDOException $e) {
-	echo json_encode(["success" => false, "message" => "Error del servidor: " . $e->getMessage()]);
+	echo json_encode(["success" => false, "message" => "Error de servidor: " . $e->getMessage()]);
 }
