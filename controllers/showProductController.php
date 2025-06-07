@@ -197,15 +197,13 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 						</p>
 					</div>
 					<div class="align-items-center align-content-center col-md-3 border-left mt-1">
-						<div class="d-flex justify-content-center text-center gap-5">
-						<div>
-							<h5 class="mb-1 fw-bold">Precio Compra:</h5> 
-							<div>$' . number_format($rows['PrecioUnitario'], 2, '.', '') . '</div>
-						</div>
-						<div>
-							<h5 class="mb-1 fw-bold">Precio Venta:</h5> 
-							<div>$' . number_format($rows['PrecioUnitario'] + ($rows['PrecioUnitario'] * 0.16), 2, '.', '') . '</div>
-						</div>
+						<div class="d-flex has-text-centered">
+							<h4 class="mr-1 col-md-6">
+								<p class="font-weight-bold">Precio Compra:</p>$' . number_format($rows['PrecioUnitario'], 2, '.', '') . '
+							</h4>
+							<h4 class="mr-1 col-md-6">
+								<p class="font-weight-bold">Precio Venta:</p>$' . number_format($rows['PrecioUnitario'] + ($rows['PrecioUnitario'] * 0.16), 2, '.', '') . '
+							</h4> 
 					</div>'
 			. $txtDisponibilidad . '
 						<div class="d-flex flex-column mt-4"><a href="index.php?page=updateProduct&idProductUp=' . $rows['ProductoID'] . '" class="btn btn-dark btn-sm" type="button">Actualizar Producto</a><a class="btn btn-secondary btn-sm mt-2 text-white" href="index.php?page=updateProductImage&idProductUp=' . $rows['ProductoID'] . '" type="button">Actualizar Imagen</a><a href="' . $url . $pagina . '&idProductDel=' . $rows['ProductoID'] . '" class="btn btn-danger btn-sm btn-sm mt-2">Eliminar</a></div>
