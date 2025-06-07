@@ -6,7 +6,7 @@
 			require_once "./controllers/mainController.php";
 			?>
 			<div class="form-rest"></div>
-			<form action="./controllers/saveProduct.php" method="POST" class="FormularioAjax" autocomplete="off" enctype="multipart/form-data">
+			<form class="FormularioAjax" method="POST" autocomplete="off" enctype="multipart/form-data">
 
 				<div class="form-row">
 					<div class="form-group col-md-6">
@@ -77,3 +77,37 @@
 		</div>
 	</div>
 </div>
+<script>
+document.querySelector('.FormularioAjax').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    const responseContainer = document.querySelector('.form-rest');
+    responseContainer.innerHTML = "Procesando...";
+
+    try {
+        const res = await fetch('../api/products/createProducts.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await res.json();
+
+        responseContainer.innerHTML = `
+            <div class="alert alert-${data.status === 'success' ? 'success' : 'danger'} alert-dismissible fade show" role="alert">
+                ${data.message}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        `;
+
+        if (data.status === 'success') form.reset();
+    } catch (error) {
+        responseContainer.innerHTML = `
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                Error de conexión con el servidor.
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        `;
+    }
+});
+</script>
