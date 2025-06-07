@@ -121,6 +121,6 @@ if (!$fechaInicio || !$fechaFin) {
 }
 ob_end_clean();
 header('Content-Type: application/pdf');
-header('Content-Disposition: attachment; filename="reporteKalli.pdf"');
+header('Content-Disposition: attachment; filename="reporteKalli'.$fechaInicio.'-'.$fechaFin.'.pdf"');
 $pdf->Output('D', 'reporteKalli'.$fechaInicio.'-'.$fechaFin.'.pdf');
 exit;
