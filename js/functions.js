@@ -173,6 +173,12 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
+        Swal.fire({
+            title: 'Procesando...',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+
         fetch('https://www.kallijaguar-inventory.com/js/productsRequested/confirmRequest.php', {
             method: 'POST',
             body: formData,
