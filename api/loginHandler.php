@@ -1,6 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL & ~E_DEPRECATED);
 require_once "../controllers/mainController.php";
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -8,14 +6,6 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 header("Content-Type: application/json");
-
-function limpiar_cadena($cadena) {
-	return htmlspecialchars(trim($cadena), ENT_QUOTES, 'UTF-8');
-}
-
-function verificar_datos($patron, $cadena) {
-	return !preg_match("/^$patron$/", $cadena);
-}
 
 $usuario = limpiar_cadena($_POST['login_usuario'] ?? '');
 $clave = limpiar_cadena($_POST['login_clave'] ?? '');
