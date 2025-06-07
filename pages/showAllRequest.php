@@ -4,7 +4,6 @@ require_once "./controllers/mainController.php";
 $userID = $_SESSION["id"];
 $nameUser = $_SESSION["nombre"];
 
-// Obtener solicitudes con JOIN para nombre de usuario y nombre de sucursal
 $db = conexion();
 $stmt = $db->query("
     SELECT 
@@ -28,7 +27,6 @@ $stmt = $db->query("
 
 $datos = $stmt->fetchAll();
 
-// Clasificar por fecha
 $hoy = [];
 $ayer = [];
 $anteriores = [];
@@ -49,7 +47,6 @@ foreach ($datos as $row) {
     }
 }
 
-// Función para mostrar cada tarjeta
 function renderSolicitudes($solicitudes) {
     foreach ($solicitudes as $row) { ?>
         <div class="col-xl-6 col-md-12 mb-4">

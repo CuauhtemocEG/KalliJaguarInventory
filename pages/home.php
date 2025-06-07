@@ -24,6 +24,22 @@ $totalPesables = $totalPesables->query("SELECT Nombre, Cantidad, Tipo FROM Produ
 
 $totalUnidades = conexion();
 $totalUnidades = $totalUnidades->query("SELECT Nombre, Cantidad, Tipo FROM Productos WHERE Tipo='Unidad' AND Cantidad < 5");
+
+$db = conexion();
+$statusCountsStmt = $db->query("
+    SELECT Status, COUNT(DISTINCT ComandaID) AS total
+    FROM MovimientosInventario
+    WHERE TipoMovimiento = 'Salida'
+    GROUP BY Status
+");
+
+$statusCounts = $statusCountsStmt->fetchAll(PDO::FETCH_KEY_PAIR);
+
+$totalSolicitudes = array_sum($statusCounts);
+function porcentaje($valor, $total)
+{
+	return $total > 0 ? number_format(($valor / $total) * 100, 1) : '0.0';
+}
 ?>
 <div class="container-fluid py-4">
 	<?php if ($totalCount > 0): ?>
@@ -31,6 +47,52 @@ $totalUnidades = $totalUnidades->query("SELECT Nombre, Cantidad, Tipo FROM Produ
 			<p><i class="fas fa-exclamation-circle me-2"></i> Hay <strong><?php echo $totalCount; ?></strong> productos con inventario bajo (< 5 unidades).</p>
 		</div>
 	<?php endif; ?>
+
+	<div class="row mb-4">
+		<div class="col-md-6 mb-4 mb-md-0">
+			<div class="card shadow h-100">
+				<div class="card-body d-flex flex-column justify-content-center align-items-center">
+					<h5 class="card-title text-center">Resumen de Solicitudes por Estado</h5>
+					<canvas id="solicitudesChart"></canvas>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-6">
+			<div class="card shadow h-100">
+				<div class="card-body">
+					<h5 class="card-title text-center">Totales por Estado</h5>
+					<ul class="list-group list-group-flush">
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<span><i class="fas fa-info-circle text-info mr-2"></i> Abierto</span>
+							<span class="badge badge-info badge-pill">
+								<?= $statusCounts['Abierto'] ?? 0 ?> (<?= porcentaje($statusCounts['Abierto'] ?? 0, $totalSolicitudes) ?>%)
+							</span>
+						</li>
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<span><i class="fas fa-shipping-fast text-warning mr-2"></i> En transito</span>
+							<span class="badge badge-warning badge-pill">
+								<?= $statusCounts['En transito'] ?? 0 ?> (<?= porcentaje($statusCounts['En transito'] ?? 0, $totalSolicitudes) ?>%)
+							</span>
+						</li>
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<span><i class="fas fa-check-circle text-success mr-2"></i> Cerrado</span>
+							<span class="badge badge-success badge-pill">
+								<?= $statusCounts['Cerrado'] ?? 0 ?> (<?= porcentaje($statusCounts['Cerrado'] ?? 0, $totalSolicitudes) ?>%)
+							</span>
+						</li>
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<span><i class="fas fa-times-circle text-danger mr-2"></i> Cancelado</span>
+							<span class="badge badge-danger badge-pill">
+								<?= $statusCounts['Cancelado'] ?? 0 ?> (<?= porcentaje($statusCounts['Cancelado'] ?? 0, $totalSolicitudes) ?>%)
+							</span>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<div class="row">
 
 		<div class="col-12 mb-4">
@@ -122,6 +184,49 @@ $totalUnidades = $totalUnidades->query("SELECT Nombre, Cantidad, Tipo FROM Produ
 				</div>
 			</div>
 		</div>
-
 	</div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		const ctx = document.getElementById('solicitudesChart').getContext('2d');
+		const data = {
+			labels: ['Abierto', 'En transito', 'Cerrado', 'Cancelado'],
+			datasets: [{
+				data: [
+					<?= $statusCounts['Abierto'] ?? 0 ?>,
+					<?= $statusCounts['En transito'] ?? 0 ?>,
+					<?= $statusCounts['Cerrado'] ?? 0 ?>,
+					<?= $statusCounts['Cancelado'] ?? 0 ?>
+				],
+				backgroundColor: ['#17a2b8', '#ffc107', '#28a745', '#dc3545']
+			}]
+		};
+
+		const config = {
+			type: 'pie',
+			data: data,
+			options: {
+				responsive: true,
+				plugins: {
+					legend: {
+						position: 'bottom'
+					},
+					tooltip: {
+						callbacks: {
+							label: function(context) {
+								let total = context.dataset.data.reduce((a, b) => a + b, 0);
+								let value = context.parsed;
+								let percentage = ((value / total) * 100).toFixed(1);
+								return `${context.label}: ${value} (${percentage}%)`;
+							}
+						}
+					}
+				}
+			}
+		};
+
+		new Chart(ctx, config);
+	});
+</script>
