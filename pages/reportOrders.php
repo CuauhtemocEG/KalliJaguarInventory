@@ -33,7 +33,7 @@ document.getElementById("formReportePDF").addEventListener("submit", function(e)
     })
     .then(blob => {
         const url = URL.createObjectURL(blob);
-        window.open(url, '_blank'); // Abre el PDF en una nueva pestaña
+        window.open(url, '_blank');
     })
     .catch(err => {
         console.error('Error al generar PDF:', err);
