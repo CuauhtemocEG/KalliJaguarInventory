@@ -3,7 +3,7 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 session_start();
 
 if (!isset($_SESSION['id'])) {
-    header("Location: login.php");
+    header("Location: index.php?page=login");
     exit;
 } ?>
 <!DOCTYPE html>
