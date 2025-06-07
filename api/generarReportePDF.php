@@ -22,6 +22,18 @@ class PDF extends FPDF {
     }
 }
 
+function formatearCantidad($cantidad, $tipo) {
+    if (strtolower($tipo) === 'pesable') {
+        if ($cantidad >= 1.0) {
+            return number_format($cantidad, 2) . ' Kg';
+        } else {
+            return number_format($cantidad * 1000, 0) . ' grs';
+        }
+    } else {
+        return number_format($cantidad, 0) . ' Unidad(es)';
+    }
+}
+
 $pdf = new PDF();
 $pdf->AddPage();
 $pdf->SetFont('Arial', '', 10);
@@ -38,6 +50,7 @@ if (!$fechaInicio || !$fechaFin) {
                 m.SucursalID,
                 s.nombre,
                 p.Nombre,
+                p.Tipo,
                 m.Cantidad,
                 m.PrecioFinal,
                 (m.Cantidad * m.PrecioFinal) AS Subtotal
@@ -90,7 +103,7 @@ if (!$fechaInicio || !$fechaFin) {
 
                 foreach ($items as $item) {
                     $pdf->Cell(80, 6, utf8_decode($item['Nombre']), 1);
-                    $pdf->Cell(30, 6, $item['Cantidad'], 1, 0, 'C');
+                    $pdf->Cell(30, 6, utf8_decode(formatearCantidad($item['Cantidad'], $item['Tipo'])), 1, 0, 'C');
                     $pdf->Cell(30, 6, '$' . number_format($item['PrecioFinal'], 2), 1, 0, 'C');
                     $pdf->Cell(30, 6, '$' . number_format($item['Subtotal'], 2), 1, 1, 'C');
                     $totalComanda += $item['Subtotal'];
