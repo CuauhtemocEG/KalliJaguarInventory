@@ -1,8 +1,8 @@
 <?php
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
-require_once('./fpdf/fpdf.php');
-require_once('./controllers/mainController.php');
+require_once('../fpdf/fpdf.php');
+require_once('../controllers/mainController.php');
 
 $fechaInicio = $_POST['fecha_desde'] ?? '';
 $fechaFin = $_POST['fecha_hasta'] ?? '';
