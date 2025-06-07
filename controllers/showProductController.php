@@ -1,4 +1,91 @@
 <?php
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Picqer\Barcode\BarcodeGeneratorPNG;
+
+function generateValidEan13($code12)
+{
+	$sum = 0;
+	for ($i = 0; $i < 12; $i++) {
+		$digit = (int) $code12[$i];
+		$sum += ($i % 2 === 0) ? $digit : $digit * 3;
+	}
+	$checkDigit = (10 - ($sum % 10)) % 10;
+	return $code12 . $checkDigit;
+}
+
+function generarCodigoConLogo($ean13, $nombreProducto, $logoPath, $fontPath, $scale = 1.5)
+{
+	$generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
+	$barcodeData = $generator->getBarcode($ean13, $generator::TYPE_EAN_13, 2 * $scale, 45 * $scale);
+
+	$barcodeImage = imagecreatefromstring($barcodeData);
+	$barcodeWidth = imagesx($barcodeImage);
+	$barcodeHeight = imagesy($barcodeImage);
+
+	$logo = imagecreatefrompng($logoPath);
+	$logoWidth = imagesx($logo);
+	$logoHeight = imagesy($logo);
+
+	$padding = 16;
+
+	$maxLogoHeight = $barcodeHeight * 1.5;
+	if ($logoHeight > $maxLogoHeight) {
+		$ratio = $maxLogoHeight / $logoHeight;
+		$newLogoWidth = (int)($logoWidth * $ratio);
+		$newLogoHeight = (int)$maxLogoHeight;
+
+		$resizedLogo = imagecreatetruecolor($newLogoWidth, $newLogoHeight);
+		imagesavealpha($resizedLogo, true);
+		$transColor = imagecolorallocatealpha($resizedLogo, 0, 0, 0, 127);
+		imagefill($resizedLogo, 0, 0, $transColor);
+
+		imagecopyresampled($resizedLogo, $logo, 0, 0, 0, 0, $newLogoWidth, $newLogoHeight, $logoWidth, $logoHeight);
+		imagedestroy($logo);
+		$logo = $resizedLogo;
+		$logoWidth = $newLogoWidth;
+		$logoHeight = $newLogoHeight;
+	}
+
+	$finalWidth = $barcodeWidth + $logoWidth + ($padding * 3);
+	$textHeight = 30;
+	$finalHeight = max($barcodeHeight, $logoHeight) + $textHeight + ($padding * 2) + 20;
+
+	$finalImage = imagecreatetruecolor($finalWidth, $finalHeight);
+	$white = imagecolorallocate($finalImage, 255, 255, 255);
+	$black = imagecolorallocate($finalImage, 0, 0, 0);
+	imagefilledrectangle($finalImage, 0, 0, $finalWidth, $finalHeight, $white);
+
+	imagecopy($finalImage, $barcodeImage, $padding, $padding, 0, 0, $barcodeWidth, $barcodeHeight);
+
+	$logoY = $padding + (int)(($barcodeHeight - $logoHeight) / 2);
+	imagecopy($finalImage, $logo, $barcodeWidth + 2 * $padding, $logoY, 0, 0, $logoWidth, $logoHeight);
+
+	$fontSize = 19;
+	$textBox = imagettfbbox($fontSize, 0, $fontPath, $nombreProducto);
+	$textWidth = $textBox[2] - $textBox[0];
+	$textX = (int)(($finalWidth - $textWidth) / 2);
+	$textY = max($barcodeHeight, $logoHeight) + $padding + 18;
+	imagettftext($finalImage, $fontSize, 0, $textX, $textY, $black, $fontPath, $nombreProducto);
+
+	$eanFontSize = 16;
+	$textBox2 = imagettfbbox($eanFontSize, 0, $fontPath, $ean13);
+	$textWidth2 = $textBox2[2] - $textBox2[0];
+	$textX2 = (int)(($finalWidth - $textWidth2) / 2);
+	$textY2 = $textY + 30;
+	imagettftext($finalImage, $eanFontSize, 0, $textX2, $textY2, $black, $fontPath, $ean13);
+
+	ob_start();
+	imagepng($finalImage);
+	$imgData = ob_get_clean();
+
+	imagedestroy($finalImage);
+	imagedestroy($barcodeImage);
+	imagedestroy($logo);
+
+	return base64_encode($imgData);
+}
+
 $inicio = ($pagina > 0) ? (($pagina * $registros) - $registros) : 0;
 $tabla = "";
 
@@ -58,36 +145,68 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 
 		$txtDisponibilidad = "";
 
-		if($rows['Cantidad'] >= 1) {
+		if ($rows['Cantidad'] >= 1) {
 			$txtDisponibilidad = '<span class="badge badge-pill badge-success">Disponible</span>';
 		} else {
 			$txtDisponibilidad = '<span class="badge badge-pill badge-danger">No disponible</span>';
 		}
 
+		$barcodeId = 'barcodeImage_' . $rows['ProductoID'];
+		$buttonId = 'downloadBtn_' . $rows['ProductoID'];
+
+		$rawUpc = preg_replace('/\D/', '', $rows['UPC']);
+
+		if (strlen($rawUpc) === 13) {
+			$validUpc = $rawUpc;
+		} elseif (strlen($rawUpc) >= 12) {
+			$validUpc = generateValidEan13(substr($rawUpc, 0, 12));
+		} else {
+			$validUpc = str_pad($rawUpc, 12, '0', STR_PAD_LEFT);
+			$validUpc = generateValidEan13($validUpc);
+		}
+
+		$nombreProducto = $rows['productName'];
+		$logoPath = __DIR__ . '/../img/Logo-Negro.png';
+		$fontPath = __DIR__ . '/../fonts/arial.ttf';
+
+		$barcodeImgBase64 = generarCodigoConLogo($validUpc, $nombreProducto, $logoPath, $fontPath);
+
+
+		$generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
+		$barcode = base64_encode($generator->getBarcode($validUpc, $generator::TYPE_EAN_13));
+
+		$tabla .= '
+    <div class="mt-2 text-center">
+        <img id="' . $barcodeId . '" src="data:image/png;base64,' . $barcodeImgBase64 . '" alt="Código de Barras" class="img-fluid" style="max-width:250px;" />
+        <div class="mt-2">
+            <button id="' . $buttonId . '" class="btn btn-outline-primary btn-sm mt-2">Descargar Código</button>
+        </div>
+    </div>';
+
 		$tabla .= '</div>
 					<div class="col-md-6 mt-1">
 						<h5 class="h5">' . $rows['productName'] . '</h5>
 						<div class="mt-1 mb-2 spec-1 h6">
-							<span>Registrado por: '.$rows['Nombre'].'</span></span>
+							<span>Registrado por: ' . $rows['Nombre'] . '</span></span>
 						</div>
 						<p class="text-justify para mb-0">
-							<strong>UPC:</strong> '. $rows['UPC'].'<br>
-							<strong>Stock Disponible:</strong> ' .$unidades .' '. $res .'<br>
-							<strong>Categoría:</strong> '.$rows['CatName'].'<br>
-							<strong>Tipo de Inventario:</strong> '.$rows['Tipo'].'
+							<strong>UPC:</strong> ' . $rows['UPC'] . '<br>
+							<strong>Stock Disponible:</strong> ' . $unidades . ' ' . $res . '<br>
+							<strong>Categoría:</strong> ' . $rows['CatName'] . '<br>
+							<strong>Tipo de Inventario:</strong> ' . $rows['Tipo'] . '
 						</p>
 					</div>
 					<div class="align-items-center align-content-center col-md-3 border-left mt-1">
 						<div class="d-flex has-text-centered">
 							<h5 class="mr-1">
-								<p class="font-weight-bold">Precio Compra:</p> $'.number_format($rows['PrecioUnitario'], 2, '.', '').'
+								<p class="font-weight-bold">Precio Compra:</p> $' . number_format($rows['PrecioUnitario'], 2, '.', '') . '
 							</h5>
 							<h5 class="mr-1">
-								<p class="font-weight-bold">Precio Venta:</p> $'. number_format($rows['PrecioUnitario'] + ($rows['PrecioUnitario'] * 0.16), 2, '.', '').'
+								<p class="font-weight-bold">Precio Venta:</p> $' . number_format($rows['PrecioUnitario'] + ($rows['PrecioUnitario'] * 0.16), 2, '.', '') . '
 							</h5>
 						</div>'
-						. $txtDisponibilidad.'
-						<div class="d-flex flex-column mt-4"><a href="index.php?page=updateProduct&idProductUp='.$rows['ProductoID'].'" class="btn btn-dark btn-sm" type="button">Actualizar Producto</a><a class="btn btn-secondary btn-sm mt-2 text-white" href="index.php?page=updateProductImage&idProductUp='.$rows['ProductoID'].'" type="button">Actualizar Imagen</a><a href="' . $url . $pagina . '&idProductDel=' . $rows['ProductoID'] . '" class="btn btn-danger btn-sm btn-sm mt-2">Eliminar</a></div>
+			. $txtDisponibilidad . '
+						<div class="d-flex flex-column mt-4"><a href="index.php?page=updateProduct&idProductUp=' . $rows['ProductoID'] . '" class="btn btn-dark btn-sm" type="button">Actualizar Producto</a><a class="btn btn-secondary btn-sm mt-2 text-white" href="index.php?page=updateProductImage&idProductUp=' . $rows['ProductoID'] . '" type="button">Actualizar Imagen</a><a href="' . $url . $pagina . '&idProductDel=' . $rows['ProductoID'] . '" class="btn btn-danger btn-sm btn-sm mt-2">Eliminar</a></div>
 					</div>
 			    </div>
 			</div>
