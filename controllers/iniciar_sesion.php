@@ -1,4 +1,6 @@
 <?php
+require_once "mainController.php";
+
 if (session_status() === PHP_SESSION_NONE) {
 	session_set_cookie_params([
 		'lifetime' => 0,
@@ -20,7 +22,7 @@ function verificar_datos($patron, $cadena) {
 }
 
 $usuario = limpiar_cadena($_POST['login_usuario'] ?? '');
-$clave = limpiar_cadena($_POST['login_clave'] ?? '');
+$clave   = limpiar_cadena($_POST['login_clave'] ?? '');
 
 if ($usuario === "" || $clave === "") {
 	echo '<div class="alert alert-danger">Todos los campos son obligatorios.</div>';
@@ -45,20 +47,21 @@ try {
 
 	if ($stmt->rowCount() === 1) {
 		$usuarioDB = $stmt->fetch(PDO::FETCH_ASSOC);
-		
+
 		if (password_verify($clave, $usuarioDB['Password'])) {
 			session_regenerate_id(true);
+
 			$_SESSION['id'] = $usuarioDB['UsuarioID'];
 			$_SESSION['nombre'] = $usuarioDB['Nombre'];
 			$_SESSION['rol'] = $usuarioDB['Rol'];
 			$_SESSION['usuario'] = $usuarioDB['Username'];
 
-			header("Location: index.php?page=home");
-			exit;
+			header("Location: ../index.php?page=home");
+			exit();
 		}
 	}
 
 	echo '<div class="alert alert-danger">Usuario o contraseña incorrectos.</div>';
 } catch (PDOException $e) {
-	echo '<div class="alert alert-danger">Error en el servidor. Intenta más tarde.</div>';
+	echo '<div class="alert alert-danger">Error del servidor: ' . $e->getMessage() . '</div>';
 }
