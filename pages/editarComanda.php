@@ -23,6 +23,8 @@
           <button class="btn btn-success mt-2" id="confirmarCambios">Confirmar y regenerar PDF</button>
       </div>
   </div>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
       $(document).ready(function() {
           let productosActuales = [];
