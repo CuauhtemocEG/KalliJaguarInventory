@@ -54,7 +54,7 @@ if (!$fechaInicio || !$fechaFin) {
                 m.Cantidad,
                 p.PrecioUnitario,
                 m.PrecioFinal,
-                (m.Cantidad * (p.PrecioUnitario * 0.16)) AS Subtotal
+                (m.Cantidad * (p.PrecioUnitario * 0.16 + p.PrecioUnitario)) AS Subtotal
             FROM MovimientosInventario m
             JOIN Productos p ON m.ProductoID = p.ProductoID
             JOIN Sucursales s ON m.SucursalID = s.SucursalID
