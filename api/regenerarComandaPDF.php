@@ -3,11 +3,11 @@ session_start();
 header('Content-Type: application/json');
 
 $requiredFiles = [
-    '../../fpdf/fpdf.php',
-    '../../controllers/mainController.php',
-    '../../PHPMailer/src/PHPMailer.php',
-    '../../PHPMailer/src/SMTP.php',
-    '../../PHPMailer/src/Exception.php',
+    '../fpdf/fpdf.php',
+    '../controllers/mainController.php',
+    '../PHPMailer/src/PHPMailer.php',
+    '../PHPMailer/src/SMTP.php',
+    '../PHPMailer/src/Exception.php',
 ];
 
 foreach ($requiredFiles as $file) {
@@ -17,11 +17,11 @@ foreach ($requiredFiles as $file) {
     }
 }
 
-require('../../fpdf/fpdf.php');
-require_once "../../controllers/mainController.php";
-require '../../PHPMailer/src/PHPMailer.php';
-require '../../PHPMailer/src/SMTP.php';
-require '../../PHPMailer/src/Exception.php';
+require('../fpdf/fpdf.php');
+require_once "../controllers/mainController.php";
+require '../PHPMailer/src/PHPMailer.php';
+require '../PHPMailer/src/SMTP.php';
+require '../PHPMailer/src/Exception.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
