@@ -51,7 +51,7 @@
                             </td>
                         </tr>`;
                               $('#tablaProductos tbody').append(fila);
-                              total += parseFloat(producto.PrecioFinal || 0) * producto.Cantidad;
+                              total += parseFloat((producto.PrecioUnitario*0.16)+producto.PrecioUnitario) * producto.Cantidad;
                           });
 
                           $('#totalActualizado').text(total.toFixed(2));

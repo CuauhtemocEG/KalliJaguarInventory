@@ -14,9 +14,21 @@ $comandaID = $_GET['comanda_id'];
 try {
     $db = conexion();
     $stmt = $db->prepare("
-        SELECT MovimientoID, ProductoID, Cantidad, PrecioFinal
-        FROM MovimientosInventario
-        WHERE ComandaID = :comandaID AND TipoMovimiento = 'Salida'
+        SELECT 
+        mi.MovimientoID,
+        mi.ProductoID,
+        mi.Cantidad,
+        mi.PrecioFinal,
+        p.UPC,
+        p.Nombre,
+        p.Descripcion,
+        p.Tipo,
+        p.PrecioUnitario,
+        p.image
+        FROM MovimientosInventario mi
+        JOIN Productos p ON mi.ProductoID = p.ProductoID
+        WHERE mi.ComandaID = :comandaID
+        AND mi.TipoMovimiento = 'Salida'
     ");
     $stmt->bindParam(':comandaID', $comandaID);
     $stmt->execute();
@@ -40,12 +52,12 @@ try {
             'ProductoID' => $mov['ProductoID'],
             'Nombre' => $producto['Nombre'] ?? 'N/D',
             'Cantidad' => $mov['Cantidad'],
-            'PrecioFinal' => $mov['PrecioFinal']
+            'PrecioFinal' => $mov['PrecioFinal'],
+            'PrecioUnitario' => $mov['PrecioUnitario']
         ];
     }
 
     echo json_encode(['success' => true, 'productos' => $productos]);
-
 } catch (PDOException $e) {
     http_response_code(500);
     echo json_encode(['success' => false, 'error' => 'Error en la base de datos: ' . $e->getMessage()]);
