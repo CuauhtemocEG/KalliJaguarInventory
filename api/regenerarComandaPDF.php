@@ -56,6 +56,8 @@ try {
 
     $stmtProductos = $conn->prepare("SELECT 
     P.Nombre,
+    P.Tipo,
+    P.PrecioUnitario,
     MI.Cantidad,
     MI.PrecioFinal
     FROM MovimientosInventario MI
@@ -139,14 +141,14 @@ try {
     $pdf->SetFont('Arial', '', 9);
     $totalGeneral = 0;
     foreach ($productos as $item) {
-        $unidad = $item['tipo'] == "Pesable"
-            ? ($item['cantidad'] >= 1.0 ? 'Kg' : 'grs')
+        $unidad = $item['Tipo'] == "Pesable"
+            ? ($item['Cantidad'] >= 1.0 ? 'Kg' : 'grs')
             : 'Unidad(es)';
-        $cantidad = $item['tipo'] == "Pesable"
-            ? ($item['cantidad'] >= 1.0 ? number_format($item['cantidad'], 2) : number_format($item['cantidad'], 3))
-            : number_format($item['cantidad'], 0);
+        $cantidad = $item['Tipo'] == "Pesable"
+            ? ($item['Cantidad'] >= 1.0 ? number_format($item['Cantidad'], 2) : number_format($item['Cantidad'], 3))
+            : number_format($item['Cantidad'], 0);
 
-        $totalItem = ($item['precio'] * 1.16) * $item['cantidad'];
+        $totalItem = ($item['PrecioUnitario'] * 1.16) * $item['Cantidad'];
         $totalGeneral += $totalItem;
 
         $pdf->Cell(60, 10, utf8_decode($item['nombre']), 1, 0, 'C');
