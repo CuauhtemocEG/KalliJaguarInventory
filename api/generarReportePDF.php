@@ -49,8 +49,9 @@ if (!$fechaInicio || !$fechaFin) {
                 p.Nombre,
                 p.Tipo,
                 m.Cantidad,
+                p.PrecioUnitario,
                 m.PrecioFinal,
-                (m.Cantidad * m.PrecioFinal) AS Subtotal
+                (m.Cantidad * (p.PrecioUnitario * 0.16 + p.PrecioUnitario)) AS Subtotal
             FROM MovimientosInventario m
             JOIN Productos p ON m.ProductoID = p.ProductoID
             JOIN Sucursales s ON m.SucursalID = s.SucursalID
@@ -101,7 +102,7 @@ if (!$fechaInicio || !$fechaFin) {
                 foreach ($items as $item) {
                     $pdf->Cell(80, 6, utf8_decode($item['Nombre']), 1);
                     $pdf->Cell(30, 6, utf8_decode(formatearCantidad($item['Cantidad'], $item['Tipo'])), 1, 0, 'C');
-                    $pdf->Cell(30, 6, '$' . number_format($item['PrecioFinal'], 2), 1, 0, 'C');
+                    $pdf->Cell(30, 6, '$' . number_format($item['PrecioUnitario'] * 0.16, 2), 1, 0, 'C');
                     $pdf->Cell(30, 6, '$' . number_format($item['Subtotal'], 2), 1, 1, 'C');
                     $totalComanda += $item['Subtotal'];
                 }
