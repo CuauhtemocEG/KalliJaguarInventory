@@ -139,13 +139,18 @@ try {
     $pdf->SetFont('Arial', '', 9);
     $totalGeneral = 0;
     foreach ($productos as $item) {
-        $cantidad = number_format($item['Cantidad'], 2);
-        $precio = $item['PrecioFinal'];
-        $totalItem = $cantidad * $precio;
+        $unidad = $item['tipo'] == "Pesable"
+            ? ($item['cantidad'] >= 1.0 ? 'Kg' : 'grs')
+            : 'Unidad(es)';
+        $cantidad = $item['tipo'] == "Pesable"
+            ? ($item['cantidad'] >= 1.0 ? number_format($item['cantidad'], 2) : number_format($item['cantidad'], 3))
+            : number_format($item['cantidad'], 0);
+
+        $totalItem = ($item['precio'] * 1.16) * $item['cantidad'];
         $totalGeneral += $totalItem;
 
-        $pdf->Cell(60, 10, utf8_decode($item['Nombre']), 1, 0, 'C');
-        $pdf->Cell(40, 10, $cantidad, 1, 0, 'C');
+        $pdf->Cell(60, 10, utf8_decode($item['nombre']), 1, 0, 'C');
+        $pdf->Cell(40, 10, $cantidad . ' ' . $unidad, 1, 0, 'C');
         $pdf->Cell(40, 10, '$' . number_format($totalItem, 2), 1, 0, 'C');
         $pdf->Cell(40, 10, '', 1);
         $pdf->Ln();
