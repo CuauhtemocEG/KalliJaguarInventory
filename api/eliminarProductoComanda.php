@@ -1,11 +1,13 @@
 <?php
 require_once '../controllers/mainController.php';
 
+header('Content-Type: application/json');
+
 $data = json_decode(file_get_contents("php://input"), true);
 
 if (!isset($data['movimiento_id'])) {
     http_response_code(400);
-    echo json_encode(['error' => 'Falta el ID del movimiento']);
+    echo json_encode(['success' => false, 'error' => 'Falta el ID del movimiento']);
     exit;
 }
 
@@ -15,13 +17,13 @@ try {
     $db = conexion();
 
     // Obtener datos antes de eliminar
-    $stmt = $db->prepare("SELECT ProductoID, Cantidad FROM MovimientosInventario WHERE MovimientosID = :id");
+    $stmt = $db->prepare("SELECT ProductoID, Cantidad FROM MovimientosInventario WHERE MovimientoID = :id");
     $stmt->bindParam(':id', $movimientoID);
     $stmt->execute();
     $mov = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$mov) {
-        echo json_encode(['error' => 'Movimiento no encontrado']);
+        echo json_encode(['success' => false, 'error' => 'Movimiento no encontrado']);
         exit;
     }
 
@@ -37,7 +39,8 @@ try {
     $stmt->execute();
 
     echo json_encode(['success' => true]);
+
 } catch (PDOException $e) {
     http_response_code(500);
-    echo json_encode(['error' => $e->getMessage()]);
+    echo json_encode(['success' => false, 'error' => 'Error en la base de datos: ' . $e->getMessage()]);
 }

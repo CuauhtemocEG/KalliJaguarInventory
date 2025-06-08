@@ -23,40 +23,43 @@
           <button class="btn btn-success mt-2" id="confirmarCambios">Confirmar y regenerar PDF</button>
       </div>
   </div>
-
   <script>
       $(document).ready(function() {
           let productosActuales = [];
 
           function cargarProductos(comandaId) {
-              $.post('https://stagging.kallijaguar-inventory.com/api/getProductosComanda.php', {
-                  comandaId
-              }, function(res) {
-                  if (res.success) {
-                      productosActuales = res.productos;
-                      let total = 0;
-                      $('#tablaProductos tbody').empty();
+              $.getJSON('https://stagging.kallijaguar-inventory.com/api/getProductosComanda.php', {
+                      comanda_id: comandaId
+                  })
+                  .done(function(res) {
+                      if (res.success) {
+                          productosActuales = res.productos;
+                          let total = 0;
+                          $('#tablaProductos tbody').empty();
 
-                      res.productos.forEach(producto => {
-                          const fila = `<tr data-producto-id="${producto.ProductoID}">
-            <td>${producto.Nombre}</td>
-            <td>${producto.Cantidad}</td>
-            <td>$${parseFloat(producto.PrecioFinal || 0).toFixed(2)}</td>
-            <td>
-              <button class="btn btn-danger btn-sm eliminar">Eliminar</button>
-              <input type="number" min="1" max="${producto.Cantidad}" value="1" class="form-control d-inline w-25 ms-2 inputDevolver">
-              <button class="btn btn-warning btn-sm devolver ms-1">Devolver</button>
-            </td>
-          </tr>`;
-                          $('#tablaProductos tbody').append(fila);
-                          total += parseFloat(producto.PrecioFinal || 0);
-                      });
+                          res.productos.forEach(producto => {
+                              const fila = `<tr data-movimiento-id="${producto.ID}">
+                            <td>${producto.Nombre}</td>
+                            <td>${producto.Cantidad}</td>
+                            <td>$${parseFloat(producto.PrecioFinal || 0).toFixed(2)}</td>
+                            <td>
+                                <button class="btn btn-danger btn-sm eliminar">Eliminar</button>
+                                <input type="number" min="1" max="${producto.Cantidad}" value="1" class="form-control d-inline w-25 ms-2 inputDevolver">
+                                <button class="btn btn-warning btn-sm devolver ms-1">Devolver</button>
+                            </td>
+                        </tr>`;
+                              $('#tablaProductos tbody').append(fila);
+                              total += parseFloat(producto.PrecioFinal || 0) * producto.Cantidad;
+                          });
 
-                      $('#totalActualizado').text(total.toFixed(2));
-                  } else {
-                      Swal.fire('Error', res.error, 'error');
-                  }
-              }, 'json');
+                          $('#totalActualizado').text(total.toFixed(2));
+                      } else {
+                          Swal.fire('Error', res.error, 'error');
+                      }
+                  })
+                  .fail(function() {
+                      Swal.fire('Error', 'No se pudo conectar con el servidor.', 'error');
+                  });
           }
 
           $('#buscarComanda').click(function() {
@@ -70,54 +73,85 @@
 
           $('#tablaProductos').on('click', '.eliminar', function() {
               const tr = $(this).closest('tr');
-              const productoId = tr.data('producto-id');
+              const movimientoId = tr.data('movimiento-id');
               const comandaId = $('#comandaId').val();
 
-              $.post('https://stagging.kallijaguar-inventory.com/api/eliminarProductoComanda.php', {
-                  comandaId,
-                  productoId
-              }, function(res) {
-                  if (res.success) {
-                      Swal.fire('Eliminado', 'Producto eliminado de la comanda.', 'success');
-                      cargarProductos(comandaId);
-                  } else {
-                      Swal.fire('Error', res.error, 'error');
+              $.ajax({
+                  url: 'https://stagging.kallijaguar-inventory.com/api/eliminarProductoComanda.php',
+                  method: 'POST',
+                  contentType: 'application/json',
+                  data: JSON.stringify({
+                      movimiento_id: movimientoId
+                  }),
+                  dataType: 'json',
+                  success: function(res) {
+                      if (res.success) {
+                          Swal.fire('Eliminado', 'Producto eliminado de la comanda.', 'success');
+                          cargarProductos(comandaId);
+                      } else {
+                          Swal.fire('Error', res.error, 'error');
+                      }
+                  },
+                  error: function() {
+                      Swal.fire('Error', 'Error al eliminar el producto.', 'error');
                   }
-              }, 'json');
+              });
           });
 
           $('#tablaProductos').on('click', '.devolver', function() {
               const tr = $(this).closest('tr');
-              const productoId = tr.data('producto-id');
-              const cantidad = tr.find('.inputDevolver').val();
+              const movimientoId = tr.data('movimiento-id');
+              const cantidad = parseFloat(tr.find('.inputDevolver').val());
               const comandaId = $('#comandaId').val();
 
-              $.post('https://stagging.kallijaguar-inventory.com/api/devolverProductoComanda.php', {
-                  comandaId,
-                  productoId,
-                  cantidad
-              }, function(res) {
-                  if (res.success) {
-                      Swal.fire('Devuelto', 'Cantidad devuelta al inventario.', 'success');
-                      cargarProductos(comandaId);
-                  } else {
-                      Swal.fire('Error', res.error, 'error');
+              if (!cantidad || cantidad <= 0) {
+                  Swal.fire('Error', 'Ingrese una cantidad válida para devolver.', 'warning');
+                  return;
+              }
+
+              $.ajax({
+                  url: 'https://stagging.kallijaguar-inventory.com/api/devolverProductoComanda.php',
+                  method: 'POST',
+                  contentType: 'application/json',
+                  data: JSON.stringify({
+                      movimiento_id: movimientoId,
+                      cantidad
+                  }),
+                  dataType: 'json',
+                  success: function(res) {
+                      if (res.success) {
+                          Swal.fire('Devuelto', 'Cantidad devuelta al inventario.', 'success');
+                          cargarProductos(comandaId);
+                      } else {
+                          Swal.fire('Error', res.error, 'error');
+                      }
+                  },
+                  error: function() {
+                      Swal.fire('Error', 'Error al devolver el producto.', 'error');
                   }
-              }, 'json');
+              });
           });
 
           $('#confirmarCambios').click(function() {
               const comandaId = $('#comandaId').val();
+
+              if (!comandaId) {
+                  Swal.fire('Error', 'Ingrese un ID de comanda.', 'warning');
+                  return;
+              }
+
               $.post('https://stagging.kallijaguar-inventory.com/api/regenerarComandaPDF.php', {
-                  comandaId
+                  comanda_id: comandaId
               }, function(res) {
-                  if (res.success) {
+                  if (res.status === 'success') {
                       Swal.fire('Comanda Actualizada', 'Se regeneró el PDF correctamente.', 'success');
                       window.open(res.pdfUrl, '_blank');
                   } else {
-                      Swal.fire('Error', res.error, 'error');
+                      Swal.fire('Error', res.message || 'Error desconocido', 'error');
                   }
-              }, 'json');
+              }, 'json').fail(function() {
+                  Swal.fire('Error', 'No se pudo regenerar el PDF.', 'error');
+              });
           });
       });
   </script>

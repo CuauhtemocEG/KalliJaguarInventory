@@ -27,11 +27,12 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 if (!isset($_POST['comanda_id']) || empty($_POST['comanda_id'])) {
-    echo json_encode(['status' => 'error', 'message' => 'No se recibió comanda_id']);
-    exit();
+    http_response_code(400);
+    echo json_encode(['status' => 'error', 'message' => 'Falta comanda_id']);
+    exit;
 }
 
-$comandaID = $_POST['comanda_id'];
+$comandaId = $_POST['comanda_id'];
 
 try {
     $conn = conexion();
@@ -53,7 +54,6 @@ try {
         exit();
     }
 
-    // Obtener productos de la comanda (solo tipo 'Salida', para mostrar salida)
     $stmtProductos = $conn->prepare("SELECT 
     P.Nombre,
     MI.Cantidad,
@@ -161,9 +161,10 @@ try {
     $pdf->Cell(90, 10, 'Mauricio Dominguez', 0, 0, 'C');
 
     $pdf->Output('F', $pdfPath);
+    echo json_encode(['status' => 'success', 'pdfUrl' => $pdfUrl]);
 } catch (Exception $e) {
-    echo json_encode(['status' => 'error', 'message' => 'Error en base de datos: ' . $e->getMessage()]);
-    exit();
+    http_response_code(500);
+    echo json_encode(['status' => 'error', 'message' => 'Error al generar el PDF: ' . $e->getMessage()]);
 }
 
 // Preparar y enviar correo
