@@ -147,7 +147,6 @@
               }, function(res) {
                   if (res.status === 'success') {
                       Swal.fire('Comanda Actualizada', 'Se regeneró el PDF correctamente.', 'success');
-                      window.open(res.pdfUrl, '_blank');
                   } else {
                       Swal.fire('Error', res.message || 'Error desconocido', 'error');
                   }
