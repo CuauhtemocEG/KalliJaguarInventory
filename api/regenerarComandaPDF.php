@@ -161,7 +161,6 @@ try {
     $pdf->Cell(90, 10, 'Mauricio Dominguez', 0, 0, 'C');
 
     $pdf->Output('F', $pdfPath);
-    echo json_encode(['status' => 'success', 'pdfUrl' => $pdfUrl]);
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(['status' => 'error', 'message' => 'Error al generar el PDF: ' . $e->getMessage()]);
