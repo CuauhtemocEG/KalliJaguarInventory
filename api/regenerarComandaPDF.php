@@ -46,7 +46,7 @@ try {
     JOIN Sucursales S ON MI.SucursalID = S.SucursalID
     JOIN Usuarios U ON MI.UsuarioID = U.UsuarioID
     WHERE MI.ComandaID = ?");
-    $stmtInfo->execute([$comandaID]);
+    $stmtInfo->execute([$comandaId]);
     $info = $stmtInfo->fetch(PDO::FETCH_ASSOC);
 
     if (!$info) {
@@ -61,7 +61,7 @@ try {
     FROM MovimientosInventario MI
     JOIN Productos P ON MI.ProductoID = P.ProductoID
     WHERE MI.ComandaID = ? AND MI.TipoMovimiento = 'Salida'");
-    $stmtProductos->execute([$comandaID]);
+    $stmtProductos->execute([$comandaId]);
     $productos = $stmtProductos->fetchAll(PDO::FETCH_ASSOC);
 
     if (!$productos) {
@@ -107,7 +107,7 @@ try {
     $fechaLarga = fechaEnEspañol($fechaObj);
 
     // Preparar PDF
-    $pdfPath = '../../documents/' . $comandaID . '.pdf';
+    $pdfPath = '../../documents/' . $comandaId . '.pdf';
     $pdf = new FPDF();
     $pdf->AddPage();
     $pdf->Image('../../img/logo.png', 15, 15, 50);
@@ -117,7 +117,7 @@ try {
     $pdf->SetXY(70, 21);
     $pdf->Cell(60, 10, 'Listado de Salida', 1, 0, 'C');
     $pdf->SetXY(130, 11);
-    $pdf->Cell(60, 10, $comandaID, 1, 0, 'C');
+    $pdf->Cell(60, 10, $comandaId, 1, 0, 'C');
     $pdf->SetXY(130, 21);
     $pdf->Cell(60, 10, $info['UsuarioNombre'], 1, 0, 'C');
     $pdf->Ln(10);
@@ -190,7 +190,7 @@ $correoBody = '
       </tr>
       <tr>
         <td align="center" style="padding: 20px; font-family:Arial, Helvetica, sans-serif; font-size:14px; color:#ffffff;">
-          Se ha generado la comanda <b>' . $comandaID . '</b> y se adjunta el archivo PDF con el detalle.
+          Se ha generado la comanda <b>' . $comandaId . '</b> y se adjunta el archivo PDF con el detalle.
         </td>
       </tr>
     </table>
@@ -214,7 +214,7 @@ try {
     $mail->addAttachment($pdfPath);
 
     $mail->isHTML(true);
-    $mail->Subject = 'Pedido actualizado: ' . $comandaID;
+    $mail->Subject = 'Pedido actualizado: ' . $comandaId;
     $mail->Body = $correoBody;
 
     $mail->send();
