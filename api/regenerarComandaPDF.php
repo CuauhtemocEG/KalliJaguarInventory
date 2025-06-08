@@ -39,7 +39,7 @@ try {
 
     // Obtener datos generales de la comanda
     $stmtInfo = $conn->prepare("SELECT DISTINCT 
-    S.Nombre AS SucursalNombre, 
+    S.nombre AS SucursalNombre, 
     U.Nombre AS UsuarioNombre,
     MI.FechaMovimiento
     FROM MovimientosInventario MI
