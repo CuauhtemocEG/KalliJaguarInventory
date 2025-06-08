@@ -29,7 +29,7 @@
           let productosActuales = [];
 
           function cargarProductos(comandaId) {
-              $.post('api/getProductosComanda.php', {
+              $.post('https://stagging.kallijaguar-inventory.com/api/getProductosComanda.php', {
                   comandaId
               }, function(res) {
                   if (res.success) {
@@ -73,7 +73,7 @@
               const productoId = tr.data('producto-id');
               const comandaId = $('#comandaId').val();
 
-              $.post('api/eliminarProductoComanda.php', {
+              $.post('https://stagging.kallijaguar-inventory.com/api/eliminarProductoComanda.php', {
                   comandaId,
                   productoId
               }, function(res) {
@@ -92,7 +92,7 @@
               const cantidad = tr.find('.inputDevolver').val();
               const comandaId = $('#comandaId').val();
 
-              $.post('api/devolverProductoComanda.php', {
+              $.post('https://stagging.kallijaguar-inventory.com/api/devolverProductoComanda.php', {
                   comandaId,
                   productoId,
                   cantidad
@@ -108,7 +108,7 @@
 
           $('#confirmarCambios').click(function() {
               const comandaId = $('#comandaId').val();
-              $.post('api/regenerarComandaPDF.php', {
+              $.post('https://stagging.kallijaguar-inventory.com/api/regenerarComandaPDF.php', {
                   comandaId
               }, function(res) {
                   if (res.success) {

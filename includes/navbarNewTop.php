@@ -86,7 +86,7 @@
                 <span>Generar Reporte</span></a>
             <a class="nav-link" href="index.php?page=editarComanda">
                 <i class="fa fa-list-alt"></i>
-                <span>Generar Reporte</span></a>
+                <span>Regenerar Comanda</span></a>
         </li><?php } ?>
         <hr class="sidebar-divider d-none d-md-block">
     </ul>
