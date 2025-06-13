@@ -101,7 +101,7 @@ if ($producto['Tipo'] === 'Unidad') {
                 </div>
                 <hr>
                 <div class="col-12">
-                    <button type="submit" class="btn btn-success w-100">
+                    <button type="submit" class="btn btn-success w-100 mt-2">
                         <i class="fas fa-save me-2"></i> Actualizar stock
                     </button>
                 </div>
