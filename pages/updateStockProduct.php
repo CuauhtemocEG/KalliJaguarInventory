@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SERVER['HTTP_X_REQUESTED_W
     ob_start();
 
     $codigo = limpiar_cadena($_POST['codigo'] ?? '');
-    $nuevo_stock = intval($_POST['nuevo_stock'] ?? -1);
+    $nuevo_stock = $_POST['nuevo_stock'];
 
     if ($codigo && $nuevo_stock >= 0) {
         $stmt = $pdo->prepare("SELECT Cantidad FROM Productos WHERE UPC = :codigo");
