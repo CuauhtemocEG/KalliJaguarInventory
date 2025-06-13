@@ -9,6 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $codigo = limpiar_cadena($_POST['codigo'] ?? '');
 $nuevo_stock = $_POST['nuevo_stock'];
+$session_id = $_POST['id'];
 
 if (!$codigo || $nuevo_stock < 0) {
     echo json_encode(['status' => 'error', 'message' => 'Datos inválidos']);
@@ -35,7 +36,7 @@ if ($upd->execute([':nuevo' => $nuevo_stock, ':codigo' => $codigo])) {
         ':codigo' => $codigo,
         ':anterior' => $stock_actual,
         ':nuevo' => $nuevo_stock,
-        ':session' => $_SESSION['id']
+        ':session' => $session_id
     ]);
 
     echo json_encode(['status' => 'ok', 'message' => '¡Stock actualizado exitosamente!']);
