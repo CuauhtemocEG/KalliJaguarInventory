@@ -61,7 +61,7 @@ if (!$producto) {
 
 $etiquetaPesable = '';
 
-if ($producto['Tipo'] === 'Pesable' && $producto['Cantidad'] < 1.0){
+if ($producto['Tipo'] === 'Pesable' && $producto['Cantidad'] < 1.0) {
     $etiquetaPesable = 'gr';
 } else {
     $etiquetaPesable = 'Kg';
@@ -82,15 +82,19 @@ if ($producto['Tipo'] === 'Unidad') {
         <div class="card-body">
             <p><strong>Producto:</strong> <?= htmlspecialchars($producto['Nombre']) ?></p>
             <p><strong>Código de barras (UPC):</strong> <?= htmlspecialchars($producto['UPC']) ?></p>
-            <?php if($producto['Tipo'] === 'Pesable'){ ?>
-                <p><strong>Stock actual:</strong> <span id="stock-actual" class="badge bg-info text-dark"><?php echo $producto['Cantidad'].' '. $etiquetaPesable?></span></p>
+            <?php if ($producto['Tipo'] === 'Pesable') { ?>
+                <p><strong>Stock actual:</strong> <span id="stock-actual" class="badge bg-info text-dark"><?= number_format($producto['Cantidad'], 3) . ' ' . $etiquetaPesable ?></span></p>
             <?php } else { ?>
-                <p><strong>Stock actual:</strong> <span id="stock-actual" class="badge bg-info text-dark"><?= $producto['Cantidad'].' '. $etiquetaUnit?></span></p>
-            <?} ?>
+                <p><strong>Stock actual:</strong> <span id="stock-actual" class="badge bg-info text-dark"><?= number_format($producto['Cantidad'], 0) . ' ' . $etiquetaUnit ?></span></p>
+            <? } ?>
             <form id="form-actualizar" class="row g-3 mt-3">
                 <div class="col-md-6">
                     <label for="nuevo_stock" class="form-label">Nuevo stock</label>
-                    <input type="number" class="form-control" id="nuevo_stock" name="nuevo_stock" min="0.0" step="1.000" required>
+                    <?php if ($producto['Tipo'] === 'Pesable') { ?>
+                        <input type="number" class="form-control" id="nuevo_stock" name="nuevo_stock" min="0" step="0.250" required>
+                    <?php } else { ?>
+                        <input type="number" class="form-control" id="nuevo_stock" name="nuevo_stock" min="0" step="1" required>
+                    <? } ?>
                     <input type="hidden" name="codigo" value="<?= htmlspecialchars($producto['UPC']) ?>">
                 </div>
                 <hr>
