@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $codigo = limpiar_cadena($_POST['codigo'] ?? '');
-$nuevo_stock = intval($_POST['nuevo_stock'] ?? -1);
+$nuevo_stock = $_POST['nuevo_stock'];
 
 if (!$codigo || $nuevo_stock < 0) {
     echo json_encode(['status' => 'error', 'message' => 'Datos inválidos']);
