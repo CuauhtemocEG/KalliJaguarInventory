@@ -83,8 +83,10 @@ if ($producto['Tipo'] === 'Unidad') {
             <p><strong>Producto:</strong> <?= htmlspecialchars($producto['Nombre']) ?></p>
             <p><strong>Código de barras (UPC):</strong> <?= htmlspecialchars($producto['UPC']) ?></p>
             <?php if ($producto['Tipo'] === 'Pesable') { ?>
+                <p><strong>Tipo de Inventario:</strong> <?= htmlspecialchars($producto['Tipo']) ?></p>
                 <p><strong>Stock actual:</strong> <span id="stock-actual" class="badge bg-info text-dark"><?= number_format($producto['Cantidad'], 3) . ' ' . $etiquetaPesable ?></span></p>
             <?php } else { ?>
+                <p><strong>Tipo de Inventario:</strong> <?= htmlspecialchars($producto['Tipo']) ?></p>
                 <p><strong>Stock actual:</strong> <span id="stock-actual" class="badge bg-info text-dark"><?= number_format($producto['Cantidad'], 0) . ' ' . $etiquetaUnit ?></span></p>
             <? } ?>
             <form id="form-actualizar" class="row g-3 mt-3">
