@@ -99,6 +99,7 @@ if ($producto['Tipo'] === 'Unidad') {
                         <input type="number" class="form-control" id="nuevo_stock" name="nuevo_stock" min="0" step="1" required>
                     <? } ?>
                     <input type="hidden" name="codigo" value="<?= htmlspecialchars($producto['UPC']) ?>">
+                    <input type="hidden" name="id" value="<?= $_SESSION['id']?>">
                 </div>
                 <hr>
                 <div class="col-12">
