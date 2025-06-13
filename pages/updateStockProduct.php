@@ -24,11 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SERVER['HTTP_X_REQUESTED_W
 
         $upd = $pdo->prepare("UPDATE Productos SET Cantidad = :nuevo WHERE UPC = :codigo");
         if ($upd->execute([':nuevo' => $nuevo_stock, ':codigo' => $codigo])) {
-            $log = $pdo->prepare("INSERT INTO Logs_stock (UPC, StockBefore, StockAfter) VALUES (:codigo, :anterior, :nuevo)");
+            $log = $pdo->prepare("INSERT INTO Logs_stock (UPC, StockBefore, StockAfter, UsuarioID) VALUES (:codigo, :anterior, :nuevo, :session)");
             $log->execute([
                 ':codigo' => $codigo,
                 ':anterior' => $stock_actual,
-                ':nuevo' => $nuevo_stock
+                ':nuevo' => $nuevo_stock,
+                ':session' => $_SESSION['id']
             ]);
             ob_end_clean();
             echo json_encode(['status' => 'ok', 'message' => '¡Stock actualizado exitosamente!']);
