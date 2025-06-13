@@ -66,6 +66,12 @@ if ($producto['Tipo'] === 'Pesable' && $producto['Cantidad'] < 1.0){
 } else {
     $etiquetaPesable = 'Kg';
 }
+
+$etiquetaUnit = '';
+
+if ($producto['Tipo'] === 'Unidad') {
+    $etiquetaUnit = 'Unidad(es)';
+}
 ?>
 
 <div class="container py-4">
@@ -76,12 +82,15 @@ if ($producto['Tipo'] === 'Pesable' && $producto['Cantidad'] < 1.0){
         <div class="card-body">
             <p><strong>Producto:</strong> <?= htmlspecialchars($producto['Nombre']) ?></p>
             <p><strong>Código de barras (UPC):</strong> <?= htmlspecialchars($producto['UPC']) ?></p>
-            <p><strong>Stock actual:</strong> <span id="stock-actual" class="badge bg-info text-dark"><?php echo $producto['Cantidad'].' '. $etiquetaPesable?></span></p>
-
+            <?php if($producto['Tipo'] === 'Pesable'){ ?>
+                <p><strong>Stock actual:</strong> <span id="stock-actual" class="badge bg-info text-dark"><?php echo $producto['Cantidad'].' '. $etiquetaPesable?></span></p>
+            <?php } else { ?>
+                p><strong>Stock actual:</strong> <span id="stock-actual" class="badge bg-info text-dark"><?php echo $producto['Cantidad'].' '. $etiquetaUnit?></span></p>
+            <?} ?>
             <form id="form-actualizar" class="row g-3 mt-3">
                 <div class="col-md-6">
                     <label for="nuevo_stock" class="form-label">Nuevo stock</label>
-                    <input type="number" class="form-control" id="nuevo_stock" name="nuevo_stock" min="0.0" required>
+                    <input type="number" class="form-control" id="nuevo_stock" name="nuevo_stock" min="0.0" step="1.000" required>
                     <input type="hidden" name="codigo" value="<?= htmlspecialchars($producto['UPC']) ?>">
                 </div>
                 <hr>
