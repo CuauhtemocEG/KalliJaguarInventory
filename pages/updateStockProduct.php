@@ -85,7 +85,7 @@ if ($producto['Tipo'] === 'Unidad') {
             <?php if($producto['Tipo'] === 'Pesable'){ ?>
                 <p><strong>Stock actual:</strong> <span id="stock-actual" class="badge bg-info text-dark"><?php echo $producto['Cantidad'].' '. $etiquetaPesable?></span></p>
             <?php } else { ?>
-                p><strong>Stock actual:</strong> <span id="stock-actual" class="badge bg-info text-dark"><?php echo $producto['Cantidad'].' '. $etiquetaUnit?></span></p>
+                <p><strong>Stock actual:</strong> <span id="stock-actual" class="badge bg-info text-dark"><?php echo $producto['Cantidad'].' '. $etiquetaUnit?></span></p>
             <?} ?>
             <form id="form-actualizar" class="row g-3 mt-3">
                 <div class="col-md-6">
