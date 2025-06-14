@@ -8,7 +8,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $codigo = limpiar_cadena($_POST['codigo'] ?? '');
-$nuevo_stock = intval($_POST['nuevo_stock'] ?? -1);
+$nuevo_stock = $_POST['nuevo_stock'];
+$session_id = $_POST['id'];
 
 if (!$codigo || $nuevo_stock < 0) {
     echo json_encode(['status' => 'error', 'message' => 'Datos inválidos']);
@@ -30,11 +31,12 @@ $stock_actual = $producto['Cantidad'];
 
 $upd = $pdo->prepare("UPDATE Productos SET Cantidad = :nuevo WHERE UPC = :codigo");
 if ($upd->execute([':nuevo' => $nuevo_stock, ':codigo' => $codigo])) {
-    $log = $pdo->prepare("INSERT INTO Logs_stock (UPC, StockBefore, StockAfter) VALUES (:codigo, :anterior, :nuevo)");
+    $log = $pdo->prepare("INSERT INTO Logs_stock (UPC, StockBefore, StockAfter, UsuarioID) VALUES (:codigo, :anterior, :nuevo, :session)");
     $log->execute([
         ':codigo' => $codigo,
         ':anterior' => $stock_actual,
-        ':nuevo' => $nuevo_stock
+        ':nuevo' => $nuevo_stock,
+        ':session' => $session_id
     ]);
 
     echo json_encode(['status' => 'ok', 'message' => '¡Stock actualizado exitosamente!']);
