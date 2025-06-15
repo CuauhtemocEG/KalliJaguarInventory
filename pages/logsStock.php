@@ -1,5 +1,5 @@
 <?php
-require_once('./includes/mainController.php');
+require_once('./controllers/mainController.php');
 $pdo = conexion();
 
 // Consulta que une Logs_stock con Usuarios
