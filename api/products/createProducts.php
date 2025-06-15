@@ -6,7 +6,7 @@ require_once '../../helpers/responseHelper.php';
 
 try {
     // Validar existencia de campos
-    $requiredFields = ['productUPC', 'productName', 'productPrecio', 'productStock', 'productTypeInventory', 'productCategory'];
+    $requiredFields = ['productUPC', 'productName', 'productPrecio', 'productStock', 'productTypeInventory', 'productCategory', 'productDescription'];
     foreach ($requiredFields as $field) {
         if (empty($_POST[$field])) {
             throw new Exception("Todos los campos son obligatorios.");
@@ -19,6 +19,7 @@ try {
     $stock = limpiar_cadena($_POST['productStock']);
     $tipo = limpiar_cadena($_POST['productTypeInventory']);
     $categoria = limpiar_cadena($_POST['productCategory']);
+    $description = limpiar_cadena($_POST['productDescription']);
 
     if (verificar_datos("[0-9.]{1,25}", $precio)) throw new Exception("El precio tiene un formato inválido.");
     if (verificar_datos("[0-9.]{1,25}", $stock)) throw new Exception("El stock tiene un formato inválido.");
@@ -60,8 +61,8 @@ try {
     }
 
     // Guardar en base de datos
-    $insert = $db->prepare("INSERT INTO Productos (UPC, Nombre, PrecioUnitario, Cantidad, image, Tipo, CategoriaID, UsuarioID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-    $ok = $insert->execute([$codigo, $nombre, $precio, $stock, $foto, $tipo, $categoria, $_SESSION['id']]);
+    $insert = $db->prepare("INSERT INTO Productos (UPC, Nombre, PrecioUnitario, Cantidad, image, Tipo, CategoriaID, UsuarioID, Descripcion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $ok = $insert->execute([$codigo, $nombre, $precio, $stock, $foto, $tipo, $categoria, $_SESSION['id'], $description]);
 
     if (!$ok) throw new Exception("No se pudo guardar el producto.");
 

@@ -20,6 +20,13 @@
 				</div>
 
 				<div class="form-row">
+					<div class="form-group col-md-12">
+						<b><label>Descripción del producto:</label></b>
+						<input class="form-control" type="text" name="productDescription" maxlength="150">
+					</div>
+				</div>
+
+				<div class="form-row">
 					<div class="form-group col-md-4">
 						<b><label>Precio:</label></b>
 						<input class="form-control" type="text" name="productPrecio" maxlength="25">
