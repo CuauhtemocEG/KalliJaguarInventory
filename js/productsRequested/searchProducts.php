@@ -92,7 +92,7 @@ foreach ($datos as $row) {
     $tabla .= '</img>
 			        <div class="card-body">
                         <h5 class="card-title"><strong>' . $row['nombreProducto'] . '</strong></h5>
-                        <strong>Descripción:</strong>'. $row['Descripción'] .'
+                        <strong>Descripción:</strong>'. $row['Descripcion'] .'
 						<hr>
 			              <p class="card-text">
 			                <strong>UPC:</strong> ' . $row['UPC'] . '<br>
