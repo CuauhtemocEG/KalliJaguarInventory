@@ -30,7 +30,7 @@
           let productosActuales = [];
 
           function cargarProductos(comandaId) {
-              $.getJSON('https://www.kallijaguar-inventory.com/api/getProductosComanda.php', {
+              $.getJSON('https://www.kallijaguar-inventory.com/api/recreateComanda/getProductosComanda.php', {
                       comanda_id: comandaId
                   })
                   .done(function(res) {
@@ -79,7 +79,7 @@
               const comandaId = $('#comandaId').val();
 
               $.ajax({
-                  url: 'https://www.kallijaguar-inventory.com/api/eliminarProductoComanda.php',
+                  url: 'https://www.kallijaguar-inventory.com/api/recreateComanda/eliminarProductoComanda.php',
                   method: 'POST',
                   contentType: 'application/json',
                   data: JSON.stringify({
@@ -112,7 +112,7 @@
               }
 
               $.ajax({
-                  url: 'https://www.kallijaguar-inventory.com/api/devolverProductoComanda.php',
+                  url: 'https://www.kallijaguar-inventory.com/api/recreateComanda/devolverProductoComanda.php',
                   method: 'POST',
                   contentType: 'application/json',
                   data: JSON.stringify({
@@ -142,7 +142,7 @@
                   return;
               }
 
-              $.post('https://www.kallijaguar-inventory.com/api/regenerarComandaPDF.php', {
+              $.post('https://www.kallijaguar-inventory.com/api/recreateComanda/regenerarComandaPDF.php', {
                   comanda_id: comandaId
               }, function(res) {
                   if (res.status === 'success') {

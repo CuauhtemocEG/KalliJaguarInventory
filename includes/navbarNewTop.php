@@ -64,6 +64,7 @@
                     <a class="collapse-item" href="index.php?page=productsByCategory">Productos por Categoría</a>
                     <a class="collapse-item" href="index.php?page=searchProduct">Buscar Producto</a>
                     <a class="collapse-item" href="index.php?page=scanProducts">Actualizar Stock</a>
+                    <a class="collapse-item" href="index.php?page=logsStock">Historial de Cambios</a>
                 </div>
             </div>
         </li>
