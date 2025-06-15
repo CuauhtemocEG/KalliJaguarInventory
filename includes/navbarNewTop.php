@@ -46,7 +46,7 @@
         <?php if($_SESSION['id']=='1'){?><li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseOrders"
                 aria-expanded="true" aria-controls="collapseOrders">
-                <i class="fa fa-user"></i>
+                <i class="fa fa-edit"></i>
                 <span>Ordenes</span>
             </a>
             <div id="collapseOrders" class="collapse" aria-labelledby="headingUtilities"
@@ -83,6 +83,7 @@
                 </div>
             </div>
         </li>
+        <hr class="sidebar-divider">
         <li class="nav-item">
             <a class="nav-link" href="index.php?page=requestProducts">
                 <i class="fa fa-truck"></i>
