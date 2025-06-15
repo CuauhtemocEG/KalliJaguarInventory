@@ -109,13 +109,13 @@ try {
   $fechaLarga = fechaEnEspañol($fechaObj);
 
   // Preparar PDF
-  $pdfPath = '../documents/' . $comandaId . '.pdf';
+  $pdfPath = '../../documents/' . $comandaId . '.pdf';
   if (file_exists($pdfPath)) {
     unlink($pdfPath);
   }
   $pdf = new FPDF();
   $pdf->AddPage();
-  $pdf->Image('../img/logo.png', 15, 15, 50);
+  $pdf->Image('../../img/logo.png', 15, 15, 50);
   $pdf->SetFont('Arial', 'B', 8);
   $pdf->SetXY(70, 11);
   $pdf->Cell(60, 10, $info['SucursalNombre'], 1, 0, 'C');
