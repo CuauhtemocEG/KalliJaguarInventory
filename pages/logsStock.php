@@ -7,8 +7,6 @@ $sql = "SELECT
     ls.id, 
     ls.UPC, 
     p.Nombre AS NombreProducto,
-    p.Tipo,
-    p.PrecioUnitario,
     ls.StockBefore, 
     ls.StockAfter, 
     ls.Fecha, 
@@ -16,7 +14,7 @@ $sql = "SELECT
 FROM Logs_stock ls
 INNER JOIN Usuarios u ON ls.UsuarioID = u.UsuarioID
 INNER JOIN Productos p ON ls.UPC = p.UPC
-ORDER BY ls.Fecha DESC";
+ORDER BY ls.Fecha DESC;";
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute();
