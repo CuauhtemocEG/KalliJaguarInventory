@@ -199,14 +199,13 @@ $correoBody = '
       </tr>
       <tr>
         <td align="center" style="padding: 20px; font-family:Arial, Helvetica, sans-serif; font-size:14px; color:#ffffff;">
-          Se ha generado la comanda <b>' . $comandaId . '</b> y se adjunta el archivo PDF con el detalle.
+          Se ha re-generado la comanda <b>' . $comandaId . '</b>, se adjunta el archivo PDF con el detalle.
         </td>
       </tr>
     </table>
   </body>
 </html>';
 
-// Configurar PHPMailer
 $mail = new PHPMailer(true);
 try {
   $mail->isSMTP();
@@ -218,12 +217,15 @@ try {
   $mail->SMTPSecure = 'ssl';
   $mail->Port = 465;
 
-  $mail->setFrom('info@stagging.kallijaguar-inventory.com', 'Información Kalli Jaguar');
-  $mail->addAddress('cencarnacion@stagging.kallijaguar-inventory.com');
+  $mail->setFrom('info@kallijaguar-inventory.com', 'Informacion Kalli Jaguar');
+  $mail->addAddress('andrea.sanchez@kallijaguar-inventory.com');
+  $mail->addCC('julieta.ramirez@kallijaguar-inventory.com');
+  $mail->addCC('miguel.loaeza@kallijaguar-inventory.com');
+  $mail->addCC('cencarnacion@kallijaguar-inventory.com');
   $mail->addAttachment($pdfPath);
 
   $mail->isHTML(true);
-  $mail->Subject = 'Pedido actualizado: ' . $comandaId;
+  $mail->Subject = 'Comanda actualizada: ' . $comandaId;
   $mail->Body = $correoBody;
 
   $mail->send();
