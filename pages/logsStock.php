@@ -3,11 +3,20 @@ require_once('./controllers/mainController.php');
 $pdo = conexion();
 
 // Consulta que une Logs_stock con Usuarios
-$sql = "SELECT ls.id, ls.UPC, ls.StockBefore, ls.StockAfter, ls.Fecha, 
-               u.Nombre AS Usuario
-        FROM Logs_stock ls
-        INNER JOIN Usuarios u ON ls.UsuarioID = u.UsuarioID
-        ORDER BY ls.Fecha DESC";
+$sql = "SELECT 
+    ls.id, 
+    ls.UPC, 
+    p.Nombre AS NombreProducto,
+    p.Tipo,
+    p.PrecioUnitario,
+    ls.StockBefore, 
+    ls.StockAfter, 
+    ls.Fecha, 
+    u.Nombre AS Usuario
+FROM Logs_stock ls
+INNER JOIN Usuarios u ON ls.UsuarioID = u.UsuarioID
+INNER JOIN Productos p ON ls.UPC = p.UPC
+ORDER BY ls.Fecha DESC";
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute();
@@ -23,7 +32,7 @@ $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <table class="table table-bordered table-hover" id="logsTable" width="100%" cellspacing="0">
                     <thead class="thead-dark">
                         <tr>
-                            <th>#</th>
+                            <th>Producto</th>
                             <th>UPC</th>
                             <th>Stock Anterior</th>
                             <th>Stock Nuevo</th>
@@ -34,7 +43,7 @@ $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <tbody>
                         <?php foreach($logs as $log): ?>
                             <tr>
-                                <td><?= htmlspecialchars($log['id']) ?></td>
+                                <td><?= htmlspecialchars($log['NombreProducto']) ?></td>
                                 <td><?= htmlspecialchars($log['UPC']) ?></td>
                                 <td><?= htmlspecialchars($log['StockBefore']) ?></td>
                                 <td><?= htmlspecialchars($log['StockAfter']) ?></td>
