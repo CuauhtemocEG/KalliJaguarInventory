@@ -197,7 +197,7 @@ try {
   $pdf->Cell(90, 10, 'Firma', 0, 0, 'C');
   $pdf->Ln(10);
   $pdf->Cell(90, 10, $nameUser, 0, 0, 'C');
-  $pdf->Cell(90, 10, 'Mauricio Dominguez', 0, 0, 'C');
+  $pdf->Cell(90, 10, 'Encargado Logistica', 0, 0, 'C');
   $pdf->Output('F', $pdfPath);
 } catch (Exception $e) {
   echo json_encode(['status' => 'error', 'message' => 'Error al generar PDF: ' . $e->getMessage()]);
