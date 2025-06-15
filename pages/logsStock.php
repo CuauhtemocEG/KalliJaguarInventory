@@ -4,7 +4,7 @@ $pdo = conexion();
 
 // Consulta que une Logs_stock con Usuarios
 $sql = "SELECT 
-    ls.id, 
+    ls.Id, 
     ls.UPC, 
     p.Nombre AS NombreProducto,
     ls.StockBefore, 
