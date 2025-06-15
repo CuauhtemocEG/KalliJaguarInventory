@@ -12,7 +12,7 @@
                 <span>Ir al Inicio</span></a>
         </li>
         <hr class="sidebar-divider">
-        <div class="sidebar-heading">Gestión</div>
+        <div class="sidebar-heading">Administración</div>
         <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                 aria-expanded="true" aria-controls="collapseTwo">
@@ -43,6 +43,22 @@
                 </div>
             </div>
         </li>
+        <?php if($_SESSION['id']=='1'){?><li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
+                aria-expanded="true" aria-controls="collapseUtilities">
+                <i class="fa fa-user"></i>
+                <span>Ordenes</span>
+            </a>
+            <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
+                data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">Gestión Ordenes:</h6>
+                    <a class="collapse-item" href="index.php?page=showAllRequest">Solicitudes Generales</a>
+                    <a class="collapse-item" href="index.php?page=editarComanda">Regenerar Comanda</a>
+                    <a class="collapse-item" href="index.php?page=reportOrders">Generar Reporte</a>
+                </div>
+            </div>
+        </li><?php } ?>
         <hr class="sidebar-divider">
         <div class="sidebar-heading">Catálogo de Almacén</div>
         <li class="nav-item">
@@ -75,19 +91,8 @@
         <li class="nav-item">
             <a class="nav-link" href="index.php?page=showRequest">
                 <i class="fa fa-list-alt"></i>
-                <span>Mis Solicitudes</span></a>
+                <span>Mis Pedidos</span></a>
         </li>
-        <?php if($_SESSION['id']=='1'){?><li class="nav-item">
-            <a class="nav-link" href="index.php?page=showAllRequest">
-                <i class="fa fa-list-alt"></i>
-                <span>Solicitudes Generales</span></a>
-            <a class="nav-link" href="index.php?page=reportOrders">
-                <i class="fa fa-list-alt"></i>
-                <span>Generar Reporte</span></a>
-            <a class="nav-link" href="index.php?page=editarComanda">
-                <i class="fa fa-list-alt"></i>
-                <span>Regenerar Comanda</span></a>
-        </li><?php } ?>
         <hr class="sidebar-divider d-none d-md-block">
     </ul>
     <div id="content-wrapper" class="d-flex flex-column">
