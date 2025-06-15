@@ -56,6 +56,7 @@
                     <a class="collapse-item" href="index.php?page=showAllRequest">Solicitudes Generales</a>
                     <a class="collapse-item" href="index.php?page=editarComanda">Regenerar Comanda</a>
                     <a class="collapse-item" href="index.php?page=reportOrders">Generar Reporte</a>
+                    <a class="collapse-item" href="index.php?page=logsStock">Historial de Cambios</a>
                 </div>
             </div>
         </li><?php } ?>
