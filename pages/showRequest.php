@@ -67,7 +67,7 @@ $num = 0;
                                                         ?> text-uppercase"><?php echo $row['Status']; ?></span>
                                 </div>
                                 <a href="index.php?page=showPDF&ComandaID=<?php echo $row['ComandaID']; ?>"
-                                    class="d-sm-inline-block btn btn-sm btn-primary shadow-sm mt-1 mb-1"><i
+                                    class="d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                                         class="fas fa-download fa-sm text-white-50"></i> Ver Solicitud</a>
                                 <a class="btn btn-info" data-comanda-id="<?php echo $row['ComandaID']; ?>" href="#collapseComanda<?php echo $row['ComandaID']; ?>" data-toggle="collapse">
                                     <i class="fas fa-eye fa-sm text-white-50"></i> Ver más
