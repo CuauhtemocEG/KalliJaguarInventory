@@ -143,16 +143,32 @@ document.addEventListener("DOMContentLoaded", function () {
                 target.style.display = "block";
 
                 if (!container.dataset.loaded) {
-                    container.innerHTML = "<div class='text-muted'>Cargando detalles...</div>";
+                    Swal.fire({
+                        title: 'Cargando...',
+                        text: 'Obteniendo información de la solicitud',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
 
                     fetch(`https://stagging.kallijaguar-inventory.com/api/comandaDetails/getComandaDetails.php?ComandaID=${comandaID}`)
-                        .then(res => res.text())
+                        .then(res => {
+                            if (!res.ok) throw new Error("Error en la respuesta del servidor");
+                            return res.text();
+                        })
                         .then(html => {
                             container.innerHTML = html;
                             container.dataset.loaded = "true";
+                            Swal.close();
                         })
                         .catch(err => {
-                            container.innerHTML = "<div class='text-danger'>Error al cargar detalles.</div>";
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error al cargar',
+                                text: 'No se pudo obtener la información de la comanda.',
+                                footer: 'Intenta nuevamente más tarde o revisa la conexión.'
+                            });
                             console.error("Error AJAX:", err);
                         });
                 }
@@ -164,3 +180,4 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 </script>
+
