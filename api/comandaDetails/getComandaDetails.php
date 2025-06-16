@@ -62,8 +62,8 @@ $total = 0;
                 <tr>
                     <td><?php echo $producto['Nombre']; ?></td>
                     <td><?php echo $producto['Descripcion']; ?></td>
-                    <td><?php echo $producto['PrecioUnitario'] * 1.16; ?></td>
-                    <td>$<?php echo number_format($producto['PrecioFinal'], 2); ?></td>
+                    <td><?php echo $producto['Cantidad']; ?></td>
+                    <td>$<?php echo number_format($producto['PrecioUnitario'] * 1.16, 2); ?></td>
                     <td>$<?php echo number_format($producto['Subtotal'], 2); ?></td>
                 </tr>
             <?php endforeach; ?>
