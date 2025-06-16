@@ -69,7 +69,12 @@ $num = 0;
                                 <a href="index.php?page=showPDF&ComandaID=<?php echo $row['ComandaID']; ?>"
                                     class="d-sm-inline-block btn btn-sm btn-primary shadow-sm mt-1 mb-1"><i
                                         class="fas fa-download fa-sm text-white-50"></i> Ver Solicitud</a>
-                                <a class="btn btn-info" data-comanda-id="<?php echo $row['ComandaID']; ?>" href="#collapseComanda<?php echo $row['ComandaID']; ?>" data-toggle="collapse">
+                                <a class="btn btn-sm btn-info shadow-sm mt-1 mb-1"
+                                    data-toggle="collapse"
+                                    href="#collapseComanda<?php echo $row['ComandaID']; ?>"
+                                    role="button"
+                                    aria-expanded="false"
+                                    aria-controls="collapseComanda<?php echo $row['ComandaID']; ?>">
                                     <i class="fas fa-eye fa-sm text-white-50"></i> Ver más
                                 </a>
                                 <?php if ($row['Status'] === 'Abierto') { ?><a class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" href="#" data-toggle="modal" data-target="#deleteModal_<?php echo $row['ComandaID']; ?>"><i
@@ -117,21 +122,12 @@ $num = 0;
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    const buttons = document.querySelectorAll("a[data-comanda-id]");
+    const collapseElements = document.querySelectorAll("[id^='collapseComanda']");
 
-    buttons.forEach(button => {
-        button.addEventListener("click", function (e) {
-            const comandaID = this.dataset.comandaId;
-            const collapseID = `collapseComanda${comandaID}`;
-            const collapseElement = document.getElementById(collapseID);
+    collapseElements.forEach(collapse => {
+        collapse.addEventListener("show.bs.collapse", function () {
+            const comandaID = this.id.replace("collapseComanda", "");
             const container = document.getElementById("detalleComanda_" + comandaID);
-
-            if (collapseElement.classList.contains("show")) {
-                collapseElement.classList.remove("show");
-                return;
-            }
-
-            collapseElement.classList.add("show");
 
             if (container.dataset.loaded === "true") return;
 
@@ -145,7 +141,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 })
                 .catch(err => {
                     container.innerHTML = "<div class='text-danger'>Error al cargar detalles.</div>";
-                    console.error(err);
                 });
         });
     });
