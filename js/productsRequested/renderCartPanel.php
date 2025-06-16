@@ -2,6 +2,10 @@
 session_start();
 ob_start();
 
+if (!isset($_SESSION['INV']) && isset($_COOKIE['persist_cart'])) {
+    $_SESSION['INV'] = json_decode($_COOKIE['persist_cart'], true);
+}
+
 if (isset($_SESSION['INV']) && count($_SESSION['INV']) > 0) {
     $total = 0;
     $totalItem = 0;

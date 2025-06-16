@@ -31,6 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     //}
 
     echo json_encode(['status' => 'success']);
+    setcookie("persist_cart", json_encode($_SESSION['INV']), time() + 604800, "/");
 } else {
     echo json_encode(['status' => 'error']);
 }
