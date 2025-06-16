@@ -69,12 +69,7 @@ $num = 0;
                                 <a href="index.php?page=showPDF&ComandaID=<?php echo $row['ComandaID']; ?>"
                                     class="d-sm-inline-block btn btn-sm btn-primary shadow-sm mt-1 mb-1"><i
                                         class="fas fa-download fa-sm text-white-50"></i> Ver Solicitud</a>
-                                <a class="d-sm-inline-block btn btn-sm btn-info shadow-sm mt-1 mb-1"
-                                    data-toggle="collapse"
-                                    href="#collapseComanda<?php echo $row['ComandaID']; ?>"
-                                    role="button"
-                                    aria-expanded="false"
-                                    aria-controls="collapseComanda<?php echo $row['ComandaID']; ?>">
+                                <a class="btn btn-info" data-comanda-id="<?php echo $row['ComandaID']; ?>" href="#collapseComanda<?php echo $row['ComandaID']; ?>" data-toggle="collapse">
                                     <i class="fas fa-eye fa-sm text-white-50"></i> Ver más
                                 </a>
                                 <?php if ($row['Status'] === 'Abierto') { ?><a class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" href="#" data-toggle="modal" data-target="#deleteModal_<?php echo $row['ComandaID']; ?>"><i
@@ -120,14 +115,23 @@ $num = 0;
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
-    const buttons = document.querySelectorAll("[href^='#collapseComanda']");
+document.addEventListener("DOMContentLoaded", function () {
+    const buttons = document.querySelectorAll("a[data-comanda-id]");
 
     buttons.forEach(button => {
-        button.addEventListener("click", function() {
-            const comandaID = this.getAttribute("href").replace("#collapseComanda", "");
+        button.addEventListener("click", function (e) {
+            const comandaID = this.dataset.comandaId;
+            const collapseID = `collapseComanda${comandaID}`;
+            const collapseElement = document.getElementById(collapseID);
             const container = document.getElementById("detalleComanda_" + comandaID);
+
+            if (collapseElement.classList.contains("show")) {
+                collapseElement.classList.remove("show");
+                return;
+            }
+
+            collapseElement.classList.add("show");
 
             if (container.dataset.loaded === "true") return;
 
@@ -141,8 +145,9 @@ $num = 0;
                 })
                 .catch(err => {
                     container.innerHTML = "<div class='text-danger'>Error al cargar detalles.</div>";
-                    console.error("Error AJAX:", err);
+                    console.error(err);
                 });
         });
     });
+});
 </script>
