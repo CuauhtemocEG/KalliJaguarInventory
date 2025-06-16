@@ -13,7 +13,7 @@ $conn = conexion();
 $query = $conn->prepare("
     SELECT m.ProductoID, p.Nombre, p.Descripcion, m.Cantidad, m.PrecioFinal,
            (m.Cantidad * m.PrecioFinal) AS Subtotal,
-           u.nombre AS Solicitante, s.nombre AS Sucursal
+           u.Nombre AS Solicitante, s.nombre AS Sucursal
     FROM MovimientosInventario m
     JOIN Productos p ON m.ProductoID = p.ProductoID
     JOIN Usuarios u ON m.UsuarioID = u.UsuarioID
