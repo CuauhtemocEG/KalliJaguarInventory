@@ -121,28 +121,38 @@ $num = 0;
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const collapseElements = document.querySelectorAll("[id^='collapseComanda']");
+    document.addEventListener("DOMContentLoaded", function() {
+        const buttons = document.querySelectorAll("a[data-comanda-id]");
 
-    collapseElements.forEach(collapse => {
-        collapse.addEventListener("show.bs.collapse", function () {
-            const comandaID = this.id.replace("collapseComanda", "");
-            const container = document.getElementById("detalleComanda_" + comandaID);
+        buttons.forEach(button => {
+            button.addEventListener("click", function(e) {
+                const comandaID = this.dataset.comandaId;
+                const collapseID = `collapseComanda${comandaID}`;
+                const collapseElement = document.getElementById(collapseID);
+                const container = document.getElementById("detalleComanda_" + comandaID);
 
-            if (container.dataset.loaded === "true") return;
+                if (collapseElement.classList.contains("show")) {
+                    collapseElement.classList.remove("show");
+                    return;
+                }
 
-            container.innerHTML = "<div class='text-muted'>Cargando detalles...</div>";
+                collapseElement.classList.add("show");
 
-            fetch(`https://stagging.kallijaguar-inventory.com/api/comandaDetails/getComandaDetails.php?ComandaID=${comandaID}`)
-                .then(res => res.text())
-                .then(html => {
-                    container.innerHTML = html;
-                    container.dataset.loaded = "true";
-                })
-                .catch(err => {
-                    container.innerHTML = "<div class='text-danger'>Error al cargar detalles.</div>";
-                });
+                if (container.dataset.loaded === "true") return;
+
+                container.innerHTML = "<div class='text-muted'>Cargando detalles...</div>";
+
+                fetch(`https://stagging.kallijaguar-inventory.com/api/comandaDetails/getComandaDetails.php?ComandaID=${comandaID}`)
+                    .then(res => res.text())
+                    .then(html => {
+                        container.innerHTML = html;
+                        container.dataset.loaded = "true";
+                    })
+                    .catch(err => {
+                        container.innerHTML = "<div class='text-danger'>Error al cargar detalles.</div>";
+                        console.error(err);
+                    });
+            });
         });
     });
-});
 </script>
