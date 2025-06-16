@@ -10,7 +10,7 @@ $nameUser = $_SESSION["nombre"];
 $showComanda = conexion();
 $showComanda = $showComanda->query("SELECT MAX(FechaMovimiento) AS FechaMovimiento, Status, ComandaID, Status, MAX(SucursalID) AS SucursalID, MAX(MovimientoID) AS MovimientoID, COUNT(DISTINCT ProductoID) AS TotalProductos, SUM(Cantidad) AS TotalCantidad FROM MovimientosInventario WHERE TipoMovimiento = 'Salida' AND UsuarioID = $userID GROUP BY ComandaID, Status, UsuarioID ORDER BY MovimientoID DESC");
 $datos = $showComanda->fetchAll();
-$num;
+$num = 0;
 ?>
 <div class="container-fluid">
 
