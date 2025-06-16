@@ -20,7 +20,7 @@ $datos = $showComanda->fetchAll();
     <div class="row">
         <?php foreach ($datos as $row) { ?>
 
-            <?php 
+            <?php
             $num += 1;
             $dataSucursal = conexion();
             $dataSucursal = $dataSucursal->query("SELECT nombre FROM Sucursales WHERE SucursalID = " . $row['SucursalID'] . "");
@@ -66,6 +66,14 @@ $datos = $showComanda->fetchAll();
                                 <a href="index.php?page=showPDF&ComandaID=<?php echo $row['ComandaID']; ?>"
                                     class="d-sm-inline-block btn btn-sm btn-primary shadow-sm mt-1 mb-1"><i
                                         class="fas fa-download fa-sm text-white-50"></i> Ver Solicitud</a>
+                                <a class="d-sm-inline-block btn btn-sm btn-info shadow-sm mt-1 mb-1"
+                                    data-toggle="collapse"
+                                    href="#collapseComanda<?php echo $row['ComandaID']; ?>"
+                                    role="button"
+                                    aria-expanded="false"
+                                    aria-controls="collapseComanda<?php echo $row['ComandaID']; ?>">
+                                    <i class="fas fa-eye fa-sm text-white-50"></i> Ver más
+                                </a>
                                 <?php if ($row['Status'] === 'Abierto') { ?><a class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" href="#" data-toggle="modal" data-target="#deleteModal_<?php echo $row['ComandaID']; ?>"><i
                                             class="fas fa-trash fa-sm text-white-50"></i> Cancelar Solicitud</a><?php } ?>
                             </div>
@@ -98,3 +106,26 @@ $datos = $showComanda->fetchAll();
         <?php } ?>
     </div>
 </div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const collapses = document.querySelectorAll("[id^='collapseComanda']");
+
+    collapses.forEach(collapse => {
+        collapse.addEventListener("show.bs.collapse", function () {
+            const comandaID = this.id.replace("collapseComanda", "");
+            const container = document.getElementById("detalleComanda_" + comandaID);
+            container.innerHTML = "<div class='text-muted'>Cargando detalles...</div>";
+
+            fetch(`../api/comandaDetails/getComandaDetails.php?ComandaID=${comandaID}`)
+                .then(res => res.text())
+                .then(html => {
+                    container.innerHTML = html;
+                })
+                .catch(err => {
+                    container.innerHTML = "<div class='text-danger'>Error al cargar detalles.</div>";
+                    console.error(err);
+                });
+        });
+    });
+});
+</script>
