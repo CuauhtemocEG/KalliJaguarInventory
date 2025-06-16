@@ -117,27 +117,32 @@ $num = 0;
         <?php } ?>
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const collapses = document.querySelectorAll("[id^='collapseComanda']");
+    const buttons = document.querySelectorAll("[href^='#collapseComanda']");
 
-        collapses.forEach(collapse => {
-            collapse.addEventListener("show.bs.collapse", function() {
-                const comandaID = this.id.replace("collapseComanda", "");
-                const container = document.getElementById("detalleComanda_" + comandaID);
-                container.innerHTML = "<div class='text-muted'>Cargando detalles...</div>";
+    buttons.forEach(button => {
+        button.addEventListener("click", function() {
+            const comandaID = this.getAttribute("href").replace("#collapseComanda", "");
+            const container = document.getElementById("detalleComanda_" + comandaID);
 
-                fetch(`https://stagging.kallijaguar-inventory.com/api/comandaDetails/getComandaDetails.php?ComandaID=${comandaID}`)
-                    .then(res => res.text())
-                    .then(html => {
-                        console.log("Respuesta del backend:", html);
-                        container.innerHTML = html;
-                    })
-                    .catch(err => {
-                        container.innerHTML = "<div class='text-danger'>Error al cargar detalles.</div>";
-                        console.error(err);
-                    });
-            });
+            if (container.dataset.loaded === "true") return;
+
+            container.innerHTML = "<div class='text-muted'>Cargando detalles...</div>";
+
+            fetch(`https://stagging.kallijaguar-inventory.com/api/comandaDetails/getComandaDetails.php?ComandaID=${comandaID}`)
+                .then(res => res.text())
+                .then(html => {
+                    container.innerHTML = html;
+                    container.dataset.loaded = "true";
+                })
+                .catch(err => {
+                    container.innerHTML = "<div class='text-danger'>Error al cargar detalles.</div>";
+                    console.error("Error AJAX:", err);
+                });
         });
     });
 </script>
