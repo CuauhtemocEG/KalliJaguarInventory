@@ -11,15 +11,22 @@ $comandaID = intval($_GET['ComandaID']);
 $conn = conexion();
 
 $query = $conn->prepare("
-    SELECT m.ProductoID, p.Nombre, p.Descripcion, m.Cantidad, m.PrecioFinal,
-           (m.Cantidad * m.PrecioFinal) AS Subtotal,
-           u.Nombre AS Solicitante, s.nombre AS Sucursal
-    FROM MovimientosInventario m
-    JOIN Productos p ON m.ProductoID = p.ProductoID
-    JOIN Usuarios u ON m.UsuarioID = u.UsuarioID
-    JOIN Sucursales s ON m.SucursalID = s.SucursalID
-    WHERE m.ComandaID = :comandaID AND m.TipoMovimiento = 'Salida'
-");
+    SELECT 
+    m.ProductoID, 
+    p.Nombre, 
+    p.Descripcion, 
+    p.PrecioUnitario, 
+    m.Cantidad, 
+    m.PrecioFinal, 
+    (m.Cantidad * (p.PrecioUnitario*1.16)) AS Subtotal, 
+    u.Nombre AS Solicitante, 
+    s.nombre AS Sucursal 
+    FROM MovimientosInventario m 
+    JOIN Productos p ON m.ProductoID = p.ProductoID 
+    JOIN Usuarios u ON m.UsuarioID = u.UsuarioID 
+    JOIN Sucursales s ON m.SucursalID = s.SucursalID 
+    WHERE m.ComandaID = :comandaID 
+    AND m.TipoMovimiento = 'Salida'");
 $query->execute([':comandaID' => $comandaID]);
 $productos = $query->fetchAll(PDO::FETCH_ASSOC);
 
