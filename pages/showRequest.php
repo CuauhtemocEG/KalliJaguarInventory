@@ -1,5 +1,8 @@
 <?php
 require_once "./controllers/mainController.php";
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 $userID = $_SESSION["id"];
 $nameUser = $_SESSION["nombre"];
@@ -124,9 +127,10 @@ $datos = $showComanda->fetchAll();
                 const container = document.getElementById("detalleComanda_" + comandaID);
                 container.innerHTML = "<div class='text-muted'>Cargando detalles...</div>";
 
-                fetch(`../api/comandaDetails/getComandaDetails.php?ComandaID=${comandaID}`)
+                fetch(`https://stagging.kallijaguar-inventory.com/api/comandaDetails/getComandaDetails.php?ComandaID=${comandaID}`)
                     .then(res => res.text())
                     .then(html => {
+                        console.log("Respuesta del backend:", html);
                         container.innerHTML = html;
                     })
                     .catch(err => {
