@@ -85,6 +85,14 @@ $datos = $showComanda->fetchAll();
                 </div>
             </div>
 
+            <div class="collapse col-12" id="collapseComanda<?php echo $row['ComandaID']; ?>">
+                <div class="card card-body border-left-info shadow-sm mb-4">
+                    <div id="detalleComanda_<?php echo $row['ComandaID']; ?>">
+                        <div class="text-center text-muted">Cargando información...</div>
+                    </div>
+                </div>
+            </div>
+
             <div class="modal fade" id="deleteModal_<?php echo $row['ComandaID']; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog" role="document">
@@ -107,25 +115,25 @@ $datos = $showComanda->fetchAll();
     </div>
 </div>
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const collapses = document.querySelectorAll("[id^='collapseComanda']");
+    document.addEventListener("DOMContentLoaded", function() {
+        const collapses = document.querySelectorAll("[id^='collapseComanda']");
 
-    collapses.forEach(collapse => {
-        collapse.addEventListener("show.bs.collapse", function () {
-            const comandaID = this.id.replace("collapseComanda", "");
-            const container = document.getElementById("detalleComanda_" + comandaID);
-            container.innerHTML = "<div class='text-muted'>Cargando detalles...</div>";
+        collapses.forEach(collapse => {
+            collapse.addEventListener("show.bs.collapse", function() {
+                const comandaID = this.id.replace("collapseComanda", "");
+                const container = document.getElementById("detalleComanda_" + comandaID);
+                container.innerHTML = "<div class='text-muted'>Cargando detalles...</div>";
 
-            fetch(`../api/comandaDetails/getComandaDetails.php?ComandaID=${comandaID}`)
-                .then(res => res.text())
-                .then(html => {
-                    container.innerHTML = html;
-                })
-                .catch(err => {
-                    container.innerHTML = "<div class='text-danger'>Error al cargar detalles.</div>";
-                    console.error(err);
-                });
+                fetch(`../api/comandaDetails/getComandaDetails.php?ComandaID=${comandaID}`)
+                    .then(res => res.text())
+                    .then(html => {
+                        container.innerHTML = html;
+                    })
+                    .catch(err => {
+                        container.innerHTML = "<div class='text-danger'>Error al cargar detalles.</div>";
+                        console.error(err);
+                    });
+            });
         });
     });
-});
 </script>
