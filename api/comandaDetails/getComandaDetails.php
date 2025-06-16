@@ -7,7 +7,7 @@ if (!isset($_GET['ComandaID'])) {
     exit;
 }
 
-$comandaID = intval($_GET['ComandaID']);
+$comandaID = $_GET['ComandaID'];
 $conn = conexion();
 
 $query = $conn->prepare("
