@@ -89,6 +89,6 @@ function generarPDF(formId, btnId, urlAPI, fileNamePrefix) {
     });
 }
 
-generarPDF("formReporteComandas", "btnGenerarComandas", "https://stagging.kallijaguar-inventory.com/api/generarReportePDF.php", "reporteComandas");
-generarPDF("formReporteProductos", "btnGenerarProductos", "https://stagging.kallijaguar-inventory.com/api/generarReporteProductosPDF.php", "reporteProductos");
+generarPDF("formReporteComandas", "btnGenerarComandas", "https://www.kallijaguar-inventory.com/api/generarReportePDF.php", "reporteComandas");
+generarPDF("formReporteProductos", "btnGenerarProductos", "https://www.kallijaguar-inventory.com/api/generarReporteProductosPDF.php", "reporteProductos");
 </script>
