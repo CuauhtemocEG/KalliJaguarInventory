@@ -72,7 +72,7 @@ try {
             $pdf->Cell(100, 7, 'Producto', 1, 0, 'C', true);
             $pdf->Cell(60, 7, 'Cantidad', 1, 1, 'C', true);
             foreach ($unidades as $u) {
-                $pdf->Cell(100, 6, utf8_decode($u['Nombre']), 1);
+                $pdf->Cell(100, 6, utf8_decode(ucwords(strtolower($p['Nombre']))), 1);
                 $pdf->Cell(60, 6, utf8_decode(formatearCantidad($u['Cantidad'], $u['Tipo'])), 1, 1, 'C');
             }
         }
