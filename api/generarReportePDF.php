@@ -100,7 +100,7 @@ if (!$fechaInicio || !$fechaFin) {
                 $totalComanda = 0;
 
                 foreach ($items as $item) {
-                    $pdf->Cell(80, 6, utf8_decode($item['Nombre']), 1);
+                    $pdf->Cell(80, 6, utf8_decode(ucwords(strtolower($item['Nombre']))), 1);
                     $pdf->Cell(30, 6, utf8_decode(formatearCantidad($item['Cantidad'], $item['Tipo'])), 1, 0, 'C');
                     $pdf->Cell(30, 6, '$' . number_format($item['PrecioUnitario'] * 0.16 +$item['PrecioUnitario'], 2), 1, 0, 'C');
                     $pdf->Cell(30, 6, '$' . number_format($item['Subtotal'], 2), 1, 1, 'C');
