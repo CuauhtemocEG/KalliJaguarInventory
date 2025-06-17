@@ -59,8 +59,44 @@ $totalCountProd = (int) $totalProd->fetchColumn();
 					</div>
 				</div>
 
+				<button id="btnStockBajoPDF" class="btn btn-danger">
+					<i class="fas fa-file-pdf"></i> Descargar PDF de Stock Bajo
+				</button>
+
 			</div>
 		</div>
 	</div>
 </div>
-</div>
+<script>
+document.getElementById("btnStockBajoPDF").addEventListener("click", function () {
+    const btn = this;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
+
+    fetch("api/generarStockBajoPDF.php", {
+        method: "POST"
+    })
+    .then(res => {
+        if (!res.ok) throw new Error("Error en la respuesta del servidor");
+        return res.blob();
+    })
+    .then(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "stock_bajo.pdf";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+    })
+    .catch(err => {
+        console.error("Error al generar PDF:", err);
+        alert("Ocurrió un error al generar el PDF.");
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-file-pdf"></i> Descargar PDF de Stock Bajo';
+    });
+});
+</script>
