@@ -1,6 +1,10 @@
 <div class="container py-4">
     <h2 class="mb-4">Reportes por Rango de Fechas</h2>
 
+    <button id="btnStockBajoPDF" class="btn btn-sm btn-danger">
+        <i class="fas fa-file-pdf"></i> Descargar PDF de Stock Bajo
+    </button>
+
     <form id="formReporteComandas">
         <div class="form-row">
             <div class="form-group col-md-5">
@@ -42,53 +46,85 @@
 </div>
 
 <script>
-function generarPDF(formId, btnId, urlAPI, fileNamePrefix) {
-    const form = document.getElementById(formId);
-    const btn = document.getElementById(btnId);
-    const loader = document.getElementById("loader");
+    function generarPDF(formId, btnId, urlAPI, fileNamePrefix) {
+        const form = document.getElementById(formId);
+        const btn = document.getElementById(btnId);
+        const loader = document.getElementById("loader");
 
-    form.addEventListener("submit", function(e) {
-        e.preventDefault();
-        const formData = new FormData(form);
-        const fechaDesde = formData.get("fecha_desde");
-        const fechaHasta = formData.get("fecha_hasta");
+        form.addEventListener("submit", function(e) {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const fechaDesde = formData.get("fecha_desde");
+            const fechaHasta = formData.get("fecha_hasta");
 
-        const fileName = `${fileNamePrefix}-${fechaDesde}_${fechaHasta}.pdf`;
+            const fileName = `${fileNamePrefix}-${fechaDesde}_${fechaHasta}.pdf`;
 
-        loader.style.display = "block";
-        btn.disabled = true;
-        btn.textContent = "Generando...";
+            loader.style.display = "block";
+            btn.disabled = true;
+            btn.textContent = "Generando...";
 
-        fetch(urlAPI, {
-            method: "POST",
-            body: formData
-        })
-        .then(res => {
-            if (!res.ok) throw new Error("Error en la respuesta del servidor");
-            return res.blob();
-        })
-        .then(blob => {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            URL.revokeObjectURL(url);
-        })
-        .catch(err => {
-            console.error("Error al generar PDF:", err);
-            alert("Ocurrió un error al generar el PDF.");
-        })
-        .finally(() => {
-            loader.style.display = "none";
-            btn.disabled = false;
-            btn.textContent = "Generar PDF";
+            fetch(urlAPI, {
+                    method: "POST",
+                    body: formData
+                })
+                .then(res => {
+                    if (!res.ok) throw new Error("Error en la respuesta del servidor");
+                    return res.blob();
+                })
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(url);
+                })
+                .catch(err => {
+                    console.error("Error al generar PDF:", err);
+                    alert("Ocurrió un error al generar el PDF.");
+                })
+                .finally(() => {
+                    loader.style.display = "none";
+                    btn.disabled = false;
+                    btn.textContent = "Generar PDF";
+                });
         });
-    });
-}
+    }
 
-generarPDF("formReporteComandas", "btnGenerarComandas", "https://www.kallijaguar-inventory.com/api/generarReportePDF.php", "reporteComandas");
-generarPDF("formReporteProductos", "btnGenerarProductos", "https://www.kallijaguar-inventory.com/api/generarReporteProductosPDF.php", "reporteProductos");
+    document.getElementById("btnStockBajoPDF").addEventListener("click", function() {
+        const btn = this;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
+
+        fetch("api/generarStockBajoPDF.php", {
+                method: "POST"
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Error en la respuesta del servidor");
+                return res.blob();
+            })
+            .then(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "stock_bajo.pdf";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+            })
+            .catch(err => {
+                console.error("Error al generar PDF:", err);
+                alert("Ocurrió un error al generar el PDF.");
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-file-pdf"></i> Descargar PDF de Stock Bajo';
+            });
+    });
+
+    generarPDF("formReporteComandas", "btnGenerarComandas", "https://www.kallijaguar-inventory.com/api/generarReportePDF.php", "reporteComandas");
+    generarPDF("formReporteProductos", "btnGenerarProductos", "https://www.kallijaguar-inventory.com/api/generarReporteProductosPDF.php", "reporteProductos");
 </script>
