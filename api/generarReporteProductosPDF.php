@@ -75,7 +75,7 @@ if (!$fechaInicio || !$fechaFin) {
             $totalGeneral = 0;
 
             foreach ($productos as $producto) {
-                $pdf->Cell(70, 6, utf8_decode($producto['Nombre']), 1);
+                $pdf->Cell(70, 6, utf8_decode(ucwords(strtolower($producto['Nombre']))), 1);
                 $pdf->Cell(35, 6, utf8_decode(formatearCantidadTotal($producto['TotalCantidad'], $producto['Tipo'])), 1, 0, 'C');
                 $precioIVA = $producto['PrecioUnitario'] * 1.16;
                 $pdf->Cell(35, 6, '$' . number_format($precioIVA, 2), 1, 0, 'C');
