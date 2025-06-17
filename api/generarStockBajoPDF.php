@@ -59,7 +59,7 @@ try {
             $pdf->Cell(100, 7, 'Producto', 1, 0, 'C', true);
             $pdf->Cell(60, 7, 'Cantidad', 1, 1, 'C', true);
             foreach ($pesables as $p) {
-                $pdf->Cell(100, 6, utf8_decode($p['Nombre']), 1);
+                $pdf->Cell(100, 6, utf8_decode(ucwords(strtolower($p['nombre']))), 1);
                 $pdf->Cell(60, 6, utf8_decode(formatearCantidad($p['Cantidad'], $p['Tipo'])), 1, 1, 'C');
             }
             $pdf->Ln(5);
