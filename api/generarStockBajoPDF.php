@@ -5,7 +5,7 @@ require_once('../controllers/mainController.php');
 class PDF extends FPDF {
     function Header() {
         $this->SetFont('Arial', 'B', 14);
-        $this->Cell(0, 10, utf8_decode('Productos con Inventario Bajo'), 0, 1, 'C');
+        $this->Cell(0, 10, utf8_decode('Productos con Inventario Bajo por Categoría'), 0, 1, 'C');
         $this->Ln(5);
     }
 
@@ -41,40 +41,28 @@ $pdf->SetFont('Arial', '', 10);
 try {
     $conn = conexion();
 
-    // Productos pesables con stock bajo
-    $stmtPesables = $conn->query("SELECT Nombre, Cantidad, Tipo FROM Productos WHERE Tipo='Pesable' AND Cantidad < 5");
-    $pesables = $stmtPesables->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $conn->query("SELECT p.Nombre, p.Cantidad, p.Tipo, c.Nombre AS Categoria FROM Productos p INNER JOIN Categorias c ON p.CategoriaID = c.CategoriaID WHERE p.Cantidad < 5 ORDER BY c.Nombre, p.Nombre");
+    $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Productos por unidad con stock bajo
-    $stmtUnidades = $conn->query("SELECT Nombre, Cantidad, Tipo FROM Productos WHERE Tipo='Unidad' AND Cantidad < 5");
-    $unidades = $stmtUnidades->fetchAll(PDO::FETCH_ASSOC);
-
-    if (count($pesables) === 0 && count($unidades) === 0) {
+    if (count($productos) === 0) {
         $pdf->Cell(0, 10, utf8_decode('No hay productos con inventario bajo.'), 0, 1);
     } else {
-        // Sección Pesables
-        if (count($pesables) > 0) {
-            $pdf->TituloSeccion('Productos Pesables con Stock Bajo');
-            $pdf->SetFillColor(200, 220, 255);
-            $pdf->Cell(100, 7, 'Producto', 1, 0, 'C', true);
-            $pdf->Cell(60, 7, 'Cantidad', 1, 1, 'C', true);
-            foreach ($pesables as $p) {
-                $pdf->Cell(100, 6, utf8_decode(ucwords(strtolower($p['Nombre']))), 1);
-                $pdf->Cell(60, 6, utf8_decode(formatearCantidad($p['Cantidad'], $p['Tipo'])), 1, 1, 'C');
-            }
-            $pdf->Ln(5);
+        $categorias = [];
+        foreach ($productos as $producto) {
+            $categorias[$producto['Categoria']][] = $producto;
         }
 
-        // Sección Unidades
-        if (count($unidades) > 0) {
-            $pdf->TituloSeccion('Productos por Unidad con Stock Bajo');
+        foreach ($categorias as $categoria => $items) {
+            $pdf->TituloSeccion("Categoría: " . $categoria);
             $pdf->SetFillColor(200, 220, 255);
             $pdf->Cell(100, 7, 'Producto', 1, 0, 'C', true);
             $pdf->Cell(60, 7, 'Cantidad', 1, 1, 'C', true);
-            foreach ($unidades as $u) {
-                $pdf->Cell(100, 6, utf8_decode(ucwords(strtolower($u['Nombre']))), 1);
-                $pdf->Cell(60, 6, utf8_decode(formatearCantidad($u['Cantidad'], $u['Tipo'])), 1, 1, 'C');
+
+            foreach ($items as $item) {
+                $pdf->Cell(100, 6, utf8_decode(ucwords(strtolower($item['Nombre']))), 1);
+                $pdf->Cell(60, 6, utf8_decode(formatearCantidad($item['Cantidad'], $item['Tipo'])), 1, 1, 'C');
             }
+            $pdf->Ln(5);
         }
     }
 
@@ -84,6 +72,6 @@ try {
 
 ob_end_clean();
 header('Content-Type: application/pdf');
-header('Content-Disposition: attachment; filename="stock_bajo.pdf"');
-$pdf->Output('D', 'stock_bajo.pdf');
-exit; ?>
+header('Content-Disposition: attachment; filename="stock_bajo_por_categoria.pdf"');
+$pdf->Output('D', 'stock_bajo_por_categoria.pdf');
+exit;
