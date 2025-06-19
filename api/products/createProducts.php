@@ -5,7 +5,7 @@ require_once "../../controllers/mainController.php";
 require_once '../../helpers/responseHelper.php';
 
 try {
-    $requiredFields = ['productUPC', 'productName', 'productPrecio', 'productStock', 'productTypeInventory', 'productCategory'];
+    $requiredFields = ['productUPC', 'productName', 'productPrecio', 'productStock', 'productTypeInventory', 'productCategory', 'productTag'];
     foreach ($requiredFields as $field) {
         if (empty($_POST[$field])) {
             throw new Exception("Todos los campos son obligatorios.");
