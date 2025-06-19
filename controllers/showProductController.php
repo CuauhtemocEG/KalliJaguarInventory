@@ -89,7 +89,7 @@ function generarCodigoConLogo($ean13, $nombreProducto, $logoPath, $fontPath, $sc
 $inicio = ($pagina > 0) ? (($pagina * $registros) - $registros) : 0;
 $tabla = "";
 
-$campos = "Productos.ProductoID,Productos.UPC,Productos.Nombre as productName,Productos.Descripcion,Productos.PrecioUnitario,Productos.Cantidad,Productos.image,Productos.CategoriaID,Productos.UsuarioID,Productos.Tipo,Categorias.CategoriaID,Categorias.Nombre, Productos.Tag as CatName,Usuarios.UsuarioID,Usuarios.Nombre,Usuarios.Username";
+$campos = "Productos.ProductoID,Productos.UPC,Productos.Nombre as productName,Productos.Descripcion,Productos.PrecioUnitario,Productos.Cantidad,Productos.image,Productos.CategoriaID,Productos.UsuarioID,Productos.Tipo,Categorias.CategoriaID,Categorias.Nombre as CatName,Productos.Tag,Usuarios.UsuarioID,Usuarios.Nombre,Usuarios.Username";
 
 if (isset($busqueda) && $busqueda != "") {
 
