@@ -5,6 +5,10 @@
         <i class="fas fa-file-pdf"></i> Descargar PDF de Stock Bajo
     </button>
 
+    <button id="btnStockBajoTagPDF" class="btn btn-sm btn-secondary">
+        <i class="fas fa-tags"></i> Descargar PDF Stock Bajo por Tag
+    </button>
+
     <form id="formReporteComandas">
         <div class="form-row">
             <div class="form-group col-md-5">
@@ -92,6 +96,39 @@
                 });
         });
     }
+
+    document.getElementById("btnStockBajoTagPDF").addEventListener("click", function() {
+        const btn = this;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
+
+        fetch("api/generarStockBajoTagPDF.php", {
+                method: "POST"
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Error en la respuesta del servidor");
+                return res.blob();
+            })
+            .then(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "stock_bajo_por_tag.pdf";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+            })
+            .catch(err => {
+                console.error("Error al generar PDF:", err);
+                alert("Ocurrió un error al generar el PDF.");
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-tags"></i> Descargar PDF Stock Bajo por Tag';
+            });
+    });
+
 
     document.getElementById("btnStockBajoPDF").addEventListener("click", function() {
         const btn = this;
