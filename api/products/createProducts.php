@@ -56,13 +56,13 @@ try {
     }
 
     $insert = $db->prepare("INSERT INTO Productos (UPC, Nombre, PrecioUnitario, Cantidad, image, Tipo, CategoriaID, UsuarioID, Tag) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $ok = $insert->execute([$codigo, $nombre, $precio, $stock, $foto, $tipo, $categoria, $_SESSION['id']], $tags);
+    $ok = $insert->execute([$codigo, $nombre, $precio, $stock, $foto, $tipo, $categoria, $_SESSION['id'], $tags]);
 
     if (!$ok) throw new Exception("No se pudo guardar el producto.");
 
     $response = ['status' => 'success', 'message' => 'Producto registrado correctamente'];
 } catch (Exception $e) {
-    $response['message'] = $e->getMessage();
+    $response = ['status' => 'error', 'message' => $e->getMessage()];
 }
 
 echo json_encode($response);
