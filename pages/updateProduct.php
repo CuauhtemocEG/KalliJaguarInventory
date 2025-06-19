@@ -82,6 +82,19 @@
 								?>
 							</select>
 						</div>
+						<div class="form-group col-md-5">
+							<b><label>Tag del producto:</label></b>
+							<select class="custom-select" id="inputTag" name="productTag">
+								<option value="Costco">Costco</option>
+								<option value="Mercado">Mercado</option>
+								<option value="Walmart">Walmart</option>
+								<option value="Central">Central de Abastos</option>
+								<option value="Chilapa">Chilapa</option>
+								<option value="Arero">Arero</option>
+								<option value="Oficina">Oficina</option>
+								<option value="Kike">Kike</option>
+							</select>
+						</div>
 					</div>
 
 					<p class="has-text-centered">
