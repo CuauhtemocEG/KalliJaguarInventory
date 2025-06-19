@@ -72,118 +72,208 @@
 </div>
 
 <script>
-    function generarPDF(formId, btnId, urlAPI, fileNamePrefix) {
-        const form = document.getElementById(formId);
-        const btn = document.getElementById(btnId);
-        const loader = document.getElementById("loader");
+function generarPDF(formId, btnId, urlAPI, fileNamePrefix) {
+    const form = document.getElementById(formId);
+    const btn = document.getElementById(btnId);
 
-        form.addEventListener("submit", function(e) {
-            e.preventDefault();
-            const formData = new FormData(form);
-            const fechaDesde = formData.get("fecha_desde");
-            const fechaHasta = formData.get("fecha_hasta");
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const fechaDesde = formData.get("fecha_desde");
+        const fechaHasta = formData.get("fecha_hasta");
 
-            const fileName = `${fileNamePrefix}-${fechaDesde}_${fechaHasta}.pdf`;
+        if (!fechaDesde || !fechaHasta) {
+            return Swal.fire({
+                icon: "warning",
+                title: "Fechas requeridas",
+                text: "Por favor, selecciona ambas fechas.",
+            });
+        }
 
-            loader.style.display = "block";
-            btn.disabled = true;
-            btn.textContent = "Generando...";
+        if (fechaDesde > fechaHasta) {
+            return Swal.fire({
+                icon: "error",
+                title: "Rango inválido",
+                text: "La fecha 'Desde' no puede ser mayor que la fecha 'Hasta'.",
+            });
+        }
 
-            fetch(urlAPI, {
-                    method: "POST",
-                    body: formData
-                })
-                .then(res => {
-                    if (!res.ok) throw new Error("Error en la respuesta del servidor");
-                    return res.blob();
-                })
-                .then(blob => {
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = url;
-                    a.download = fileName;
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
-                    URL.revokeObjectURL(url);
-                })
-                .catch(err => {
-                    console.error("Error al generar PDF:", err);
-                    alert("Ocurrió un error al generar el PDF.");
-                })
-                .finally(() => {
-                    loader.style.display = "none";
-                    btn.disabled = false;
-                    btn.textContent = "Generar PDF";
-                });
+        const result = await Swal.fire({
+            title: "¿Deseas generar el reporte?",
+            text: `Desde: ${fechaDesde} - Hasta: ${fechaHasta}`,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Sí, generar",
+            cancelButtonText: "Cancelar",
         });
-    }
 
-    document.getElementById("btnStockBajoTagPDF").addEventListener("click", function() {
-        const btn = this;
+        if (!result.isConfirmed) return;
+
+        const fileName = `${fileNamePrefix}-${fechaDesde}_${fechaHasta}.pdf`;
+
+        Swal.fire({
+            title: "Generando PDF...",
+            text: "Por favor espera un momento",
+            didOpen: () => Swal.showLoading(),
+            allowOutsideClick: false,
+        });
+
         btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
 
-        fetch("api/generarStockBajoTagPDF.php", {
-                method: "POST"
+        fetch(urlAPI, {
+                method: "POST",
+                body: formData
             })
-            .then(res => {
-                if (!res.ok) throw new Error("Error en la respuesta del servidor");
+            .then((res) => {
+                if (!res.ok) throw new Error("Error en el servidor");
                 return res.blob();
             })
-            .then(blob => {
+            .then((blob) => {
+                Swal.close();
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement("a");
                 a.href = url;
-                a.download = "stock_bajo_por_tag.pdf";
+                a.download = fileName;
                 document.body.appendChild(a);
                 a.click();
                 a.remove();
                 URL.revokeObjectURL(url);
+
+                Swal.fire({
+                    icon: "success",
+                    title: "¡Reporte generado!",
+                    text: "Tu archivo PDF se ha descargado correctamente.",
+                    timer: 3000,
+                    showConfirmButton: false,
+                });
             })
-            .catch(err => {
+            .catch((err) => {
                 console.error("Error al generar PDF:", err);
-                alert("Ocurrió un error al generar el PDF.");
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "Ocurrió un error al generar el PDF.",
+                });
             })
             .finally(() => {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-tags"></i> Descargar PDF Stock Bajo por Tag';
+                btn.innerHTML = '<i class="fas fa-file-pdf"></i> Generar PDF';
             });
     });
+}
 
+document.getElementById("btnStockBajoPDF").addEventListener("click", function () {
+  const btn = this;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
 
-    document.getElementById("btnStockBajoPDF").addEventListener("click", function() {
-        const btn = this;
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
+  Swal.fire({
+    title: "Generando PDF de stock bajo...",
+    didOpen: () => Swal.showLoading(),
+    allowOutsideClick: false,
+  });
 
-        fetch("api/generarStockBajoPDF.php", {
-                method: "POST"
-            })
-            .then(res => {
-                if (!res.ok) throw new Error("Error en la respuesta del servidor");
-                return res.blob();
-            })
-            .then(blob => {
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = "stock_bajo.pdf";
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                URL.revokeObjectURL(url);
-            })
-            .catch(err => {
-                console.error("Error al generar PDF:", err);
-                alert("Ocurrió un error al generar el PDF.");
-            })
-            .finally(() => {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-file-pdf"></i> Descargar PDF de Stock Bajo';
-            });
+  fetch("api/generarStockBajoPDF.php", {
+    method: "POST",
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error("Error en el servidor");
+      return res.blob();
+    })
+    .then((blob) => {
+      Swal.close();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "stock_bajo.pdf";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+
+      Swal.fire({
+        icon: "success",
+        title: "PDF generado",
+        text: "Archivo descargado exitosamente.",
+        timer: 3000,
+        showConfirmButton: false,
+      });
+    })
+    .catch((err) => {
+      console.error("Error:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Ocurrió un error al generar el PDF.",
+      });
+    })
+    .finally(() => {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-file-pdf"></i> PDF Stock Bajo';
     });
+});
 
-    generarPDF("formReporteComandas", "btnGenerarComandas", "https://www.kallijaguar-inventory.com/api/generarReportePDF.php", "reporteComandas");
-    generarPDF("formReporteProductos", "btnGenerarProductos", "https://www.kallijaguar-inventory.com/api/generarReporteProductosPDF.php", "reporteProductos");
+document.getElementById("btnStockBajoTagPDF").addEventListener("click", function () {
+  const btn = this;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
+
+  Swal.fire({
+    title: "Generando PDF por Tag...",
+    didOpen: () => Swal.showLoading(),
+    allowOutsideClick: false,
+  });
+
+  fetch("api/generarStockBajoTagPDF.php", {
+    method: "POST",
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error("Error en el servidor");
+      return res.blob();
+    })
+    .then((blob) => {
+      Swal.close();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "stock_bajo_por_tag.pdf";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+
+      Swal.fire({
+        icon: "success",
+        title: "PDF generado",
+        text: "Archivo descargado correctamente.",
+        timer: 3000,
+        showConfirmButton: false,
+      });
+    })
+    .catch((err) => {
+      console.error("Error:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Ocurrió un error al generar el PDF.",
+      });
+    })
+    .finally(() => {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-tags"></i> PDF Stock Bajo por Tag';
+    });
+});
+
+generarPDF(
+  "formReporteComandas",
+  "btnGenerarComandas",
+  "https://www.kallijaguar-inventory.com/api/generarReportePDF.php",
+  "reporteComandas"
+);
+generarPDF(
+  "formReporteProductos",
+  "btnGenerarProductos",
+  "https://www.kallijaguar-inventory.com/api/generarReporteProductosPDF.php",
+  "reporteProductos"
+);
 </script>
