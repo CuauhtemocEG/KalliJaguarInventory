@@ -81,29 +81,27 @@ foreach ($datos as $row) {
         </form>';
     }
 
+    $imagen = is_file("./img/producto/" . $row['image']) ? $row['image'] : 'producto.png';
+
     $tabla .= '
-				<div class="col-md-3">
-				<div class="card mb-2">';
-    if (is_file("./img/producto/" . $row['image'])) {
-        $tabla .= '<img class="card-img-top mx-auto d-block img-responsive w-50" src="./img/producto/' . $row['image'] . '">';
-    } else {
-        $tabla .= '<img class="card-img-top mx-auto d-block img-responsive w-50" src="./img/producto.png">';
-    }
-    $tabla .= '</img>
-			        <div class="card-body">
-                        <h5 class="card-title"><strong>' . $row['nombreProducto'] . '</strong></h5>
-                        <strong>Descripción:</strong><br>'. $row['Descripcion'] .'
-						<hr>
-			              <p class="card-text">
-			                <strong>UPC:</strong> ' . $row['UPC'] . '<br>
-                            <strong>Precio:</strong> $' . $row['PrecioUnitario'] . '<br>
-							<strong>Disponible:</strong> ' . $unidades . ' ' . $result . '<br>
-                            ' . $txtDisponibilidad . '
-			              </p>
-						  ' . $cantidadRequested . '
-			        </div>
-			    </div>
-				</div>';
+    <div class="col-md-3 d-flex">
+        <div class="card mb-3 shadow-sm w-100 d-flex flex-column">
+            <div class="text-center mt-2">
+                <img class="card-img-top img-fluid rounded w-50" src="./img/producto/' . $imagen . '" alt="Imagen del producto">
+            </div>
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title text-primary text-center">' . $row['nombreProducto'] . '</h5>
+                <p class="text-muted small" style="min-height: 60px;">
+                    <strong>Descripción:</strong> ' . htmlspecialchars($row['Descripcion']) . '
+                </p>
+                <p class="mb-1"><strong>UPC:</strong> ' . $row['UPC'] . '</p>
+                <p class="mb-1"><strong>Precio:</strong> $' . $row['PrecioUnitario'] . '</p>
+                <p class="mb-1"><strong>Disponible:</strong> ' . $unidades . ' ' . $result . '</p>
+                ' . $txtDisponibilidad . '
+                <div class="mt-auto">' . $cantidadRequested . '</div>
+            </div>
+        </div>
+    </div>';
 }
 $tabla .= '</div>
 				</div>';
