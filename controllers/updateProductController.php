@@ -33,6 +33,7 @@ $precio = limpiar_cadena($_POST['productPrecio']);
 $stock = limpiar_cadena($_POST['productStock']);
 $categoria = limpiar_cadena($_POST['productCategory']);
 $tags = limpiar_cadena($_POST['productTag']);
+$description = limpiar_cadena($_POST['productDescription']);
 
 
 /*== Verificando campos obligatorios ==*/
@@ -158,7 +159,7 @@ if ($categoria != $datos['CategoriaID']) {
 
 /*== Actualizando datos ==*/
 $actualizar_producto = conexion();
-$actualizar_producto = $actualizar_producto->prepare("UPDATE Productos SET UPC=:codigo,Nombre=:nombre,PrecioUnitario=:precio,Cantidad=:stock,CategoriaID=:categoria,Tipo=:tipo, Tag=:tag WHERE ProductoID=:id");
+$actualizar_producto = $actualizar_producto->prepare("UPDATE Productos SET UPC=:codigo,Nombre=:nombre,PrecioUnitario=:precio,Cantidad=:stock,CategoriaID=:categoria,Tipo=:tipo, Tag=:tag, Descripcion=:description WHERE ProductoID=:id");
 
 $marcadores = [
     ":codigo" => $codigo,
@@ -168,7 +169,8 @@ $marcadores = [
     ":categoria" => $categoria,
     ":id" => $id,
     ":tipo" => $typeInventory,
-    ":tag" => $tags
+    ":tag" => $tags,
+    ":description" => $description
 ];
 
 

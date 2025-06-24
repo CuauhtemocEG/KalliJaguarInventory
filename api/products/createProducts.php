@@ -19,6 +19,7 @@ try {
     $tipo = limpiar_cadena($_POST['productTypeInventory']);
     $categoria = limpiar_cadena($_POST['productCategory']);
     $tags = limpiar_cadena($_POST['productTag']);
+    $description = limpiar_cadena($_POST['productDescription']);
 
     if (verificar_datos("[0-9.]{1,25}", $precio)) throw new Exception("El precio tiene un formato inválido.");
     if (verificar_datos("[0-9.]{1,25}", $stock)) throw new Exception("El stock tiene un formato inválido.");
@@ -55,8 +56,8 @@ try {
         $foto = $img_name;
     }
 
-    $insert = $db->prepare("INSERT INTO Productos (UPC, Nombre, PrecioUnitario, Cantidad, image, Tipo, CategoriaID, UsuarioID, Tag) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $ok = $insert->execute([$codigo, $nombre, $precio, $stock, $foto, $tipo, $categoria, $_SESSION['id'], $tags]);
+    $insert = $db->prepare("INSERT INTO Productos (UPC, Nombre, PrecioUnitario, Cantidad, image, Tipo, CategoriaID, UsuarioID, Tag, Descripcion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $ok = $insert->execute([$codigo, $nombre, $precio, $stock, $foto, $tipo, $categoria, $_SESSION['id'], $tags, $description]);
 
     if (!$ok) throw new Exception("No se pudo guardar el producto.");
 

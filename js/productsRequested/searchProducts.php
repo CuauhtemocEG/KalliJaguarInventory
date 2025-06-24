@@ -9,7 +9,7 @@ function conexion()
 
 $query = isset($_GET['query']) ? $_GET['query'] : '';
 
-$campos = "Productos.ProductoID,Productos.UPC,Productos.Nombre as nombreProducto,Productos.PrecioUnitario,Productos.Cantidad,Productos.Tipo,Productos.image,Productos.CategoriaID as productCategory,Productos.UsuarioID,Categorias.CategoriaID,Categorias.Nombre as categoryName,Usuarios.UsuarioID,Usuarios.Nombre as userName";
+$campos = "Productos.ProductoID,Productos.Descripcion,Productos.UPC,Productos.Nombre as nombreProducto,Productos.PrecioUnitario,Productos.Cantidad,Productos.Tipo,Productos.image,Productos.CategoriaID as productCategory,Productos.UsuarioID,Categorias.CategoriaID,Categorias.Nombre as categoryName,Usuarios.UsuarioID,Usuarios.Nombre as userName";
 
 $consulta_datos = "SELECT $campos FROM Productos INNER JOIN Categorias ON Productos.CategoriaID=Categorias.CategoriaID INNER JOIN Usuarios ON Productos.UsuarioID=Usuarios.UsuarioID WHERE Productos.UPC LIKE '%$query%' OR Productos.Nombre LIKE '%$query%' ORDER BY Productos.Nombre";
 
@@ -24,7 +24,7 @@ foreach ($datos as $row) {
     $result = "";
     $txtDisponibilidad = "";
 
-    if ($row['Cantidad'] >= 1 && $row['Tipo'] == 'Unidad' ) {
+    if ($row['Cantidad'] >= 1 && $row['Tipo'] == 'Unidad') {
         $txtDisponibilidad = '<span class="badge badge-success">Disponible</span>';
     } elseif ($row['Cantidad'] > 0 && $row['Tipo'] == 'Pesable') {
         $txtDisponibilidad = '<span class="badge badge-success">Disponible</span>';
@@ -92,6 +92,9 @@ foreach ($datos as $row) {
     $tabla .= '</img>
 			        <div class="card-body">
                         <h5 class="card-title"><strong>' . $row['nombreProducto'] . '</strong></h5>
+                        <p class="text-muted small" style="min-height: 40px;">
+                            <strong>Descripción:</strong> ' . htmlspecialchars($row['Descripcion']) . '
+                        </p>
 						<hr>
 			              <p class="card-text">
 			                <strong>UPC:</strong> ' . $row['UPC'] . '<br>
