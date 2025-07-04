@@ -212,8 +212,8 @@ try {
   $mail->CharSet = 'UTF-8';
   $mail->Host = 'smtp.titan.email';
   $mail->SMTPAuth = true;
-  $mail->Username = 'info@stagging.kallijaguar-inventory.com';
-  $mail->Password = 'KalliJaguar2025@';
+  $mail->Username = 'info@kallijaguar-inventory.com';
+  $mail->Password = '{&<eXA[x$?_q\<N';
   $mail->SMTPSecure = 'ssl';
   $mail->Port = 465;
 
