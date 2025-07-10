@@ -281,6 +281,7 @@ try {
   $mail->isSMTP();
   $mail->CharSet = 'UTF-8';
   $mail->Host = 'smtp.titan.email';
+  $mail->SMTPDebug = 2; // Cambiar a 2 para depuración
   $mail->SMTPAuth = true;
   $mail->Username = 'info@stagging.kallijaguar-inventory.com';
   $mail->Password = 'KalliJaguar2025@';
