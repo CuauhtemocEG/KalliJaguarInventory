@@ -1,5 +1,4 @@
-<?php require "./includes/session_start.php";
-require_once "./controllers/mainController.php"; ?>
+<?php require "./includes/session_start.php";?>
 <!DOCTYPE html>
 <html>
 
