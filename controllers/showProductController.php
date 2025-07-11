@@ -192,7 +192,7 @@ if ($total >= 1 && $pagina <= $Npaginas) {
 						<p class="text-justify para mb-0">
 							<strong>UPC:</strong> ' . $rows['UPC'] . '<br>
 							<strong>Stock Disponible:</strong> ' . $unidades . ' ' . $res . '<br>
-							<strong>Categoría:</strong> ' . $rows['CatName'] . '<br>
+							<strong>Categoría:</strong> ' . utf8_decode(ucwords(strtolower($rows['CatName']))). '<br>
 							<strong>Tipo de Inventario:</strong> ' . $rows['Tipo'] . '<br>
 							<strong>Se compra en:</strong> ' . $rows['Tag'] . '
 						</p>
