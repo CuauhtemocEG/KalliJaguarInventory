@@ -92,6 +92,7 @@
 						<div class="form-group col-md-5">
 							<b><label>Tag del producto:</label></b>
 							<select class="custom-select" id="inputTag" name="productTag">
+								<option selected value="<?php echo $datos['Tag']; ?>"><?php echo $datos['Tag']; ?></option>
 								<option value="Costco">Costco</option>
 								<option value="Mercado">Mercado</option>
 								<option value="Walmart">Walmart</option>
