@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Editar Comanda</title>
-    <!-- TailwindCSS CDN con soporte dark -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-      // Forzar dark y responsive por defecto
       tailwind.config = {
         darkMode: 'class',
         theme: {
@@ -21,7 +19,6 @@
         }
       }
     </script>
-    <!-- SweetAlert2 -->
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
@@ -69,10 +66,8 @@
             </div>
         </div>
     </div>
-    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-      // Dark mode toggle with system preference (optional, can remove if you want always dark)
       if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
         document.documentElement.classList.add('dark');
       }
@@ -88,7 +83,7 @@
           }
 
           function cargarProductos(comandaId) {
-              $.getJSON('https://www.kallijaguar-inventory.com/api/recreateComanda/getProductosComanda.php', {
+              $.getJSON('https://stagging.kallijaguar-inventory.com/api/getProductosComanda.php', {
                       comanda_id: comandaId
                   })
                   .done(function(res) {
@@ -161,7 +156,7 @@
               }).then((result) => {
                   if (result.isConfirmed) {
                       $.ajax({
-                          url: 'https://www.kallijaguar-inventory.com/api/recreateComanda/eliminarProductoComanda.php',
+                          url: 'https://stagging.kallijaguar-inventory.com/api/eliminarProductoComanda.php',
                           method: 'POST',
                           contentType: 'application/json',
                           data: JSON.stringify({
@@ -206,7 +201,7 @@
               }).then((result) => {
                   if (result.isConfirmed) {
                       $.ajax({
-                          url: 'https://www.kallijaguar-inventory.com/api/recreateComanda/devolverProductoComanda.php',
+                          url: 'https://stagging.kallijaguar-inventory.com/api/devolverProductoComanda.php',
                           method: 'POST',
                           contentType: 'application/json',
                           data: JSON.stringify({
@@ -248,7 +243,7 @@
                   confirmButtonColor: '#059669'
               }).then((result) => {
                   if (result.isConfirmed) {
-                      $.post('https://www.kallijaguar-inventory.com/api/recreateComanda/regenerarComandaPDF.php', {
+                      $.post('https://stagging.kallijaguar-inventory.com/api/regenerarComandaPDF.php', {
                           comanda_id: comandaId
                       }, function(res) {
                           if (res.status === 'success') {
