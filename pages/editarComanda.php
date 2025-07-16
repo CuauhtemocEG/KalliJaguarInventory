@@ -63,7 +63,7 @@
           }
 
           function cargarProductos(comandaId) {
-              $.getJSON('https://stagging.kallijaguar-inventory.com/api/recreateComanda/getProductosComanda.php', {
+              $.getJSON('https://stagging.kallijaguar-inventory.com/api/getProductosComanda.php', {
                       comanda_id: comandaId
                   })
                   .done(function(res) {
@@ -136,7 +136,7 @@
               }).then((result) => {
                   if (result.isConfirmed) {
                       $.ajax({
-                          url: 'https://stagging.kallijaguar-inventory.com/api/recreateComanda/eliminarProductoComanda.php',
+                          url: 'https://stagging.kallijaguar-inventory.com/api/eliminarProductoComanda.php',
                           method: 'POST',
                           contentType: 'application/json',
                           data: JSON.stringify({
@@ -181,7 +181,7 @@
               }).then((result) => {
                   if (result.isConfirmed) {
                       $.ajax({
-                          url: 'https://stagging.kallijaguar-inventory.com/api/recreateComanda/devolverProductoComanda.php',
+                          url: 'https://stagging.kallijaguar-inventory.com/api/devolverProductoComanda.php',
                           method: 'POST',
                           contentType: 'application/json',
                           data: JSON.stringify({
@@ -223,7 +223,7 @@
                   confirmButtonColor: '#059669'
               }).then((result) => {
                   if (result.isConfirmed) {
-                      $.post('https://stagging.kallijaguar-inventory.com/api/recreateComanda/regenerarComandaPDF.php', {
+                      $.post('https://stagging.kallijaguar-inventory.com/api/regenerarComandaPDF.php', {
                           comanda_id: comandaId
                       }, function(res) {
                           if (res.status === 'success') {
