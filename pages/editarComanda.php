@@ -1,3 +1,11 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Comanda</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
 <body class="bg-gray-50 min-h-screen">
     <div class="max-w-3xl mx-auto mt-10">
         <div class="bg-white shadow-lg rounded-lg p-8">
@@ -26,6 +34,7 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <!-- Productos serán cargados aquí -->
                     </tbody>
                 </table>
             </div>
@@ -231,3 +240,4 @@
       });
     </script>
 </body>
+</html>
