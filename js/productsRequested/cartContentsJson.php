@@ -1,40 +1,73 @@
 <?php
-header('Content-Type: application/json');
 session_start();
+header('Content-Type: application/json');
 
-require_once '../../controllers/mainController.php';
+// Recupera el carrito desde la sesión o la cookie persistente
+if (!isset($_SESSION['INV']) && isset($_COOKIE['persist_cart'])) {
+    $_SESSION['INV'] = json_decode($_COOKIE['persist_cart'], true);
+}
 
 $cart = isset($_SESSION['INV']) ? $_SESSION['INV'] : [];
 
+if (count($cart) > 0) {
+    $total = 0;
+    $totalItem = 0;
+    $productos = [];
 
-$productos = [];
+    foreach ($cart as $key => $item) {
+        $unidadesRes = '';
+        $res = 0;
 
-foreach ($cart as $item) {
-    $conexion = conexion();
-    $stmt = $conexion->prepare("SELECT ProductoID, Nombre, UPC, Descripcion, PrecioUnitario, Tipo, image FROM Productos WHERE ProductoID = ?");
-    $stmt->execute([$item['producto_id']]);
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($row) {
-        $nombreImagen = !empty($row['image']) && is_file("../../img/producto/" . $row['image'])
-            ? $row['image']
+        if ($item['tipo'] == "Pesable") {
+            if ($item['cantidad'] >= 1.0) {
+                $unidadesRes = 'Kg';
+                $res = number_format($item["cantidad"], 3);
+            } else {
+                $unidadesRes = 'grs';
+                $res = number_format($item["cantidad"], 3);
+            }
+        } else {
+            $unidadesRes = 'Un';
+            $res = number_format($item["cantidad"], 0);
+        }
+
+        $totalItem += $item['cantidad'];
+        $percentage = $item['precio'] * (1 + 0.16);
+        $total += $item['cantidad'] * $percentage;
+
+        // Construye la URL de la imagen (opcional, ajústalo si tienes imagen en tus items)
+        $nombreImagen = !empty($item['imagen']) && is_file("../../img/producto/" . $item['imagen'])
+            ? $item['imagen']
             : 'producto.png';
         $urlImagen = 'https://www.kallijaguar-inventory.com/img/producto/' . $nombreImagen;
+
         $productos[] = [
-            'id'         => $row['ProductoID'],
-            'nombre'     => $row['Nombre'],
-            'upc'        => $row['UPC'],
-            'descripcion'=> $row['Descripcion'],
-            'precio'     => $row['PrecioUnitario'],
-            'unidad'     => $row['Tipo'],
-            'imagen'     => $urlImagen,
-            'cantidad'   => $item['cantidad']
+            'id'        => $key,
+            'nombre'    => $item["nombre"],
+            'cantidad'  => $item["cantidad"],
+            'cantidad_formateada' => $res,
+            'unidad'    => $unidadesRes,
+            'precio'    => $item["precio"],
+            'precio_total' => $item["precio"] * $item["cantidad"],
+            'tipo'      => $item["tipo"],
+            'imagen'    => $urlImagen
         ];
     }
-}
 
-echo json_encode([
-    'status' => 'success',
-    'cart'   => $productos
-]);
-exit();
+    echo json_encode([
+        'status'      => 'success',
+        'cart'        => $productos,
+        'total_items' => $totalItem,
+        'total'       => $total
+    ]);
+    exit;
+} else {
+    echo json_encode([
+        'status' => 'success',
+        'cart'   => [],
+        'total_items' => 0,
+        'total'  => 0.0
+    ]);
+    exit;
+}
 ?>
