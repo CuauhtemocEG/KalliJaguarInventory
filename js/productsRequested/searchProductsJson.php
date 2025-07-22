@@ -41,6 +41,12 @@ $stmt->execute();
 
 $productos = [];
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    // Lógica para la imagen
+    $nombreImagen = !empty($row['image']) && is_file("../../img/producto/" . $row['image'])
+        ? $row['image']
+        : 'producto.png';
+    $urlImagen = 'https://stagging.kallijaguar-inventory.com/img/producto/' . $nombreImagen;
+
     $productos[] = [
         'id'          => $row['ProductoID'],
         'nombre'      => $row['nombreProducto'],
@@ -49,13 +55,13 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         'existencias' => $row['Cantidad'],
         'unidad'      => $row['Tipo'],
         'precio'      => $row['PrecioUnitario'],
-        'imagen'      => $row['image'],
+        'imagen'      => $urlImagen,
         'categoria'   => [
-            'id'   => $row['productCategory'],
+            'id'     => $row['productCategory'],
             'nombre' => $row['categoryName'],
         ],
         'usuario'     => [
-            'id'   => $row['UsuarioID'],
+            'id'     => $row['UsuarioID'],
             'nombre' => $row['userName'],
         ]
     ];
@@ -66,4 +72,3 @@ echo json_encode([
     'products' => $productos
 ]);
 exit();
-?>
