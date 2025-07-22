@@ -6,11 +6,11 @@ session_start();
 require_once '../../controllers/mainController.php';
 
 // Validar sesión
-if (!isset($_SESSION['id'])) {
-    http_response_code(401);
-    echo json_encode(['status' => 'error', 'message' => 'No autenticado']);
-    exit();
-}
+//if (!isset($_SESSION['id'])) {
+//    http_response_code(401);
+//    echo json_encode(['status' => 'error', 'message' => 'No autenticado']);
+//    exit();
+//}
 
 // Recibe el parámetro de búsqueda
 $query = isset($_GET['query']) ? limpiar_cadena($_GET['query']) : '';
