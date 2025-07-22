@@ -4,7 +4,7 @@ session_start();
 
 require_once '../../controllers/mainController.php';
 
-$cart = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
+$cart = isset($_SESSION['INV']) ? $_SESSION['INV'] : [];
 
 
 $productos = [];
