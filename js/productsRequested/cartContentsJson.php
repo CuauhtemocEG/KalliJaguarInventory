@@ -1,6 +1,8 @@
 <?php
 session_start();
 header('Content-Type: application/json');
+error_log('SESION CONSULTA: ' . session_id());
+error_log('CARRITO CONSULTA: ' . print_r($_SESSION['INV'], true));
 
 // Recupera el carrito desde la sesión o la cookie persistente
 if (!isset($_SESSION['INV']) && isset($_COOKIE['persist_cart'])) {
@@ -39,7 +41,7 @@ if (count($cart) > 0) {
         $nombreImagen = !empty($item['imagen']) && is_file("../../img/producto/" . $item['imagen'])
             ? $item['imagen']
             : 'producto.png';
-        $urlImagen = 'https://www.kallijaguar-inventory.com/img/producto/' . $nombreImagen;
+        $urlImagen = 'https://stagging.kallijaguar-inventory.com/img/producto/' . $nombreImagen;
 
         $productos[] = [
             'id'        => $key,
