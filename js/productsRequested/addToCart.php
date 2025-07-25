@@ -2,31 +2,35 @@
 session_start();
 header('Content-Type: application/json');
 
+// Permite POST clásico (web) y JSON (móvil)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Intenta obtener los datos como JSON
     $data = json_decode(file_get_contents('php://input'), true);
 
     if ($data) {
         $id       = $data['id']       ?? null;
-        $cantidad = $data['cantidad'] ?? null;
         $precio   = $data['precio']   ?? null;
+        $cantidad = $data['cantidad'] ?? null;
         $nombre   = $data['nombre']   ?? null;
         $tipo     = $data['tipo']     ?? null;
         $imagen   = $data['imagen']   ?? null;
     } else {
-        $id       = $_POST['id']       ?? null;
-        $cantidad = $_POST['cantidad'] ?? null;
-        $precio   = $_POST['precio']   ?? null;
-        $nombre   = $_POST['nombre']   ?? null;
-        $tipo     = $_POST['tipo']     ?? null;
-        $imagen   = $_POST['imagen']   ?? null;
+        $id       = $_POST['idProduct']       ?? null;
+        $precio   = $_POST['precioProduct']   ?? null;
+        $cantidad = $_POST['cantidadProduct'] ?? null;
+        $nombre   = $_POST['nameProduct']     ?? null;
+        $tipo     = $_POST['typeProduct']     ?? null;
+        $imagen   = $_POST['imageProduct']    ?? null;
     }
 
-    if (!$id || !$cantidad) {
+    if (!$id || !$precio || !$cantidad || !$nombre || !$tipo) {
         echo json_encode(['status' => 'error', 'message' => 'Faltan datos']);
         exit;
     }
 
-    if (!isset($_SESSION['INV'])) $_SESSION['INV'] = [];
+    if (!isset($_SESSION['INV'])) {
+        $_SESSION['INV'] = [];
+    }
 
     if (isset($_SESSION['INV'][$id])) {
         $_SESSION['INV'][$id]['cantidad'] += $cantidad;
@@ -46,4 +50,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Método no permitido']);
 }
-?>
