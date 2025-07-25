@@ -2,52 +2,46 @@
 session_start();
 header('Content-Type: application/json');
 
-// Admite tanto POST clásico como JSON desde fetch
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    // Primero intenta obtener los datos como JSON
     $data = json_decode(file_get_contents('php://input'), true);
 
     if ($data) {
-        // Vía JSON (fetch/app movil)
         $id       = $data['id']       ?? null;
-        $precio   = $data['precio']   ?? null;
         $cantidad = $data['cantidad'] ?? null;
+        $precio   = $data['precio']   ?? null;
         $nombre   = $data['nombre']   ?? null;
         $tipo     = $data['tipo']     ?? null;
         $imagen   = $data['imagen']   ?? null;
     } else {
-        // Vía POST form clásico (web)
-        $id       = $_POST['idProduct']      ?? null;
-        $precio   = $_POST['precioProduct']  ?? null;
-        $cantidad = $_POST['cantidadProduct']?? null;
-        $nombre   = $_POST['nameProduct']    ?? null;
-        $tipo     = $_POST['typeProduct']    ?? null;
-        $imagen   = $_POST['imageProduct']   ?? null;
+        $id       = $_POST['id']       ?? null;
+        $cantidad = $_POST['cantidad'] ?? null;
+        $precio   = $_POST['precio']   ?? null;
+        $nombre   = $_POST['nombre']   ?? null;
+        $tipo     = $_POST['tipo']     ?? null;
+        $imagen   = $_POST['imagen']   ?? null;
     }
 
-    if (!$id || !$precio || !$cantidad || !$nombre || !$tipo) {
+    if (!$id || !$cantidad) {
         echo json_encode(['status' => 'error', 'message' => 'Faltan datos']);
         exit;
     }
 
-    if (!isset($_SESSION['INV'])) {
-        $_SESSION['INV'] = [];
+    if (!isset($_SESSION['INV'])) $_SESSION['INV'] = [];
+
+    if (isset($_SESSION['INV'][$id])) {
+        $_SESSION['INV'][$id]['cantidad'] += $cantidad;
+    } else {
+        $_SESSION['INV'][$id] = [
+            'producto' => $id,
+            'precio'   => $precio,
+            'nombre'   => $nombre,
+            'cantidad' => $cantidad,
+            'tipo'     => $tipo,
+            'imagen'   => $imagen
+        ];
     }
 
-    // Agrega o actualiza el producto en el carrito
-    $_SESSION['INV'][$id] = [
-        'producto' => $id,
-        'precio'   => $precio,
-        'nombre'   => $nombre,
-        'cantidad' => $cantidad,
-        'tipo'     => $tipo,
-        'imagen'   => $imagen
-    ];
-
-    // Guarda el carrito en cookie persistente (para la web)
     setcookie("persist_cart", json_encode($_SESSION['INV']), time() + 604800, "/");
-
     echo json_encode(['status' => 'success']);
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Método no permitido']);
