@@ -10,11 +10,15 @@ if (!$userId) {
     exit();
 }
 
-$stmt = $conn->prepare("SELECT ComandaID, Status, FechaMovimiento, SucursalID, SUM(Cantidad) as TotalCantidad
-                        FROM MovimientosInventario
-                        WHERE TipoMovimiento = 'Salida' AND UsuarioID = ?
-                        GROUP BY ComandaID, Status, SucursalID, FechaMovimiento
-                        ORDER BY FechaMovimiento DESC");
+$stmt = $conn->prepare("SELECT MAX(FechaMovimiento) AS FechaMovimiento, Status, ComandaID, 
+           MAX(SucursalID) AS SucursalID, MAX(MovimientoID) AS MovimientoID, 
+           COUNT(DISTINCT ProductoID) AS TotalProductos, 
+           SUM(Cantidad) AS TotalCantidad 
+    FROM MovimientosInventario 
+    WHERE TipoMovimiento = 'Salida' AND UsuarioID = ? 
+    GROUP BY ComandaID, Status, UsuarioID 
+    ORDER BY MovimientoID DESC
+                        ");
 $stmt->execute([$userId]);
 $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

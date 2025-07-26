@@ -19,11 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = $data['nombre'];
     $tipo = $data['tipo'];
 
-    // Guardar en una tabla temporal de carrito
     $stmt = $conn->prepare("REPLACE INTO CarritoSolicitudes (UsuarioID, ProductoID, Cantidad, PrecioUnitario, NombreProducto, Tipo) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->execute([$userId, $id, $cantidad, $precio, $nombre, $tipo]);
 
-    // Consultar el carrito actualizado
     $cartStmt = $conn->prepare("SELECT * FROM CarritoSolicitudes WHERE UsuarioID = ?");
     $cartStmt->execute([$userId]);
     $cart = $cartStmt->fetchAll(PDO::FETCH_ASSOC);
@@ -32,7 +30,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
 }
 
-// GET para consultar el carrito
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (!$userId) {
         echo json_encode(['status' => 'error', 'message' => 'Usuario no identificado']);
