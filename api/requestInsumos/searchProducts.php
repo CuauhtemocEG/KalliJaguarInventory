@@ -5,7 +5,7 @@ require_once '../../controllers/mainController.php';
 $query = isset($_GET['query']) ? $_GET['query'] : '';
 $conn = conexion();
 
-$sql = "SELECT ProductoID, Nombre, Descripcion, PrecioUnitario, Cantidad, Tipo, CategoriaID, image 
+$sql = "SELECT ProductoID, UPC, Nombre, Descripcion, PrecioUnitario, Cantidad, Tipo, CategoriaID, image 
         FROM Productos 
         WHERE Nombre LIKE :query OR UPC LIKE :query 
         ORDER BY Nombre";
