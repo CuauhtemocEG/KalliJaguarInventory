@@ -10,14 +10,20 @@ if (!$userId) {
     exit();
 }
 
-$stmt = $conn->prepare("SELECT MAX(FechaMovimiento) AS FechaMovimiento, Status, ComandaID, 
-           MAX(SucursalID) AS SucursalID, MAX(MovimientoID) AS MovimientoID, 
-           COUNT(DISTINCT ProductoID) AS TotalProductos, 
-           SUM(Cantidad) AS TotalCantidad 
-    FROM MovimientosInventario 
-    WHERE TipoMovimiento = 'Salida' AND UsuarioID = ? 
-    GROUP BY ComandaID, Status, UsuarioID 
-    ORDER BY MovimientoID DESC
+$stmt = $conn->prepare("SELECT 
+    MAX(MI.FechaMovimiento) AS FechaMovimiento, 
+    MI.Status, 
+    MI.ComandaID, 
+    MAX(MI.SucursalID) AS SucursalID, 
+    S.nombre AS SucursalNombre,
+    MAX(MI.MovimientoID) AS MovimientoID, 
+    COUNT(DISTINCT MI.ProductoID) AS TotalProductos, 
+    SUM(MI.Cantidad) AS TotalCantidad 
+FROM MovimientosInventario MI
+INNER JOIN Sucursales S ON S.SucursalID = MI.SucursalID
+WHERE MI.TipoMovimiento = 'Salida' AND MI.UsuarioID = ?
+GROUP BY MI.ComandaID, MI.Status, MI.UsuarioID, S.nombre
+ORDER BY MovimientoID DESC
                         ");
 $stmt->execute([$userId]);
 $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
