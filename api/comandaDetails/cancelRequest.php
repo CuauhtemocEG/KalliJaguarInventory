@@ -48,13 +48,9 @@ try {
     $emailStmt->execute([':idUser' => $idUser]);
     $Usermail = $emailStmt->fetchColumn();
 
-    require '../../PHPMailer/src/PHPMailer.php';
-    require '../../PHPMailer/src/SMTP.php';
-    require '../../PHPMailer/src/Exception.php';
-
-    use PHPMailer\PHPMailer\PHPMailer;
-    use PHPMailer\PHPMailer\SMTP;
-    use PHPMailer\PHPMailer\Exception;
+    require_once '../../PHPMailer/src/PHPMailer.php';
+    require_once '../../PHPMailer/src/SMTP.php';
+    require_once '../../PHPMailer/src/Exception.php';
 
     $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
 
@@ -80,7 +76,7 @@ try {
     $mail->send();
 
     echo json_encode(['status' => 'success', 'message' => 'Comanda cancelada correctamente']);
-} catch (Exception $e) {
+} catch (\Exception $e) {
     echo json_encode(['status' => 'error', 'message' => 'Error al cancelar: ' . $e->getMessage()]);
 }
 exit();
