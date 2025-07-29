@@ -1,61 +1,64 @@
 <?php
 require_once "../../controllers/mainController.php";
+header('Content-Type: application/json');
 
-if (!isset($_GET['ComandaID'])) {
-    echo 'No se recibió una Comanda para eliminar';
+// Leer input JSON
+$input = json_decode(file_get_contents('php://input'), true);
+
+if (!isset($input['ComandaID'])) {
+    echo json_encode(['status' => 'error', 'message' => 'No se recibió una Comanda para eliminar']);
+    exit;
 }
 
-$comandaID = $_GET['ComandaID'];
-$idUser = $_SESSION['id'];
+$comandaID = $input['ComandaID'];
+session_start();
+$idUser = $_SESSION['id'] ?? null;
 
-$conexion = conexion();
-$datos = $conexion->query("SELECT Cantidad, ProductoID FROM MovimientosInventario WHERE ComandaID='$comandaID'");
-$datos = $datos->fetchAll();
-
-foreach ($datos as $item) {
-
-    $product = $item['ProductoID'];
-
-    $consultStock = conexion();
-    $consultStock = $consultStock->query("SELECT Cantidad as Quantity FROM Productos WHERE ProductoID='$product'");
-    $stockBefore = $consultStock->fetchColumn();
-
-    $newStock = $stockBefore + $item['Cantidad'];
-
-    try {
-        $updateProducts = conexion();
-        $updateProducts = $updateProducts->prepare("UPDATE Productos SET Cantidad=:stock WHERE ProductoID=:productoID");
-
-        $updateProducts->execute([
-            ':stock' => $newStock,
-            ':productoID' => $item['ProductoID']
-        ]);
-    } catch (Exception $e) {
-        echo "Error al actualizar stock de los productos cancelados: " . $e->getMessage();
-    }
+if (!$idUser) {
+    echo json_encode(['status' => 'error', 'message' => 'Usuario no autenticado']);
+    exit;
 }
-
-$deleteComanda = conexion();
-$deleteComanda = $deleteComanda->prepare("UPDATE MovimientosInventario SET Status='Cancelado' WHERE ComandaID=:id");
-$deleteComanda->execute([":id" => $comandaID]);
-
-$emailUser = conexion();
-$emailUser = $emailUser->query("SELECT Email FROM Usuarios WHERE UsuarioID = '$idUser'");
-$Usermail = $emailUser->fetchColumn();
-
-require '../../PHPMailer/src/PHPMailer.php';
-require '../../PHPMailer/src/SMTP.php';
-require '../../PHPMailer/src/Exception.php';
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
-use PHPMailer\PHPMailer\Exception;
-
-$mail = new PHPMailer(true);
 
 try {
+    $conexion = conexion();
+    $datosStmt = $conexion->prepare("SELECT Cantidad, ProductoID FROM MovimientosInventario WHERE ComandaID = :comandaID");
+    $datosStmt->execute([':comandaID' => $comandaID]);
+    $datos = $datosStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($datos as $item) {
+        $product = $item['ProductoID'];
+
+        $stockStmt = $conexion->prepare("SELECT Cantidad FROM Productos WHERE ProductoID = :productID");
+        $stockStmt->execute([':productID' => $product]);
+        $stockBefore = $stockStmt->fetchColumn();
+
+        $newStock = $stockBefore + $item['Cantidad'];
+
+        $updateStmt = $conexion->prepare("UPDATE Productos SET Cantidad = :stock WHERE ProductoID = :productoID");
+        $updateStmt->execute([
+            ':stock' => $newStock,
+            ':productoID' => $product
+        ]);
+    }
+
+    $deleteComanda = $conexion->prepare("UPDATE MovimientosInventario SET Status = 'Cancelado' WHERE ComandaID = :id");
+    $deleteComanda->execute([':id' => $comandaID]);
+
+    $emailStmt = $conexion->prepare("SELECT Email FROM Usuarios WHERE UsuarioID = :idUser");
+    $emailStmt->execute([':idUser' => $idUser]);
+    $Usermail = $emailStmt->fetchColumn();
+
+    require '../../PHPMailer/src/PHPMailer.php';
+    require '../../PHPMailer/src/SMTP.php';
+    require '../../PHPMailer/src/Exception.php';
+
+    use PHPMailer\PHPMailer\PHPMailer;
+    use PHPMailer\PHPMailer\SMTP;
+    use PHPMailer\PHPMailer\Exception;
+
+    $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+
     $mail->isSMTP();
-    $mail->Debugoutput = 'html';
     $mail->Host = 'smtp.titan.email';
     $mail->SMTPAuth = true;
     $mail->Username = 'info@stagging.kallijaguar-inventory.com';
@@ -65,23 +68,19 @@ try {
 
     $mail->setFrom('info@stagging.kallijaguar-inventory.com', 'Informacion Kalli Jaguar');
     $mail->addAddress('cencarnacion@stagging.kallijaguar-inventory.com');
-    //$mail->addAddress('mauricio.dominguez@kallijaguar-inventory.com');
-    //$mail->addCC('julieta.ramirez@kallijaguar-inventory.com');
-    //$mail->addCC('miguel.loaeza@kallijaguar-inventory.com');
-    //$mail->addCC('andrea.sanchez@kallijaguar-inventory.com');
-    //$mail->addCC('may.sanchez@kallijaguar-inventory.com');
-    //$mail->addCC('cencarnacion@kallijaguar-inventory.com');
-
+    if ($Usermail) {
+        $mail->addCC($Usermail);
+    }
     $mail->isHTML(true);
     $mail->Subject = 'Comanda Cancelada: ' . $comandaID;
-    $mail->Body = "<p>Se ha generado una cancelacion de la siguiente comanda: <strong>{$comandaID}</strong></p>
-    <p>La solicitud realizada sera eliminada del Sistema y el stock reservado pasara a ser disponible nuevamente.</p>
+    $mail->Body = "<p>Se ha generado una cancelación de la siguiente comanda: <strong>{$comandaID}</strong></p>
+    <p>La solicitud realizada será eliminada del Sistema y el stock reservado pasará a ser disponible nuevamente.</p>
     <p>Saludos.</p>";
-    $mail->send();
-    echo 'El mensaje ha sido enviado con éxito.';
-} catch (Exception $e) {
-    echo "El mensaje no pudo ser enviado: {$mail->ErrorInfo}";
-}
 
-echo "<script>window.setTimeout(function() { window.location = 'index.php?page=showRequest' }, 10);</script>";
+    $mail->send();
+
+    echo json_encode(['status' => 'success', 'message' => 'Comanda cancelada correctamente']);
+} catch (Exception $e) {
+    echo json_encode(['status' => 'error', 'message' => 'Error al cancelar: ' . $e->getMessage()]);
+}
 exit();
