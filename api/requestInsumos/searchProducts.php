@@ -14,11 +14,15 @@ $sql = "SELECT
             p.Cantidad, 
             p.Tipo, 
             c.Nombre AS nombreCategoria, 
-            p.image 
+            p.image,
+            COALESCE(SUM(mi.Cantidad), 0) AS popularidad
         FROM Productos p
         INNER JOIN Categorias c ON p.CategoriaID = c.CategoriaID
+        LEFT JOIN MovimientosInventario mi ON mi.ProductoID = p.ProductoID
+            AND mi.TipoMovimiento = 'Salida' -- o el tipo que corresponda a ventas/solicitudes
         WHERE p.Nombre LIKE :query OR p.UPC LIKE :query 
-        ORDER BY p.Nombre";
+        GROUP BY p.ProductoID
+        ORDER BY popularidad DESC, p.Nombre ASC";
 $stmt = $conn->prepare($sql);
 $stmt->execute([':query' => "%$query%"]);
 $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
