@@ -250,7 +250,7 @@ $correoBody = '
             <tr>
               <td colspan="2" style="padding:20px;">
                 <p style="font-size:14px; color:#ffffff; margin:0 0 10px 0;">¡Tu pedido ha sido recibido exitosamente!</p>
-                <p style="font-size:14px; color:#ffffff; margin:0;">Fecha de entrega: <strong>' . utf8_decode($fechaLarga) . '</strong></p>
+                <p style="font-size:14px; color:#ffffff; margin:0;">Fecha de entrega: <strong>' . $fechaLarga . '</strong></p>
                 <p style="font-size:14px; color:#ffffff; margin:0;">Adjunto se encontrará el PDF correspondiente a la comanda generada.</p>
               </td>
             </tr>
