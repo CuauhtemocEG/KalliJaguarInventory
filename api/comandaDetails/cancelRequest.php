@@ -55,6 +55,7 @@ try {
     $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
 
     $mail->isSMTP();
+    $mail->CharSet = 'UTF-8';
     $mail->Host = 'smtp.titan.email';
     $mail->SMTPAuth = true;
     $mail->Username = 'info@stagging.kallijaguar-inventory.com';
