@@ -17,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $precio = $data['precio'];
     $cantidad = $data['cantidad'];
     $nombre = $data['nombre'];
+    $tipo = $data['tipo'];
     $imagen = $data['imagen'] ?? null;
 
     $stmt = $conn->prepare("REPLACE INTO CarritoSolicitudes (UsuarioID, ProductoID, Cantidad, PrecioUnitario, NombreProducto, Tipo, Imagen) VALUES (?, ?, ?, ?, ?, ?, ?)");
