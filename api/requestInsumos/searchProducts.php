@@ -2,7 +2,7 @@
 header('Content-Type: application/json');
 require_once '../../controllers/mainController.php';
 
-$query = isset($_GET['query']) ? $_GET['query'] : '';
+$query = isset($_GET['query']) ? trim($_GET['query']) : '';
 $conn = conexion();
 
 $sql = "SELECT 
@@ -19,12 +19,18 @@ $sql = "SELECT
         FROM Productos p
         INNER JOIN Categorias c ON p.CategoriaID = c.CategoriaID
         LEFT JOIN MovimientosInventario mi ON mi.ProductoID = p.ProductoID
-            AND mi.TipoMovimiento = 'Salida' -- o el tipo que corresponda a ventas/solicitudes
-        WHERE p.Nombre LIKE :query OR p.UPC LIKE :query 
-        GROUP BY p.ProductoID
-        ORDER BY popularidad DESC, p.Nombre ASC";
+            AND mi.TipoMovimiento = 'Salida'";
+
+$params = [];
+if ($query !== '') {
+    $sql .= " WHERE p.Nombre LIKE :query OR p.UPC LIKE :query";
+    $params[':query'] = "%$query%";
+}
+$sql .= " GROUP BY p.ProductoID
+          ORDER BY popularidad DESC, p.Nombre ASC";
+
 $stmt = $conn->prepare($sql);
-$stmt->execute([':query' => "%$query%"]);
+$stmt->execute($params);
 $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 echo json_encode(['status' => 'success', 'productos' => $productos]);
