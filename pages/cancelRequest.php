@@ -57,6 +57,7 @@ $mail = new PHPMailer(true);
 
 try {
     $mail->isSMTP();
+    $mail->CharSet = 'UTF-8';
     $mail->Debugoutput = 'html';
     $mail->Host = 'smtp.titan.email';
     $mail->SMTPAuth = true;
