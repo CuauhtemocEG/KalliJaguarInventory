@@ -51,7 +51,7 @@ function fechaEnEspañol($fechaObj) {
 }
 
 // Validaciones de entrada
-if (!isset($_POST['idSucursal']) || !isset($_POST['id'])) {
+if (!isset($_POST['idSucursal']) || !isset($_SESSION['id'])) {
   echo json_encode(['status' => 'error', 'message' => 'Datos de sesión no válidos.']);
   exit();
 }
@@ -74,7 +74,7 @@ $fechaMysql = $fechaObj->format('Y-m-d');
 $fecha = date('Ymd');
 $random_number = rand(100, 999);
 $comandaID = 'COM-' . $fecha . '-' . $_POST['idSucursal'] . '-' . $random_number;
-$idUser = $_POST['id'];
+$idUser = $_SESSION['id'] ?? null;
 $sucursal_id = $_POST['idSucursal'];
 
 // Obtener productos del carrito desde la base de datos
