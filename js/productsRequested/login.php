@@ -42,7 +42,14 @@ if ($check_user->rowCount() == 1) {
         $_SESSION['rol']     = $user['Rol'];
         $_SESSION['usuario'] = $user['Username'];
 
-        echo json_encode(['status' => 'success', 'message' => 'Login correcto']);
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Login correcto',
+            'userId' => $user['UsuarioID'],
+            'nombre' => $user['Nombre'],
+            'rol' => $user['Rol'],
+            'usuario' => $user['Username']
+        ]);
         exit();
     }
 }
@@ -50,4 +57,3 @@ if ($check_user->rowCount() == 1) {
 // Usuario o clave incorrectos
 http_response_code(401);
 echo json_encode(['status' => 'error', 'message' => 'Usuario o clave incorrectos']);
-?>
