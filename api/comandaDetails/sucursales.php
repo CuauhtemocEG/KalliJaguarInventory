@@ -5,7 +5,7 @@ require_once "../../controllers/mainController.php";
 
 try {
     $conexion = conexion();
-    $stmt = $conexion->prepare("SELECT SucursalID, nombre, direccion FROM Sucursales WHERE activa = 1");
+    $stmt = $conexion->prepare("SELECT SucursalID, nombre, direccion FROM Sucursales ORDER BY nombre ASC");
     $stmt->execute();
     $sucursales = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
