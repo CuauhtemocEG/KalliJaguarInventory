@@ -308,4 +308,4 @@ echo json_encode([
   'message' => 'Solicitud confirmada correctamente.',
   'comanda' => $comandaID
 ]);
-setcookie("persist_cart", "", time() - 3600, "/");
+exit();
