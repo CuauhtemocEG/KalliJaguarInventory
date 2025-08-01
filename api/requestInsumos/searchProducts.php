@@ -12,6 +12,7 @@ $sql = "SELECT
             p.Descripcion, 
             p.PrecioUnitario, 
             p.Cantidad, 
+            c.CategoriaID,
             p.Tipo, 
             c.Nombre AS nombreCategoria, 
             p.image,
