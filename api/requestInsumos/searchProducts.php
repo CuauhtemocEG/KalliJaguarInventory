@@ -11,8 +11,9 @@ $sql = "SELECT
             p.Nombre, 
             p.Descripcion, 
             p.PrecioUnitario, 
-            p.Cantidad, 
-            p.Tipo, 
+            p.Cantidad,
+            p.Tipo,
+            c.CategoriaID,
             c.Nombre AS nombreCategoria, 
             p.image,
             COALESCE(SUM(mi.Cantidad), 0) AS popularidad
