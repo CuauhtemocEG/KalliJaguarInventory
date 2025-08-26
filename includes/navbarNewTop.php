@@ -78,7 +78,7 @@
                 <i class="fa fa-list-alt"></i>
                 <span>Mis Solicitudes</span></a>
         </li>
-        <?php if($_SESSION['id']=='1'||$_SESSION['id']=='2'){?><li class="nav-item">
+        <?php if($_SESSION['rol']=='Administrador'){?><li class="nav-item">
             <a class="nav-link" href="index.php?page=showAllRequest">
                 <i class="fa fa-list-alt"></i>
                 <span>Solicitudes Generales</span></a>
