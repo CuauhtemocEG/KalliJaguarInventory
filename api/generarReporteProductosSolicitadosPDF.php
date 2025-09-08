@@ -125,7 +125,6 @@ try {
     
     // Encabezado principal
     $pdf->SetFont('Arial', 'B', 18);
-    $pdf->Cell(0, 35, '', 0, 1); // Espacio para el logo (aumentado)
     $pdf->Cell(0, 10, utf8_decode('Kalli Jaguar Inventory'), 0, 1, 'C');
     
     $pdf->SetFont('Arial', 'B', 14);
