@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 try {
-    $controller = new mainController();
+    $conexion = conexion();
     
     $fechaDesde = $_POST['fecha_desde'] ?? '';
     $fechaHasta = $_POST['fecha_hasta'] ?? '';
@@ -38,22 +38,20 @@ try {
     // Consulta para obtener productos más solicitados por tag
     $query = "
         SELECT 
-            p.nombre AS nombre_producto,
-            p.stock,
-            SUM(dm.cantidad) AS total_solicitado,
+            p.Nombre AS nombre_producto,
+            p.Cantidad AS stock,
+            SUM(m.CantidadSolicitada) AS total_solicitado,
             '' AS columna_solicitado
         FROM 
-            detalle_movimientos dm
+            MovimientosInventario m
         INNER JOIN 
-            productos p ON dm.producto_id = p.id
-        INNER JOIN 
-            movimientos m ON dm.movimiento_id = m.id
+            Productos p ON m.ProductoID = p.ProductoID
         WHERE 
-            p.tag = :tag
-            AND m.fecha BETWEEN :fecha_desde AND :fecha_hasta
-            AND m.tipo = 'salida'
+            p.Tag = :tag
+            AND m.Fecha BETWEEN :fecha_desde AND :fecha_hasta
+            AND m.TipoMovimiento = 'Salida'
         GROUP BY 
-            p.id, p.nombre, p.stock
+            p.ProductoID, p.Nombre, p.Cantidad
         ORDER BY 
             total_solicitado DESC
     ";
@@ -62,7 +60,7 @@ try {
         $query .= " LIMIT :limite";
     }
     
-    $stmt = $controller->conexion->prepare($query);
+    $stmt = $conexion->prepare($query);
     $stmt->bindParam(':tag', $tag);
     $stmt->bindParam(':fecha_desde', $fechaDesde);
     $stmt->bindParam(':fecha_hasta', $fechaHasta);

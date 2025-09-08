@@ -12,11 +12,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 require_once '../controllers/mainController.php';
 
 try {
-    $controller = new mainController();
+    $conexion = conexion();
     
     // Consulta para obtener todos los tags únicos de los productos
-    $query = "SELECT DISTINCT tag FROM productos WHERE tag IS NOT NULL AND tag != '' ORDER BY tag";
-    $stmt = $controller->conexion->prepare($query);
+    $query = "SELECT DISTINCT Tag FROM Productos WHERE Tag IS NOT NULL AND Tag != '' ORDER BY Tag";
+    $stmt = $conexion->prepare($query);
     $stmt->execute();
     $tags = $stmt->fetchAll(PDO::FETCH_COLUMN);
     
