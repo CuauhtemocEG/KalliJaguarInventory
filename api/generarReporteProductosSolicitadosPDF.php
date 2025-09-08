@@ -1,8 +1,11 @@
 <?php
+// Habilitar reporte de errores para debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once '../fpdf/fpdf.php';
 require_once '../controllers/mainController.php';
 
-header('Content-Type: application/pdf');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
@@ -14,17 +17,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
+    header('Content-Type: application/json');
     echo json_encode(['error' => 'Método no permitido']);
     exit;
 }
 
 try {
+    // Log de debugging
+    error_log("Iniciando generación de reporte de productos solicitados");
+    
     $conexion = conexion();
+    if (!$conexion) {
+        throw new Exception('No se pudo establecer conexión con la base de datos');
+    }
     
     $fechaDesde = $_POST['fecha_desde'] ?? '';
     $fechaHasta = $_POST['fecha_hasta'] ?? '';
     $tag = $_POST['tag'] ?? '';
     $limite = $_POST['limite'] ?? '';
+    
+    error_log("Parámetros recibidos: fechaDesde=$fechaDesde, fechaHasta=$fechaHasta, tag=$tag, limite=$limite");
     
     if (empty($fechaDesde) || empty($fechaHasta) || empty($tag)) {
         throw new Exception('Faltan parámetros requeridos');
@@ -40,8 +52,7 @@ try {
         SELECT 
             p.Nombre AS nombre_producto,
             p.Cantidad AS stock,
-            SUM(m.CantidadSolicitada) AS total_solicitado,
-            '' AS columna_solicitado
+            SUM(m.CantidadSolicitada) AS total_solicitado
         FROM 
             MovimientosInventario m
         INNER JOIN 
@@ -60,7 +71,12 @@ try {
         $query .= " LIMIT :limite";
     }
     
+    error_log("Consulta SQL: " . $query);
+    
     $stmt = $conexion->prepare($query);
+    if (!$stmt) {
+        throw new Exception('Error preparando la consulta: ' . implode(', ', $conexion->errorInfo()));
+    }
     $stmt->bindParam(':tag', $tag);
     $stmt->bindParam(':fecha_desde', $fechaDesde);
     $stmt->bindParam(':fecha_hasta', $fechaHasta);
@@ -69,8 +85,16 @@ try {
         $stmt->bindParam(':limite', $limite, PDO::PARAM_INT);
     }
     
-    $stmt->execute();
+    $ejecutado = $stmt->execute();
+    if (!$ejecutado) {
+        throw new Exception('Error ejecutando la consulta: ' . implode(', ', $stmt->errorInfo()));
+    }
+    
     $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    error_log("Productos encontrados: " . count($productos));
+    
+    // Establecer header para PDF solo si todo está bien
+    header('Content-Type: application/pdf');
     
     // Crear PDF
     $pdf = new FPDF();
@@ -115,7 +139,9 @@ try {
     $pdf->Output('D', $filename);
     
 } catch (Exception $e) {
+    error_log("Error en generarReporteProductosSolicitadosPDF.php: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['error' => $e->getMessage()]);
+    header('Content-Type: application/json');
+    echo json_encode(['error' => $e->getMessage(), 'debug' => true]);
 }
 ?>

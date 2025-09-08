@@ -108,6 +108,9 @@
                 <button type="submit" class="btn btn-warning btn-block" id="btnGenerarSolicitados">
                   <i class="fas fa-chart-line"></i> Generar Reporte PDF
                 </button>
+                <button type="button" class="btn btn-info btn-block mt-2" id="btnTestAPI">
+                  <i class="fas fa-bug"></i> Prueba de Diagnóstico
+                </button>
               </form>
             </div>
           </div>
@@ -408,7 +411,15 @@ document.getElementById("formReporteProductosSolicitados").addEventListener("sub
             body: formData
         })
         .then((res) => {
-            if (!res.ok) throw new Error("Error en el servidor");
+            console.log('Response status:', res.status);
+            console.log('Response headers:', res.headers);
+            
+            if (!res.ok) {
+                return res.text().then(text => {
+                    console.error('Error response text:', text);
+                    throw new Error(`Error ${res.status}: ${text}`);
+                });
+            }
             return res.blob();
         })
         .then((blob) => {
@@ -443,4 +454,44 @@ document.getElementById("formReporteProductosSolicitados").addEventListener("sub
             btn.innerHTML = '<i class="fas fa-chart-line"></i> Generar Reporte PDF';
         });
 });
+
+// Botón de prueba para diagnosticar problemas
+document.getElementById("btnTestAPI").addEventListener("click", function() {
+    const formData = new FormData();
+    formData.append('fecha_desde', '2024-01-01');
+    formData.append('fecha_hasta', '2024-12-31');
+    formData.append('tag', 'test');
+    
+    fetch("api/testReporteProductos.php", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log('Resultado de prueba:', data);
+        Swal.fire({
+            title: 'Resultado de Diagnóstico',
+            text: JSON.stringify(data, null, 2),
+            icon: data.success ? 'success' : 'error',
+            customClass: {
+                popup: 'swal-wide'
+            }
+        });
+    })
+    .catch(err => {
+        console.error('Error en prueba:', err);
+        Swal.fire('Error en prueba', err.message, 'error');
+    });
+});
 </script>
+
+<style>
+.swal-wide {
+    width: 600px !important;
+}
+.swal2-popup .swal2-content {
+    text-align: left !important;
+    font-family: monospace !important;
+    white-space: pre-wrap !important;
+}
+</style>
