@@ -27,9 +27,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 try {
-    // Log de debugging
-    error_log("Iniciando generación de reporte de productos solicitados");
-    
     $conexion = conexion();
     if (!$conexion) {
         throw new Exception('No se pudo establecer conexión con la base de datos');
@@ -39,8 +36,6 @@ try {
     $fechaHasta = $_POST['fecha_hasta'] ?? '';
     $tag = $_POST['tag'] ?? '';
     $limite = $_POST['limite'] ?? '';
-    
-    error_log("Parámetros recibidos: fechaDesde=$fechaDesde, fechaHasta=$fechaHasta, tag=$tag, limite=$limite");
     
     if (empty($fechaDesde) || empty($fechaHasta) || empty($tag)) {
         throw new Exception('Faltan parámetros requeridos');
@@ -75,8 +70,6 @@ try {
         $query .= " LIMIT :limite";
     }
     
-    error_log("Consulta SQL: " . $query);
-    
     $stmt = $conexion->prepare($query);
     if (!$stmt) {
         throw new Exception('Error preparando la consulta: ' . implode(', ', $conexion->errorInfo()));
@@ -95,7 +88,6 @@ try {
     }
     
     $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    error_log("Productos encontrados: " . count($productos));
     
     // Limpiar buffer antes de generar PDF
     if (ob_get_level()) {
@@ -110,44 +102,113 @@ try {
     // Crear PDF
     $pdf = new FPDF();
     $pdf->AddPage();
-    $pdf->SetFont('Arial', 'B', 16);
     
-    // Título
-    $pdf->Cell(0, 10, utf8_decode('Reporte de Productos Más Solicitados'), 0, 1, 'C');
-    $pdf->SetFont('Arial', '', 12);
-    $pdf->Cell(0, 10, utf8_decode("Tag: $tag | Período: $fechaDesde al $fechaHasta"), 0, 1, 'C');
-    $pdf->Ln(10);
+    // Agregar logo
+    $logoPath = '../img/logo.png';
+    if (file_exists($logoPath)) {
+        $pdf->Image($logoPath, 15, 15, 30, 20); // x, y, width, height
+    }
     
-    // Encabezados de tabla
+    // Encabezado principal
+    $pdf->SetFont('Arial', 'B', 18);
+    $pdf->Cell(0, 25, '', 0, 1); // Espacio para el logo
+    $pdf->Cell(0, 10, utf8_decode('Kalli Jaguar Inventory'), 0, 1, 'C');
+    
+    $pdf->SetFont('Arial', 'B', 14);
+    $pdf->Cell(0, 8, utf8_decode('Reporte de Productos Más Solicitados'), 0, 1, 'C');
+    
+    // Información del reporte
+    $pdf->SetFont('Arial', '', 11);
+    $pdf->Cell(0, 6, utf8_decode("Tag Filtrado: $tag"), 0, 1, 'C');
+    $pdf->Cell(0, 6, utf8_decode("Período: $fechaDesde al $fechaHasta"), 0, 1, 'C');
+    $pdf->Cell(0, 6, utf8_decode("Generado el: " . date('d/m/Y H:i:s')), 0, 1, 'C');
+    
+    $pdf->Ln(8);
+    
+    // Encabezados de tabla con diseño profesional
+    $pdf->SetFillColor(52, 115, 223); // Color azul corporativo
+    $pdf->SetTextColor(255, 255, 255); // Texto blanco
     $pdf->SetFont('Arial', 'B', 10);
-    $pdf->Cell(70, 10, utf8_decode('Nombre del Producto'), 1, 0, 'C');
-    $pdf->Cell(25, 10, 'Stock', 1, 0, 'C');
-    $pdf->Cell(30, 10, utf8_decode('Total Solicitado'), 1, 0, 'C');
-    $pdf->Cell(40, 10, 'Solicitado', 1, 1, 'C');
     
-    // Datos
+    $pdf->Cell(8, 10, '#', 1, 0, 'C', true);
+    $pdf->Cell(85, 10, utf8_decode('Nombre del Producto'), 1, 0, 'C', true);
+    $pdf->Cell(25, 10, 'Stock', 1, 0, 'C', true);
+    $pdf->Cell(30, 10, utf8_decode('Total Solicitado'), 1, 0, 'C', true);
+    $pdf->Cell(32, 10, 'Observaciones', 1, 1, 'C', true);
+    
+    // Restaurar color de texto para el contenido
+    $pdf->SetTextColor(0, 0, 0);
     $pdf->SetFont('Arial', '', 9);
     
     if (empty($productos)) {
-        $pdf->Cell(165, 10, utf8_decode('No se encontraron productos para el período seleccionado'), 1, 1, 'C');
+        $pdf->SetFillColor(240, 240, 240);
+        $pdf->Cell(180, 12, utf8_decode('No se encontraron productos para el período seleccionado'), 1, 1, 'C', true);
     } else {
+        $contador = 1;
         foreach ($productos as $producto) {
-            $pdf->Cell(70, 8, utf8_decode($producto['nombre_producto']), 1, 0, 'L');
-            $pdf->Cell(25, 8, $producto['stock'], 1, 0, 'C');
-            $pdf->Cell(30, 8, $producto['total_solicitado'], 1, 0, 'C');
-            $pdf->Cell(40, 8, '', 1, 1, 'C'); // Columna en blanco "Solicitado"
+            // Alternar colores de fila para mejor legibilidad
+            $fill = ($contador % 2 == 0);
+            $pdf->SetFillColor(248, 249, 250);
+            
+            // Truncar nombre si es muy largo
+            $nombre = strlen($producto['nombre_producto']) > 40 ? 
+                     substr($producto['nombre_producto'], 0, 37) . '...' : 
+                     $producto['nombre_producto'];
+            
+            $pdf->Cell(8, 8, $contador, 1, 0, 'C', $fill);
+            $pdf->Cell(85, 8, utf8_decode($nombre), 1, 0, 'L', $fill);
+            $pdf->Cell(25, 8, number_format($producto['stock']), 1, 0, 'C', $fill);
+            $pdf->Cell(30, 8, number_format($producto['total_solicitado']), 1, 0, 'C', $fill);
+            $pdf->Cell(32, 8, '', 1, 1, 'C', $fill); // Columna en blanco "Observaciones"
+            
+            $contador++;
         }
+        
+        // Resumen estadístico
+        $totalProductos = count($productos);
+        $totalSolicitado = array_sum(array_column($productos, 'total_solicitado'));
+        
+        $pdf->Ln(5);
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetFillColor(52, 115, 223);
+        $pdf->SetTextColor(255, 255, 255);
+        $pdf->Cell(180, 8, 'RESUMEN ESTADÍSTICO', 1, 1, 'C', true);
+        
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->SetFillColor(240, 240, 240);
+        $pdf->SetFont('Arial', '', 9);
+        $pdf->Cell(90, 6, utf8_decode("Total de productos mostrados: $totalProductos"), 1, 0, 'L', true);
+        $pdf->Cell(90, 6, utf8_decode("Total cantidad solicitada: " . number_format($totalSolicitado)), 1, 1, 'L', true);
     }
     
-    // Pie de página
+    // Pie de página profesional
     $pdf->Ln(10);
+    
+    // Línea separadora
+    $pdf->SetDrawColor(52, 115, 223);
+    $pdf->SetLineWidth(0.5);
+    $pdf->Line(15, $pdf->GetY(), 195, $pdf->GetY());
+    $pdf->Ln(5);
+    
     $pdf->SetFont('Arial', 'I', 8);
-    $pdf->Cell(0, 10, utf8_decode('Generado el: ' . date('d/m/Y H:i:s')), 0, 1, 'R');
+    $pdf->SetTextColor(100, 100, 100);
+    
+    // Información de la empresa y fecha
+    $pdf->Cell(90, 4, utf8_decode('Kalli Jaguar Inventory System'), 0, 0, 'L');
+    $pdf->Cell(90, 4, utf8_decode('Página 1'), 0, 1, 'R');
+    
+    $pdf->Cell(90, 4, utf8_decode('Sistema de Gestión de Inventarios'), 0, 0, 'L');
+    $pdf->Cell(90, 4, utf8_decode('Generado automáticamente'), 0, 1, 'R');
+    
+    // Nota importante
+    $pdf->Ln(3);
+    $pdf->SetFont('Arial', '', 7);
+    $pdf->SetTextColor(150, 150, 150);
+    $pdf->MultiCell(180, 3, utf8_decode('NOTA: La columna "Observaciones" está disponible para anotaciones manuales durante el uso del reporte. Los datos mostrados corresponden únicamente a movimientos de salida en el período especificado.'), 0, 'J');
     
     // Generar nombre del archivo
-    $filename = "reporte_productos_solicitados_{$tag}_{$fechaDesde}_{$fechaHasta}.pdf";
-    
-    // Enviar headers finales
+    $timestamp = date('Ymd_His');
+    $filename = "reporte_productos_solicitados_{$tag}_{$timestamp}.pdf";    // Enviar headers finales
     header('Content-Disposition: attachment; filename="' . $filename . '"');
     header('Content-Length: ' . strlen($pdf->Output('S')));
     
@@ -164,6 +225,6 @@ try {
     
     http_response_code(500);
     header('Content-Type: application/json');
-    echo json_encode(['error' => $e->getMessage(), 'debug' => true]);
+    echo json_encode(['error' => $e->getMessage()]);
 }
 ?>
