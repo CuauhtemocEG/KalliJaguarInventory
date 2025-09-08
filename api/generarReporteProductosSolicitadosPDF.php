@@ -48,20 +48,21 @@ try {
     }
     
     // Consulta para obtener productos más solicitados por tag
+    // Ahora incluye TODOS los productos del tag, incluso si no se han solicitado
     $query = "
         SELECT 
             p.Nombre AS nombre_producto,
             p.Cantidad AS stock,
             p.Tipo AS tipo_producto,
-            SUM(m.Cantidad) AS total_solicitado
+            COALESCE(SUM(m.Cantidad), 0) AS total_solicitado
         FROM 
-            MovimientosInventario m
-        INNER JOIN 
-            Productos p ON m.ProductoID = p.ProductoID
-        WHERE 
-            p.Tag = :tag
+            Productos p
+        LEFT JOIN 
+            MovimientosInventario m ON p.ProductoID = m.ProductoID 
             AND m.FechaMovimiento BETWEEN :fecha_desde AND :fecha_hasta
-            AND m.TipoMovimiento = 'Salida'";
+            AND m.TipoMovimiento = 'Salida'
+        WHERE 
+            p.Tag = :tag";
     
     // Agregar filtro de tipo si está especificado
     if (!empty($tipo)) {
@@ -72,7 +73,7 @@ try {
         GROUP BY 
             p.ProductoID, p.Nombre, p.Cantidad, p.Tipo
         ORDER BY 
-            total_solicitado DESC
+            total_solicitado DESC, p.Nombre ASC
     ";
     
     if (!empty($limite)) {
@@ -129,7 +130,7 @@ try {
     $pdf->Cell(0, 10, utf8_decode('Kalli Jaguar Inventory'), 0, 1, 'C');
     
     $pdf->SetFont('Arial', 'B', 14);
-    $pdf->Cell(0, 8, utf8_decode('Reporte de Productos Más Solicitados'), 0, 1, 'C');
+    $pdf->Cell(0, 8, utf8_decode('Reporte de Productos por Tag con Solicitudes'), 0, 1, 'C');
     
     // Información del reporte
     $pdf->SetFont('Arial', '', 11);
@@ -187,14 +188,18 @@ try {
             }
             
             // Formatear total solicitado
-            if ($tipoProducto == "Pesable") {
-                $unidadSolicitado = ($producto['total_solicitado'] >= 1.0) ? 'Kg' : 'grs';
-                $solicitadoFormateado = ($producto['total_solicitado'] >= 1.0) ? 
-                    number_format($producto['total_solicitado'], 2) : 
-                    number_format($producto['total_solicitado'], 3);
-                $solicitadoTexto = $solicitadoFormateado . ' ' . $unidadSolicitado;
+            if ($producto['total_solicitado'] == 0) {
+                $solicitadoTexto = 'No solicitado';
             } else {
-                $solicitadoTexto = number_format($producto['total_solicitado'], 0) . ' Unidad(es)';
+                if ($tipoProducto == "Pesable") {
+                    $unidadSolicitado = ($producto['total_solicitado'] >= 1.0) ? 'Kg' : 'grs';
+                    $solicitadoFormateado = ($producto['total_solicitado'] >= 1.0) ? 
+                        number_format($producto['total_solicitado'], 2) : 
+                        number_format($producto['total_solicitado'], 3);
+                    $solicitadoTexto = $solicitadoFormateado . ' ' . $unidadSolicitado;
+                } else {
+                    $solicitadoTexto = number_format($producto['total_solicitado'], 0) . ' Unidad(es)';
+                }
             }
             
             $pdf->Cell(8, 8, $contador, 1, 0, 'C', $fill);
@@ -208,6 +213,7 @@ try {
         
         // Resumen estadístico
         $totalProductos = count($productos);
+        $productosSolicitados = count(array_filter($productos, function($p) { return $p['total_solicitado'] > 0; }));
         $totalSolicitado = array_sum(array_column($productos, 'total_solicitado'));
         
         $pdf->Ln(5);
@@ -219,8 +225,9 @@ try {
         $pdf->SetTextColor(0, 0, 0);
         $pdf->SetFillColor(240, 240, 240);
         $pdf->SetFont('Arial', '', 9);
-        $pdf->Cell(90, 6, utf8_decode("Total de productos mostrados: $totalProductos"), 1, 0, 'L', true);
-        $pdf->Cell(90, 6, utf8_decode("Total cantidad solicitada: " . number_format($totalSolicitado)), 1, 1, 'L', true);
+        $pdf->Cell(60, 6, utf8_decode("Total productos del tag: $totalProductos"), 1, 0, 'L', true);
+        $pdf->Cell(60, 6, utf8_decode("Productos solicitados: $productosSolicitados"), 1, 0, 'L', true);
+        $pdf->Cell(60, 6, utf8_decode("Total cantidad solicitada: " . number_format($totalSolicitado)), 1, 1, 'L', true);
     }
     
     // Pie de página profesional
@@ -246,7 +253,7 @@ try {
     $pdf->Ln(3);
     $pdf->SetFont('Arial', '', 7);
     $pdf->SetTextColor(150, 150, 150);
-    $pdf->MultiCell(180, 3, utf8_decode('NOTA: La columna "Observaciones" está disponible para anotaciones manuales durante el uso del reporte. Los datos mostrados corresponden únicamente a movimientos de salida en el período especificado.'), 0, 'J');
+    $pdf->MultiCell(180, 3, utf8_decode('NOTA: Este reporte muestra TODOS los productos del tag seleccionado. La columna "Total Solicitado" muestra las cantidades solicitadas en el período especificado, mostrando "No solicitado" para productos sin movimientos. La columna "Observaciones" está disponible para anotaciones manuales.'), 0, 'J');
     
     // Generar nombre del archivo
     $timestamp = date('Ymd_His');
