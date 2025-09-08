@@ -35,6 +35,7 @@ try {
     $fechaDesde = $_POST['fecha_desde'] ?? '';
     $fechaHasta = $_POST['fecha_hasta'] ?? '';
     $tag = $_POST['tag'] ?? '';
+    $tipo = $_POST['tipo'] ?? '';
     $limite = $_POST['limite'] ?? '';
     
     if (empty($fechaDesde) || empty($fechaHasta) || empty($tag)) {
@@ -51,6 +52,7 @@ try {
         SELECT 
             p.Nombre AS nombre_producto,
             p.Cantidad AS stock,
+            p.Tipo AS tipo_producto,
             SUM(m.Cantidad) AS total_solicitado
         FROM 
             MovimientosInventario m
@@ -59,9 +61,16 @@ try {
         WHERE 
             p.Tag = :tag
             AND m.FechaMovimiento BETWEEN :fecha_desde AND :fecha_hasta
-            AND m.TipoMovimiento = 'Salida'
+            AND m.TipoMovimiento = 'Salida'";
+    
+    // Agregar filtro de tipo si está especificado
+    if (!empty($tipo)) {
+        $query .= " AND p.Tipo = :tipo";
+    }
+    
+    $query .= "
         GROUP BY 
-            p.ProductoID, p.Nombre, p.Cantidad
+            p.ProductoID, p.Nombre, p.Cantidad, p.Tipo
         ORDER BY 
             total_solicitado DESC
     ";
@@ -77,6 +86,10 @@ try {
     $stmt->bindParam(':tag', $tag);
     $stmt->bindParam(':fecha_desde', $fechaDesde);
     $stmt->bindParam(':fecha_hasta', $fechaHasta);
+    
+    if (!empty($tipo)) {
+        $stmt->bindParam(':tipo', $tipo);
+    }
     
     if (!empty($limite)) {
         $stmt->bindParam(':limite', $limite, PDO::PARAM_INT);
@@ -120,6 +133,9 @@ try {
     // Información del reporte
     $pdf->SetFont('Arial', '', 11);
     $pdf->Cell(0, 6, utf8_decode("Tag Filtrado: $tag"), 0, 1, 'C');
+    if (!empty($tipo)) {
+        $pdf->Cell(0, 6, utf8_decode("Tipo: $tipo"), 0, 1, 'C');
+    }
     $pdf->Cell(0, 6, utf8_decode("Período: $fechaDesde al $fechaHasta"), 0, 1, 'C');
     $pdf->Cell(0, 6, utf8_decode("Generado el: " . date('d/m/Y H:i:s')), 0, 1, 'C');
     
@@ -155,10 +171,35 @@ try {
                      substr($producto['nombre_producto'], 0, 37) . '...' : 
                      $producto['nombre_producto'];
             
+            // Aplicar formato según el tipo de producto
+            $tipoProducto = $producto['tipo_producto'];
+            
+            // Formatear stock
+            if ($tipoProducto == "Pesable") {
+                $unidadStock = ($producto['stock'] >= 1.0) ? 'Kg' : 'grs';
+                $stockFormateado = ($producto['stock'] >= 1.0) ? 
+                    number_format($producto['stock'], 2) : 
+                    number_format($producto['stock'], 3);
+                $stockTexto = $stockFormateado . ' ' . $unidadStock;
+            } else {
+                $stockTexto = number_format($producto['stock'], 0) . ' Unidad(es)';
+            }
+            
+            // Formatear total solicitado
+            if ($tipoProducto == "Pesable") {
+                $unidadSolicitado = ($producto['total_solicitado'] >= 1.0) ? 'Kg' : 'grs';
+                $solicitadoFormateado = ($producto['total_solicitado'] >= 1.0) ? 
+                    number_format($producto['total_solicitado'], 2) : 
+                    number_format($producto['total_solicitado'], 3);
+                $solicitadoTexto = $solicitadoFormateado . ' ' . $unidadSolicitado;
+            } else {
+                $solicitadoTexto = number_format($producto['total_solicitado'], 0) . ' Unidad(es)';
+            }
+            
             $pdf->Cell(8, 8, $contador, 1, 0, 'C', $fill);
             $pdf->Cell(85, 8, utf8_decode($nombre), 1, 0, 'L', $fill);
-            $pdf->Cell(25, 8, number_format($producto['stock']), 1, 0, 'C', $fill);
-            $pdf->Cell(30, 8, number_format($producto['total_solicitado']), 1, 0, 'C', $fill);
+            $pdf->Cell(25, 8, $stockTexto, 1, 0, 'C', $fill);
+            $pdf->Cell(30, 8, $solicitadoTexto, 1, 0, 'C', $fill);
             $pdf->Cell(32, 8, '', 1, 1, 'C', $fill); // Columna en blanco "Observaciones"
             
             $contador++;

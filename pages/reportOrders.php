@@ -71,7 +71,7 @@
             <div class="card-body">
               <form id="formReporteProductosSolicitados">
                 <div class="row">
-                  <div class="col-md-4">
+                  <div class="col-md-3">
                     <div class="form-group">
                       <label for="tag_filter">Filtrar por Tag:</label>
                       <select class="form-control" name="tag" id="tag_filter" required>
@@ -80,19 +80,29 @@
                       </select>
                     </div>
                   </div>
-                  <div class="col-md-3">
+                  <div class="col-md-2">
+                    <div class="form-group">
+                      <label for="tipo_filter">Tipo:</label>
+                      <select class="form-control" name="tipo" id="tipo_filter">
+                        <option value="">Todos</option>
+                        <option value="Unidad">Unidad</option>
+                        <option value="Pesable">Pesable</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-2">
                     <div class="form-group">
                       <label for="fecha_desde_solicitados">Desde:</label>
                       <input type="date" class="form-control" name="fecha_desde" id="fecha_desde_solicitados" required>
                     </div>
                   </div>
-                  <div class="col-md-3">
+                  <div class="col-md-2">
                     <div class="form-group">
                       <label for="fecha_hasta_solicitados">Hasta:</label>
                       <input type="date" class="form-control" name="fecha_hasta" id="fecha_hasta_solicitados" required>
                     </div>
                   </div>
-                  <div class="col-md-2">
+                  <div class="col-md-1">
                     <div class="form-group">
                       <label for="limite_productos">Límite:</label>
                       <select class="form-control" name="limite" id="limite_productos">
@@ -361,6 +371,7 @@ document.getElementById("formReporteProductosSolicitados").addEventListener("sub
     const fechaDesde = formData.get("fecha_desde");
     const fechaHasta = formData.get("fecha_hasta");
     const tag = formData.get("tag");
+    const tipo = formData.get("tipo");
     const limite = formData.get("limite");
 
     if (!fechaDesde || !fechaHasta || !tag) {
@@ -381,7 +392,7 @@ document.getElementById("formReporteProductosSolicitados").addEventListener("sub
 
     const result = await Swal.fire({
         title: "¿Deseas generar el reporte?",
-        text: `Tag: ${tag} - Desde: ${fechaDesde} - Hasta: ${fechaHasta}`,
+        text: `Tag: ${tag}${tipo ? ` - Tipo: ${tipo}` : ''} - Desde: ${fechaDesde} - Hasta: ${fechaHasta}`,
         icon: "question",
         showCancelButton: true,
         confirmButtonText: "Sí, generar",
