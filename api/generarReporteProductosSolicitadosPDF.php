@@ -1,10 +1,14 @@
 <?php
-// Habilitar reporte de errores para debugging
+// NO mostrar errores en el output para evitar corromper el PDF
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
 
 require_once '../fpdf/fpdf.php';
 require_once '../controllers/mainController.php';
+
+// Limpiar cualquier output previo
+ob_clean();
 
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
@@ -93,8 +97,15 @@ try {
     $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
     error_log("Productos encontrados: " . count($productos));
     
-    // Establecer header para PDF solo si todo está bien
+    // Limpiar buffer antes de generar PDF
+    if (ob_get_level()) {
+        ob_end_clean();
+    }
+    
+    // Establecer headers para PDF
     header('Content-Type: application/pdf');
+    header('Cache-Control: no-cache, must-revalidate');
+    header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
     
     // Crear PDF
     $pdf = new FPDF();
@@ -133,13 +144,24 @@ try {
     $pdf->SetFont('Arial', 'I', 8);
     $pdf->Cell(0, 10, utf8_decode('Generado el: ' . date('d/m/Y H:i:s')), 0, 1, 'R');
     
+    // Generar nombre del archivo
     $filename = "reporte_productos_solicitados_{$tag}_{$fechaDesde}_{$fechaHasta}.pdf";
-    header('Content-Disposition: attachment; filename="' . $filename . '"');
     
+    // Enviar headers finales
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Content-Length: ' . strlen($pdf->Output('S')));
+    
+    // Enviar el PDF
     $pdf->Output('D', $filename);
     
 } catch (Exception $e) {
     error_log("Error en generarReporteProductosSolicitadosPDF.php: " . $e->getMessage());
+    
+    // Limpiar cualquier output del PDF
+    if (ob_get_level()) {
+        ob_end_clean();
+    }
+    
     http_response_code(500);
     header('Content-Type: application/json');
     echo json_encode(['error' => $e->getMessage(), 'debug' => true]);

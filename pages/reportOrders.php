@@ -111,6 +111,9 @@
                 <button type="button" class="btn btn-info btn-block mt-2" id="btnTestAPI">
                   <i class="fas fa-bug"></i> Prueba de Diagnóstico
                 </button>
+                <button type="button" class="btn btn-success btn-block mt-2" id="btnTestSimple">
+                  <i class="fas fa-file-pdf"></i> Probar PDF Simplificado
+                </button>
               </form>
             </div>
           </div>
@@ -481,6 +484,78 @@ document.getElementById("btnTestAPI").addEventListener("click", function() {
     .catch(err => {
         console.error('Error en prueba:', err);
         Swal.fire('Error en prueba', err.message, 'error');
+    });
+});
+
+// Botón para probar PDF simplificado
+document.getElementById("btnTestSimple").addEventListener("click", function() {
+    const tag = document.getElementById('tag_filter').value;
+    
+    if (!tag) {
+        Swal.fire('Error', 'Por favor selecciona un tag primero', 'warning');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('tag', tag);
+    formData.append('fecha_desde', '2024-01-01');
+    formData.append('fecha_hasta', '2024-12-31');
+    
+    const btn = this;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
+    
+    Swal.fire({
+        title: "Generando PDF de prueba...",
+        didOpen: () => Swal.showLoading(),
+        allowOutsideClick: false,
+    });
+    
+    fetch("api/generarReporteSimple.php", {
+        method: "POST",
+        body: formData
+    })
+    .then((res) => {
+        console.log('Response status:', res.status);
+        
+        if (!res.ok) {
+            return res.text().then(text => {
+                console.error('Error response:', text);
+                throw new Error(`Error ${res.status}: ${text}`);
+            });
+        }
+        return res.blob();
+    })
+    .then((blob) => {
+        Swal.close();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `reporte_prueba_${tag}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+
+        Swal.fire({
+            icon: "success",
+            title: "¡PDF de prueba generado!",
+            text: "El archivo se ha descargado correctamente.",
+            timer: 3000,
+            showConfirmButton: false,
+        });
+    })
+    .catch((err) => {
+        console.error("Error:", err);
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: err.message,
+        });
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-file-pdf"></i> Probar PDF Simplificado';
     });
 });
 </script>
