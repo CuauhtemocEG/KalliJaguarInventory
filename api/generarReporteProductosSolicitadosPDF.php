@@ -52,14 +52,14 @@ try {
         SELECT 
             p.Nombre AS nombre_producto,
             p.Cantidad AS stock,
-            SUM(m.CantidadSolicitada) AS total_solicitado
+            SUM(m.Cantidad) AS total_solicitado
         FROM 
             MovimientosInventario m
         INNER JOIN 
             Productos p ON m.ProductoID = p.ProductoID
         WHERE 
             p.Tag = :tag
-            AND m.Fecha BETWEEN :fecha_desde AND :fecha_hasta
+            AND m.FechaMovimiento BETWEEN :fecha_desde AND :fecha_hasta
             AND m.TipoMovimiento = 'Salida'
         GROUP BY 
             p.ProductoID, p.Nombre, p.Cantidad

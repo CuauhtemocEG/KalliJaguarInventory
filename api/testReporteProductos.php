@@ -15,8 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 require_once '../controllers/mainController.php';
 
 try {
-    echo json_encode(['status' => 'Iniciando prueba...']);
-    
     $conexion = conexion();
     if (!$conexion) {
         throw new Exception('No se pudo establecer conexión con la base de datos');
@@ -40,11 +38,25 @@ try {
     $stmtMov->execute();
     $totalMovimientos = $stmtMov->fetch(PDO::FETCH_ASSOC);
     
+    // Vamos a ver la estructura de la tabla MovimientosInventario
+    $queryColumnas = "DESCRIBE MovimientosInventario";
+    $stmtCols = $conexion->prepare($queryColumnas);
+    $stmtCols->execute();
+    $columnas = $stmtCols->fetchAll(PDO::FETCH_ASSOC);
+    
+    // También veamos algunos registros de ejemplo
+    $queryEjemplo = "SELECT * FROM MovimientosInventario WHERE TipoMovimiento = 'Salida' LIMIT 3";
+    $stmtEj = $conexion->prepare($queryEjemplo);
+    $stmtEj->execute();
+    $ejemplos = $stmtEj->fetchAll(PDO::FETCH_ASSOC);
+    
     echo json_encode([
         'success' => true,
         'totalProductos' => $totalProductos,
         'tags' => $tags,
         'totalMovimientos' => $totalMovimientos,
+        'columnasMovimientos' => $columnas,
+        'ejemplosMovimientos' => $ejemplos,
         'parametros' => $_POST
     ]);
     
