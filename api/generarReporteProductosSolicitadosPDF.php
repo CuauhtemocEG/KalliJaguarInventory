@@ -116,15 +116,16 @@ try {
     $pdf = new FPDF();
     $pdf->AddPage();
     
-    // Agregar logo
+    // Agregar logo con mejor proporción
     $logoPath = '../img/logo.png';
     if (file_exists($logoPath)) {
-        $pdf->Image($logoPath, 15, 15, 30, 20); // x, y, width, height
+        // Posición centrada horizontalmente para el logo
+        $pdf->Image($logoPath, 85, 15, 40, 0); // x, y, width, height (0 = mantener proporción)
     }
     
     // Encabezado principal
     $pdf->SetFont('Arial', 'B', 18);
-    $pdf->Cell(0, 25, '', 0, 1); // Espacio para el logo
+    $pdf->Cell(0, 35, '', 0, 1); // Espacio para el logo (aumentado)
     $pdf->Cell(0, 10, utf8_decode('Kalli Jaguar Inventory'), 0, 1, 'C');
     
     $pdf->SetFont('Arial', 'B', 14);
