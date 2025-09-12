@@ -1,4 +1,4 @@
-let urlAPI = 'https://www.kallijaguar-inventory.com/js/productsRequested/';
+let urlAPI = "./js/productsRequested/" ;
 
 $(document).ready(function () {
     actualizarPanelCarrito();
