@@ -36,8 +36,9 @@ $(document).ready(function () {
 });
 
 function fetchProducts(query) {
+    const baseUrl = window.location.origin + '/js/productsRequested/';
     $.ajax({
-        url: './js/productsRequested/searchProducts.php',
+        url: baseUrl + 'searchProducts.php',
         method: 'GET',
         data: { query: query },
         success: function (response) {
@@ -184,7 +185,8 @@ document.addEventListener('DOMContentLoaded', function () {
             didOpen: () => Swal.showLoading()
         });
 
-        fetch('/js/productsRequested/confirmRequest.php', {
+        const confirmUrl = window.location.origin + '/js/productsRequested/confirmRequest.php';
+        fetch(confirmUrl, {
             method: 'POST',
             body: formData,
             credentials: 'include'

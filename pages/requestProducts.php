@@ -706,7 +706,7 @@ let currentView = 'grid';
 document.addEventListener('DOMContentLoaded', function() {
     
     if (typeof urlAPI === 'undefined') {
-        urlAPI = "/js/productsRequested/";
+        urlAPI = window.location.origin + "/js/productsRequested/";
         console.log('URL API definida como:', urlAPI);
     }
     
@@ -878,7 +878,7 @@ function hideEmptyState() {
 }
 
 function loadProductsNow(query) {
-    const apiUrl = window.urlAPI || urlAPI || "/js/productsRequested/";
+    const apiUrl = window.urlAPI || urlAPI || (window.location.origin + "/js/productsRequested/");
     console.log('URL:', apiUrl + 'searchProducts.php');
     
     $('#loadingProducts').show();

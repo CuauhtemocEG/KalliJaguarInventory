@@ -76,7 +76,8 @@
             }
 
             function cargarProductos(comandaId) {
-                $.getJSON('https://www.kallijaguar-inventory.com/api/recreateComanda/getProductosComanda.php', {
+                const apiUrl = window.location.origin + '/api/recreateComanda/getProductosComanda.php';
+                $.getJSON(apiUrl, {
                         comanda_id: comandaId
                     })
                     .done(function(res) {
@@ -148,8 +149,9 @@
                     cancelButtonText: 'Cancelar'
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        const deleteUrl = window.location.origin + '/api/recreateComanda/eliminarProductoComanda.php';
                         $.ajax({
-                            url: 'https://www.kallijaguar-inventory.com/api/recreateComanda/eliminarProductoComanda.php',
+                            url: deleteUrl,
                             method: 'POST',
                             contentType: 'application/json',
                             data: JSON.stringify({
@@ -193,8 +195,9 @@
                     cancelButtonText: 'Cancelar'
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        const returnUrl = window.location.origin + '/api/recreateComanda/devolverProductoComanda.php';
                         $.ajax({
-                            url: 'https://www.kallijaguar-inventory.com/api/recreateComanda/devolverProductoComanda.php',
+                            url: returnUrl,
                             method: 'POST',
                             contentType: 'application/json',
                             data: JSON.stringify({
@@ -236,7 +239,8 @@
                     confirmButtonColor: '#059669'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        $.post('https://www.kallijaguar-inventory.com/api/recreateComanda/regenerarComandaPDF.php', {
+                        const regenerateUrl = window.location.origin + '/api/recreateComanda/regenerarComandaPDF.php';
+                        $.post(regenerateUrl, {
                             comanda_id: comandaId
                         }, function(res) {
                             if (res.status === 'success') {

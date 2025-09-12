@@ -1,4 +1,15 @@
 <?php
+// Headers CORS para permitir solicitudes desde diferentes subdominios
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, X-Requested-With');
+
+// Manejar OPTIONS request para preflight
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
 ob_start();
 require_once('../fpdf/fpdf.php');
 require_once('../controllers/mainController.php');

@@ -141,7 +141,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function cargarTags() {
-  fetch('api/getTags.php')
+  const tagsUrl = window.location.origin + '/api/getTags.php';
+  fetch(tagsUrl)
     .then(response => response.json())
     .then(data => {
       const select = document.getElementById('tag_filter');
@@ -311,7 +312,8 @@ document.getElementById("btnStockBajoTagPDF").addEventListener("click", function
     allowOutsideClick: false,
   });
 
-  fetch("api/generarStockBajoTagPDF.php", {
+  const stockUrl = window.location.origin + "/api/generarStockBajoTagPDF.php";
+  fetch(stockUrl, {
     method: "POST",
   })
     .then((res) => {
@@ -354,13 +356,13 @@ document.getElementById("btnStockBajoTagPDF").addEventListener("click", function
 generarPDF(
   "formReporteComandas",
   "btnGenerarComandas",
-  "https://www.kallijaguar-inventory.com/api/generarReportePDF.php",
+  window.location.origin + "/api/generarReportePDF.php",
   "reporteComandas"
 );
 generarPDF(
   "formReporteProductos",
   "btnGenerarProductos",
-  "https://www.kallijaguar-inventory.com/api/generarReporteProductosPDF.php",
+  window.location.origin + "/api/generarReporteProductosPDF.php",
   "reporteProductos"
 );
 
@@ -414,7 +416,8 @@ document.getElementById("formReporteProductosSolicitados").addEventListener("sub
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
 
-    fetch("api/generarReporteProductosSolicitadosPDF.php", {
+    const reportUrl = window.location.origin + "/api/generarReporteProductosSolicitadosPDF.php";
+    fetch(reportUrl, {
             method: "POST",
             body: formData
         })
