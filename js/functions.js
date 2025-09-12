@@ -37,7 +37,7 @@ $(document).ready(function () {
 
 function fetchProducts(query) {
     $.ajax({
-        url: urlAPI + 'searchProducts.php',
+        url: 'https://www.kallijaguar-inventory.com/js/productsRequested/searchProducts.php',
         method: 'GET',
         data: { query: query },
         success: function (response) {
