@@ -90,12 +90,12 @@ foreach ($datos as $row) {
         </form>';
     }
 
-    $imagen = is_file("./img/producto/" . $row['image']) ? $row['image'] : 'producto.png';
+    $imagen = is_file("../../img/producto/" . $row['image']) ? $row['image'] : 'producto.png';
 
     $tabla .= '
         <div class="product-card shadow-sm">
             <div class="product-image-container">
-                <img class="product-image" src="./img/producto/' . $imagen . '" alt="' . htmlspecialchars($row['nombreProducto']) . '">
+                <img class="product-image" src="../../img/producto/' . $imagen . '" alt="' . htmlspecialchars($row['nombreProducto']) . '">
                 <div class="availability-badge">
                     ' . $txtDisponibilidad . '
                 </div>
