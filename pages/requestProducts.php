@@ -706,26 +706,26 @@ let currentView = 'grid';
 document.addEventListener('DOMContentLoaded', function() {
     
     if (typeof urlAPI === 'undefined') {
-        window.urlAPI = "https://www.kallijaguarinventory.com/js/productsRequested/";
-        console.log('URL API definida como:', window.urlAPI);
+        urlAPI = "https://www.kallijaguarinventory.com/js/productsRequested/";
+        console.log('URL API definida como:', urlAPI);
     }
     
     loadProductsNow('');
     
     $('#searchInput').on('input', function() {
         const query = $(this).val();
-        window.fetchProducts(query);
+        fetchProducts(query);
         updateClearButton(query);
     });
     
     $('#searchButton').click(function() {
         const query = $('#searchInput').val();
-        window.fetchProducts(query);
+        fetchProducts(query);
     });
     
     $('#searchClear').click(function() {
         $('#searchInput').val('');
-        window.fetchProducts('');
+        fetchProducts('');
         updateClearButton('');
     });
     
@@ -753,7 +753,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     $('#refreshProducts').click(function() {
         $(this).find('i').addClass('fa-spin');
-        window.fetchProducts($('#searchInput').val());
+        fetchProducts($('#searchInput').val());
         setTimeout(() => {
             $(this).find('i').removeClass('fa-spin');
         }, 1000);
@@ -848,7 +848,7 @@ function resetSearch() {
     $('.filter-btn').removeClass('active');
     $('.filter-btn[data-filter="all"]').addClass('active');
     currentFilter = 'all';
-    window.fetchProducts('');
+    fetchProducts('');
     updateClearButton('');
 }
 
@@ -921,7 +921,7 @@ function loadProductsNow(query) {
         });
 }
 
-window.fetchProducts = function(query) {
+fetchProducts = function(query) {
     loadProductsNow(query);
 };
 
