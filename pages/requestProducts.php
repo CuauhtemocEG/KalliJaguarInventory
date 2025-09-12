@@ -1,4 +1,4 @@
-<div class="container-fluid request-products-container">
+<div class="request-products-container">
     <?php
     session_start();
     require_once "./controllers/mainController.php";
