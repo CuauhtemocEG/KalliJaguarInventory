@@ -42,6 +42,11 @@ function fetchProducts(query) {
         data: { query: query },
         success: function (response) {
             $('#productList').html(response);
+            if (typeof window.initializeProducts === 'function') {
+                setTimeout(function() {
+                    window.initializeProducts();
+                }, 100);
+            }
         },
         error: function () {
             Swal.fire('Error', 'Ocurrió un error en la búsqueda.', 'error');
