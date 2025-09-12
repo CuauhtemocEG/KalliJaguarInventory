@@ -1,5 +1,18 @@
 <?php
 session_start();
+
+// Headers CORS para permitir solicitudes desde diferentes subdominios
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, X-Requested-With');
+header('Content-Type: text/html; charset=UTF-8');
+
+// Manejar OPTIONS request para preflight
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
 function conexion()
 {
     $pdo = new PDO('mysql:host=localhost:3306

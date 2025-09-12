@@ -706,7 +706,7 @@ let currentView = 'grid';
 document.addEventListener('DOMContentLoaded', function() {
     
     if (typeof urlAPI === 'undefined') {
-        urlAPI = "https://www.kallijaguarinventory.com/js/productsRequested/";
+        urlAPI = "/js/productsRequested/";
         console.log('URL API definida como:', urlAPI);
     }
     
@@ -878,7 +878,7 @@ function hideEmptyState() {
 }
 
 function loadProductsNow(query) {
-    const apiUrl = window.urlAPI || urlAPI || "https://www.kallijaguarinventory.com/js/productsRequested/";
+    const apiUrl = window.urlAPI || urlAPI || "/js/productsRequested/";
     console.log('URL:', apiUrl + 'searchProducts.php');
     
     $('#loadingProducts').show();
