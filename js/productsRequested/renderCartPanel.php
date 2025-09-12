@@ -1,18 +1,5 @@
 <?php
 session_start();
-
-// Headers CORS para permitir solicitudes desde diferentes subdominios
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, X-Requested-With');
-header('Content-Type: text/html; charset=UTF-8');
-
-// Manejar OPTIONS request para preflight
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
-
 ob_start();
 
 if (isset($_SESSION['INV']) && count($_SESSION['INV']) > 0) {
