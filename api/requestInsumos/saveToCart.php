@@ -33,12 +33,24 @@ error_log("saveToCart - Sesión completa: " . print_r($_SESSION, true));
 error_log("saveToCart - Usuario ID encontrado: " . ($userId ?? 'NULL'));
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = json_decode(file_get_contents('php://input'), true);
+    $rawInput = file_get_contents('php://input');
+    $data = json_decode($rawInput, true);
+    error_log("saveToCart - Raw input: " . $rawInput);
     error_log("saveToCart - Datos recibidos: " . print_r($data, true));
     
     if (!$data || !$userId) {
         error_log("saveToCart - Error: datos=" . ($data ? 'OK' : 'NULL') . ", userId=" . ($userId ?? 'NULL'));
-        echo json_encode(['status' => 'error', 'message' => 'Datos inválidos']);
+        echo json_encode([
+            'status' => 'error', 
+            'message' => 'Datos inválidos',
+            'debug' => [
+                'data_present' => $data ? true : false,
+                'user_id' => $userId,
+                'session_id' => session_id(),
+                'raw_input' => $rawInput,
+                'parsed_data' => $data
+            ]
+        ]);
         exit();
     }
 

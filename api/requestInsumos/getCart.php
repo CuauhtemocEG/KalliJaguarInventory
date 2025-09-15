@@ -28,10 +28,26 @@ $conn = conexion();
 
 $userId = $_SESSION['id'] ?? null;
 
+// Debug para diagnóstico
+error_log("=== DEBUG getCart.php ===");
+error_log("Session ID: " . session_id());
+error_log("User ID encontrado: " . ($userId ?? 'NULL'));
+error_log("Método: " . $_SERVER['REQUEST_METHOD']);
+error_log("Sesión completa: " . print_r($_SESSION, true));
+error_log("Cookies recibidas: " . print_r($_COOKIE, true));
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
     if (!$data || !$userId) {
-        echo json_encode(['status' => 'error', 'message' => 'Datos inválidos']);
+        echo json_encode([
+            'status' => 'error', 
+            'message' => 'Datos inválidos',
+            'debug' => [
+                'data_present' => $data ? true : false,
+                'user_id' => $userId,
+                'session_id' => session_id()
+            ]
+        ]);
         exit();
     }
 
@@ -58,7 +74,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // GET para consultar el carrito
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (!$userId) {
-        echo json_encode(['status' => 'error', 'message' => 'Usuario no identificado']);
+        echo json_encode([
+            'status' => 'error', 
+            'message' => 'Usuario no identificado',
+            'debug' => [
+                'session_id' => session_id(),
+                'session_data' => $_SESSION,
+                'cookies' => $_COOKIE,
+                'user_id' => $userId
+            ]
+        ]);
         exit();
     }
     $cartStmt = $conn->prepare("SELECT * FROM CarritoSolicitudes WHERE UsuarioID = ?");
