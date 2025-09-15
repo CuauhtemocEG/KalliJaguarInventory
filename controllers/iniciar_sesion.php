@@ -1,15 +1,6 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_set_cookie_params([
-        'lifetime' => 0,
-        'path' => '/',
-        'domain' => '.kallijaguar-inventory.com',  // Con punto inicial para incluir subdominios
-        'secure' => true,
-        'httponly' => true,
-        'samesite' => 'Lax'
-    ]);
-    session_start();
-}
+require_once '../includes/session_start.php';
+
 	/*== Almacenando datos ==*/
     $usuario=limpiar_cadena($_POST['login_usuario']);
     $clave=limpiar_cadena($_POST['login_clave']);

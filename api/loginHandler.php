@@ -2,9 +2,9 @@
 header("Content-Type: application/json");
 require_once "../controllers/mainController.php";
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+// La sesión se configura en session_start.php
+session_name("INV");
+session_start();
 
 if (!isset($_POST['login_usuario']) || !isset($_POST['login_clave'])) {
     echo json_encode(["success" => false, "message" => "Datos no recibidos"]);
@@ -51,7 +51,20 @@ try {
             $_SESSION['rol'] = $user['Rol'];
             $_SESSION['usuario'] = $user['Username'];
 
-            echo json_encode(["success" => true, "message" => "Login completado"]);
+            // Debug para verificar que la sesión se guardó correctamente
+            error_log("Login exitoso para usuario: " . $user['Username']);
+            error_log("Session ID después del login: " . session_id());
+            error_log("Datos de sesión guardados: " . print_r($_SESSION, true));
+
+            echo json_encode([
+                "success" => true, 
+                "message" => "Login completado",
+                "debug" => [
+                    "session_id" => session_id(),
+                    "user_id" => $_SESSION['id'],
+                    "username" => $_SESSION['usuario']
+                ]
+            ]);
             exit;
         } else {
             echo json_encode(["success" => false, "message" => "Password reconocido"]);

@@ -1,15 +1,7 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_set_cookie_params([
-        'lifetime' => 0,
-        'path' => '/',
-        'domain' => '.kallijaguar-inventory.com',  // Con punto inicial para incluir subdominios
-        'secure' => true,
-        'httponly' => true,
-        'samesite' => 'Lax'
-    ]);
-    session_start();
-}
+// La configuración de sesión se maneja en includes/session_start.php
+session_name("INV");
+session_start();
 
 header('Content-Type: application/json');
 
