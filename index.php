@@ -32,11 +32,11 @@
         }
 
         if ($_SESSION['rol'] == "Administrador") {
-            include "./includes/navbarNewTop.php";
+            include "./includes/navbar-tailwind.php";
         } elseif ($_SESSION['rol'] == "Supervisor") {
-            include "./includes/navbarSup.php";
+            include "./includes/navbar-supervisor-tailwind.php";
         } elseif ($_SESSION['rol'] == "Logistica") {
-            include "./includes/navbarLog.php";
+            include "./includes/navbar-logistica-tailwind.php";
         } else {
             echo "";
         }
@@ -45,15 +45,12 @@
 
         include "./includes/script.php";
 
-        if ($_SESSION['rol'] == "Administrador") {
-            include "./includes/navbarNewBottom.php";
-        } elseif ($_SESSION['rol'] == "Supervisor") {
-            include "./includes/navbarNewBottom.php";
-        } elseif ($_SESSION['rol'] == "Logistica") {
-            include "./includes/navbarNewBottom.php";
+        if ($_SESSION['rol'] == "Administrador" || $_SESSION['rol'] == "Supervisor" || $_SESSION['rol'] == "Logistica") {
+            include "./includes/navbar-tailwind-bottom.php";
         } else {
             echo "";
         }
+        
     } else {
         if ($_GET['page'] == "login") {
             include "./pages/login.php";
