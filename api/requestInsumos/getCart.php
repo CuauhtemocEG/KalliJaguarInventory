@@ -20,14 +20,6 @@ $conn = conexion();
 
 $userId = $_SESSION['id'] ?? null;
 
-// Debug para diagnóstico
-error_log("=== DEBUG getCart.php ===");
-error_log("Session ID: " . session_id());
-error_log("User ID encontrado: " . ($userId ?? 'NULL'));
-error_log("Método: " . $_SERVER['REQUEST_METHOD']);
-error_log("Sesión completa: " . print_r($_SESSION, true));
-error_log("Cookies recibidas: " . print_r($_COOKIE, true));
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
     if (!$data || !$userId) {

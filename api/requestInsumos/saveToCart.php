@@ -20,18 +20,11 @@ $conn = conexion();
 
 $userId = $_SESSION['id'] ?? null;
 
-// Debug para ver qué hay en la sesión
-error_log("saveToCart - Sesión completa: " . print_r($_SESSION, true));
-error_log("saveToCart - Usuario ID encontrado: " . ($userId ?? 'NULL'));
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $rawInput = file_get_contents('php://input');
     $data = json_decode($rawInput, true);
-    error_log("saveToCart - Raw input: " . $rawInput);
-    error_log("saveToCart - Datos recibidos: " . print_r($data, true));
     
     if (!$data || !$userId) {
-        error_log("saveToCart - Error: datos=" . ($data ? 'OK' : 'NULL') . ", userId=" . ($userId ?? 'NULL'));
         echo json_encode([
             'status' => 'error', 
             'message' => 'Datos inválidos',
