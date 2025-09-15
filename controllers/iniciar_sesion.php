@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_set_cookie_params([
         'lifetime' => 0,
         'path' => '/',
-        'domain' => 'www.kallijaguar-inventory.com',
+        'domain' => '.kallijaguar-inventory.com',  // Con punto inicial para incluir subdominios
         'secure' => true,
         'httponly' => true,
         'samesite' => 'Lax'
