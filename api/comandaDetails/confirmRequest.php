@@ -2,7 +2,6 @@
 session_start();
 header('Content-Type: application/json');
 
-// Permitir recibir datos tanto por JSON como por POST tradicional
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST)) {
   $input = json_decode(file_get_contents('php://input'), true);
   if (is_array($input)) {
@@ -10,7 +9,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST)) {
   }
 }
 
-// Validar que los archivos requeridos existen antes de incluirlos
 $requiredFiles = [
   '../../fpdf/fpdf.php',
   '../../controllers/mainController.php',
@@ -50,7 +48,6 @@ function fechaEnEspañol($fechaObj) {
   return ucfirst("$diaSemana $dia de $mes del $anio");
 }
 
-// Validaciones de entrada
 if (!isset($_POST['idSucursal']) || !isset($_POST['id'])) {
   echo json_encode(['status' => 'error', 'message' => 'Datos de sesión no válidos.']);
   exit();
@@ -60,9 +57,8 @@ if (empty($_POST['fecha'])) {
   exit();
 }
 
-// Validar y convertir fecha
 $fechaDelivery = $_POST['fecha'];
-$fechaObj = DateTime::createFromFormat('Y-m-d', $fechaDelivery); // Formato ISO desde la app
+$fechaObj = DateTime::createFromFormat('Y-m-d', $fechaDelivery);
 if (!$fechaObj) {
   $fechaObj = DateTime::createFromFormat('d/m/Y', $fechaDelivery);
   if (!$fechaObj) {
@@ -77,7 +73,6 @@ $comandaID = 'COM-' . $fecha . '-' . $_POST['idSucursal'] . '-' . $random_number
 $idUser = $_POST['id'];
 $sucursal_id = $_POST['idSucursal'];
 
-// Obtener productos del carrito desde la base de datos
 $conn = conexion();
 $stmt = $conn->prepare("SELECT * FROM CarritoSolicitudes WHERE UsuarioID = ?");
 $stmt->execute([$idUser]);
@@ -91,7 +86,6 @@ if (!$carrito || count($carrito) === 0) {
 try {
   $conn->beginTransaction();
 
-  // Verificar stock
   foreach ($carrito as $item) {
     $consultaStock = $conn->prepare("SELECT Cantidad FROM Productos WHERE ProductoID = ?");
     $consultaStock->execute([$item['ProductoID']]);
@@ -103,7 +97,6 @@ try {
     }
   }
 
-  // Insertar movimientos y actualizar stock
   foreach ($carrito as $item) {
     $precioFinal = $item['PrecioUnitario'] * 1.16;
     $stmt = $conn->prepare("INSERT INTO MovimientosInventario 
@@ -131,77 +124,186 @@ try {
   exit();
 }
 
-// Obtener nombres
 $nameSucursal = $conn->query("SELECT nombre FROM Sucursales WHERE SucursalID = '$sucursal_id'")->fetchColumn();
 $nameUser = $conn->query("SELECT Nombre FROM Usuarios WHERE UsuarioID = '$idUser'")->fetchColumn();
 $fechaLarga = fechaEnEspañol($fechaObj);
 
-// Generar PDF
 $pdfPath = '../../documents/' . $comandaID . '.pdf';
+
+ini_set('memory_limit', '256M');
+
 try {
-  $pdf = new FPDF();
-  $pdf->AddPage();
-  $pdf->Image('../../img/logo.png', 15, 15, 50);
-  $pdf->SetFont('Arial', 'B', 8);
-  $pdf->SetXY(70, 11);
-  $pdf->Cell(60, 10, $nameSucursal, 1, 0, 'C');
-  $pdf->SetXY(70, 21);
-  $pdf->Cell(60, 10, 'Listado de Salida', 1, 0, 'C');
-  $pdf->SetXY(130, 11);
-  $pdf->Cell(60, 10, $comandaID, 1, 0, 'C');
-  $pdf->SetXY(130, 21);
-  $pdf->Cell(60, 10, $nameUser, 1, 0, 'C');
-  $pdf->Ln(10);
-  $pdf->SetFont('Arial', '', 8);
-  $pdf->Cell(180, 10, utf8_decode("Fecha de entrega: $fechaLarga"), 0, 1, 'L');
-  $pdf->Ln(5);
-  $pdf->SetFont('Arial', '', 8);
-  $pdf->MultiCell(180, 5, utf8_decode('A continuación se debe capturar las observaciones del producto al ser recepcionado por el solicitante, verificar que todos los productos solicitados están siendo entregados y contar con 3 copias de este documento para cada una de las áreas.'), 0, 'C');
-  $pdf->Ln(5);
-  $pdf->SetFont('Arial', 'B', 8);
-  $pdf->Cell(190, 10, utf8_decode('Listado de productos solicitados a Almacén:'), 0, 1, 'L');
-  $pdf->SetFont('Arial', 'B', 9);
-  $pdf->Cell(60, 10, 'Nombre del Producto/Materia Prima', 1, 0, 'C');
-  $pdf->Cell(40, 10, 'Cantidad', 1, 0, 'C');
-  $pdf->Cell(40, 10, 'Precio', 1, 0, 'C');
-  $pdf->Cell(40, 10, 'Observaciones', 1, 0, 'C');
-  $pdf->Ln();
-
-  $pdf->SetFont('Arial', '', 9);
-  $totalGeneral = 0;
-  foreach ($carrito as $item) {
-    $unidad = $item['Tipo'] == "Pesable"
-      ? ($item['Cantidad'] >= 1.0 ? 'Kg' : 'grs')
-      : 'Unidad(es)';
-    $cantidad = $item['Tipo'] == "Pesable"
-      ? ($item['Cantidad'] >= 1.0 ? number_format($item['Cantidad'], 2) : number_format($item['Cantidad'], 3))
-      : number_format($item['Cantidad'], 0);
-
-    $totalItem = ($item['PrecioUnitario'] * 1.16) * $item['Cantidad'];
-    $totalGeneral += $totalItem;
-
-    $pdf->Cell(60, 10, utf8_decode(ucwords(strtolower($item['NombreProducto']))), 1, 0, 'C');
-    $pdf->Cell(40, 10, $cantidad . ' ' . $unidad, 1, 0, 'C');
-    $pdf->Cell(40, 10, '$' . number_format($totalItem, 2), 1, 0, 'C');
-    $pdf->Cell(40, 10, '', 1);
-    $pdf->Ln();
+  class FacturaPDF extends FPDF {
+    
+    function Header() {
+        $logoPath = '../../img/logo.png';
+        if (file_exists($logoPath) && filesize($logoPath) < 1000000) {
+            try {
+                $this->Image($logoPath, 10, 10, 30);
+            } catch (Exception $e) {
+            }
+        }
+        
+        $this->SetFont('Arial', 'B', 14);
+        $this->SetXY(120, 15);
+        $this->Cell(80, 6, 'Kalli Jaguar', 0, 1, 'R');
+        
+        $this->SetFont('Arial', '', 10);
+        $this->SetXY(120, 22);
+        $this->Cell(80, 5, 'Sistema de Inventario', 0, 1, 'R');
+        $this->SetXY(120, 27);
+        $this->Cell(80, 5, 'info@kallijaguar-inventory.com', 0, 1, 'R');
+        $this->SetXY(120, 32);
+        $this->Cell(80, 5, 'Tel: +52 756 112 7119', 0, 1, 'R');
+        
+        $this->SetY(45);
+        $this->SetDrawColor(255, 185, 0);
+        $this->SetLineWidth(1);
+        $this->Line(10, 45, 200, 45);
+        
+        $this->Ln(5);
+    }
+    
+    function Footer() {
+        $this->SetY(-25);
+        $this->SetFont('Arial', 'I', 8);
+        $this->SetTextColor(128);
+        $this->Cell(0, 5, utf8_decode('Este documento es una solicitud de productos generada automáticamente'), 0, 1, 'C');
+        $this->Cell(0, 5, utf8_decode('Página ') . $this->PageNo(), 0, 0, 'C');
+    }
   }
 
-  $pdf->Cell(100, 10, 'Total:', 1, 0, 'L');
-  $pdf->Cell(40, 10, '$' . number_format($totalGeneral, 2), 1, 0, 'C');
-  $pdf->Ln(20);
-  $pdf->Cell(90, 10, 'Firma', 0, 0, 'C');
-  $pdf->Cell(90, 10, 'Firma', 0, 0, 'C');
-  $pdf->Ln(10);
-  $pdf->Cell(90, 10, $nameUser, 0, 0, 'C');
-  $pdf->Cell(90, 10, 'Mauricio Dominguez', 0, 0, 'C');
+  $pdf = new FacturaPDF();
+  $pdf->AddPage();
+  
+  $pdf->SetFont('Arial', 'B', 18);
+  $pdf->SetTextColor(0, 0, 0);
+  $pdf->Cell(0, 10, 'Solicitud de Productos', 0, 1, 'C');
+  $pdf->Ln(5);
+  
+  $pdf->SetFont('Arial', 'B', 11);
+  $pdf->SetFillColor(248, 248, 248);
+  
+  $pdf->Cell(95, 8, utf8_decode('Información de Solicitud'), 1, 0, 'C', true);
+  $pdf->Cell(95, 8, utf8_decode('Información de Entrega'), 1, 1, 'C', true);
+  
+  $pdf->SetFont('Arial', '', 10);
+  $pdf->Cell(25, 6, 'Folio:', 1, 0, 'L');
+  $pdf->SetFont('Arial', 'B', 10);
+  $pdf->Cell(70, 6, $comandaID, 1, 0, 'L');
+  $pdf->SetFont('Arial', '', 10);
+  $pdf->Cell(25, 6, 'Sucursal:', 1, 0, 'L');
+  $pdf->SetFont('Arial', 'B', 10);
+  $pdf->Cell(70, 6, utf8_decode($nameSucursal), 1, 1, 'L');
+  
+  $pdf->SetFont('Arial', '', 10);
+  $pdf->Cell(25, 6, 'Solicitante:', 1, 0, 'L');
+  $pdf->SetFont('Arial', 'B', 10);
+  $pdf->Cell(70, 6, utf8_decode($nameUser), 1, 0, 'L');
+  $pdf->SetFont('Arial', '', 10);
+  $pdf->Cell(25, 6, 'Fecha:', 1, 0, 'L');
+  $pdf->SetFont('Arial', 'B', 10);
+  $pdf->Cell(70, 6, date('d/m/Y'), 1, 1, 'L');
+  
+  $pdf->SetFont('Arial', '', 10);
+  $pdf->Cell(25, 6, 'Estado:', 1, 0, 'L');
+  $pdf->SetFont('Arial', 'B', 10);
+  $pdf->SetTextColor(0, 150, 0);
+  $pdf->Cell(70, 6, 'Pendiente', 1, 0, 'L');
+  $pdf->SetTextColor(0, 0, 0);
+  $pdf->SetFont('Arial', '', 10);
+  $pdf->Cell(25, 6, 'Entrega:', 1, 0, 'L');
+  $pdf->SetFont('Arial', 'B', 10);
+  $pdf->Cell(70, 6, utf8_decode($fechaLarga), 1, 1, 'L');
+  
+  $pdf->Ln(8);
+  
+  $pdf->SetFont('Arial', 'B', 11);
+  $pdf->SetFillColor(255, 185, 0);
+  $pdf->SetTextColor(0, 0, 0);
+  
+  $pdf->Cell(8, 10, '#', 1, 0, 'C', true);
+  $pdf->Cell(90, 10, 'Producto', 1, 0, 'C', true);
+  $pdf->Cell(30, 10, 'Cantidad', 1, 0, 'C', true);
+  $pdf->Cell(30, 10, 'Precio Unit.', 1, 0, 'C', true);
+  $pdf->Cell(32, 10, 'Subtotal', 1, 1, 'C', true);
+  
+  $pdf->SetFont('Arial', '', 9);
+  $pdf->SetFillColor(255, 255, 255);
+  $totalGeneral = 0;
+  $contador = 1;
+  
+  foreach ($carrito as $item) {
+    $unidad = $item['Tipo'] == "Pesable" 
+        ? ($item['Cantidad'] >= 1.0 ? 'Kg' : 'g') 
+        : 'Unidad(es)';
+    
+    $cantidadFormateada = $item['Tipo'] == "Pesable" 
+        ? ($item['Cantidad'] >= 1.0 ? number_format($item['Cantidad'], 2) : number_format($item['Cantidad'], 3))
+        : number_format($item['Cantidad'], 0);
+    
+    $subtotal = floatval($item['PrecioUnitario']) * floatval($item['Cantidad']);
+    $totalGeneral += $subtotal;
+    
+    $fill = ($contador % 2 == 0) ? true : false;
+    $pdf->SetFillColor($fill ? 248 : 255, $fill ? 248 : 255, $fill ? 248 : 255);
+    
+    $nombreProducto = strlen($item['NombreProducto']) > 40 
+        ? substr($item['NombreProducto'], 0, 37) . '...' 
+        : $item['NombreProducto'];
+    
+    $pdf->Cell(8, 8, $contador, 1, 0, 'C', $fill);
+    $pdf->Cell(90, 8, utf8_decode(ucwords(strtolower($nombreProducto))), 1, 0, 'L', $fill);
+    $pdf->Cell(30, 8, $cantidadFormateada . ' ' . $unidad, 1, 0, 'C', $fill);
+    $pdf->Cell(30, 8, '$' . number_format(floatval($item['PrecioUnitario']), 2), 1, 0, 'R', $fill);
+    $pdf->Cell(32, 8, '$' . number_format($subtotal, 2), 1, 1, 'R', $fill);
+    
+    $contador++;
+    
+    unset($item, $subtotal, $nombreProducto);
+  }
+  
+  $pdf->SetFont('Arial', 'B', 10);
+  $pdf->SetFillColor(240, 240, 240);
+  $pdf->Cell(158, 8, 'TOTAL GENERAL:', 1, 0, 'R', true);
+  $pdf->SetFont('Arial', 'B', 12);
+  $pdf->SetTextColor(0, 100, 0);
+  $pdf->Cell(32, 8, '$' . number_format($totalGeneral, 2), 1, 1, 'R', true);
+  
+  $pdf->SetTextColor(0, 0, 0);
+  $pdf->Ln(8);
+  
+  $pdf->SetFont('Arial', 'B', 11);
+  $pdf->Cell(0, 6, utf8_decode('AUTORIZACIÓN Y RECEPCIÓN'), 0, 1, 'C');
+  $pdf->Ln(5);
+  
+  $pdf->SetFont('Arial', '', 10);
+  $pdf->Cell(0, 5, utf8_decode('Confirmo que los productos listados han sido verificados y corresponden a la solicitud realizada.'), 0, 1, 'C');
+  $pdf->Ln(5);
+  
+  $pdf->Cell(95, 20, '', 1, 0, 'C'); 
+  $pdf->Cell(95, 20, '', 1, 1, 'C'); 
+
+  $pdf->SetFont('Arial', 'B', 10);
+  $pdf->Cell(95, 6, 'Solicitante', 0, 0, 'C');
+  $pdf->Cell(95, 6, utf8_decode('Almacén'), 0, 1, 'C');
+  
+  $pdf->SetFont('Arial', '', 9);
+  $pdf->Cell(95, 5, utf8_decode($nameUser), 0, 0, 'C');
+  $pdf->Cell(95, 5, utf8_decode('Encargado de Logística'), 0, 1, 'C');
+  
   $pdf->Output('F', $pdfPath);
+  
+  unset($pdf);
+  if (function_exists('gc_collect_cycles')) {
+      gc_collect_cycles();
+  }
+  
 } catch (Exception $e) {
   echo json_encode(['status' => 'error', 'message' => 'Error al generar PDF: ' . $e->getMessage()]);
   exit();
 }
 
-// Email
 $productosHTML = '';
 $totalGenerals = 0;
 foreach ($carrito as $items) {
@@ -286,11 +388,10 @@ try {
   $mail->Port = 465;
 
   $mail->setFrom('info@kallijaguar-inventory.com', 'Informacion Kalli Jaguar');
-  $mail->addAddress('andrea.sanchez@kallijaguar-inventory.com');
+  $mail->addAddress('cencarnacion@kallijaguar-inventory.com');
   $mail->addCC('julieta.ramirez@kallijaguar-inventory.com');
   $mail->addCC('miguel.loaeza@kallijaguar-inventory.com');
   $mail->addCC('may.sanchez@kallijaguar-inventory.com');
-  $mail->addCC('cencarnacion@kallijaguar-inventory.com');
   $mail->addCC('claudia.espinoza@kallijaguar-inventory.com');
   $mail->addAttachment($pdfPath);
 
