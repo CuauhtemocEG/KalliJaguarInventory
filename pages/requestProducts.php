@@ -879,7 +879,6 @@ function hideEmptyState() {
 
 function loadProductsNow(query) {
     const apiUrl = window.urlAPI || urlAPI || (window.location.origin + "/js/productsRequested/");
-    console.log('URL:', apiUrl + 'searchProducts.php');
     
     $('#loadingProducts').show();
     $('#productList').hide();
@@ -887,7 +886,6 @@ function loadProductsNow(query) {
     
     $.get(apiUrl + 'searchProducts.php', { query: query })
         .done(function(response) {
-            console.log('✅ Respuesta recibida:', response.length, 'caracteres');
             
             if (response && response.indexOf('product-card') !== -1) {
                 $('#productList').html(response).show();
