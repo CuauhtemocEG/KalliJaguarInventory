@@ -52,7 +52,6 @@ function porcentaje($valor, $total)
 <div class="min-h-screen bg-gray-50 py-4">
 	<div class="w-full mx-auto px-4 sm:px-6 lg:px-8">
 		
-		<!-- Header Section -->
 		<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 space-y-4 md:space-y-0">
 			<div>
 				<h1 class="text-3xl font-bold text-gray-900">Dashboard Principal</h1>
@@ -68,7 +67,6 @@ function porcentaje($valor, $total)
 			<?php endif; ?>
 		</div>
 
-		<!-- Alert Section -->
 		<?php if ($totalCount > 0): ?>
 		<div class="bg-red-50 border-l-4 border-red-400 p-4 mb-8 rounded-r-lg">
 			<div class="flex items-center">
@@ -86,9 +84,7 @@ function porcentaje($valor, $total)
 		</div>
 		<?php endif; ?>
 
-		<!-- Statistics Cards -->
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-			<!-- Total Products -->
 			<div class="bg-white overflow-hidden shadow-lg rounded-lg border-l-4 border-green-500">
 				<div class="p-6">
 					<div class="flex items-center">
@@ -109,7 +105,6 @@ function porcentaje($valor, $total)
 				</div>
 			</div>
 
-			<!-- Status Cards -->
 			<div class="bg-white overflow-hidden shadow-lg rounded-lg border-l-4 border-blue-500">
 				<div class="p-6">
 					<div class="flex items-center">
@@ -171,9 +166,7 @@ function porcentaje($valor, $total)
 			</div>
 		</div>
 
-		<!-- Charts and Details Section -->
 		<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-			<!-- Chart -->
 			<div class="bg-white shadow-lg rounded-lg overflow-hidden">
 				<div class="p-6">
 					<h3 class="text-lg font-semibold text-gray-900 mb-6">Resumen de Solicitudes por Estado</h3>
@@ -183,7 +176,6 @@ function porcentaje($valor, $total)
 				</div>
 			</div>
 
-			<!-- Status Details -->
 			<div class="bg-white shadow-lg rounded-lg overflow-hidden">
 				<div class="p-6">
 					<h3 class="text-lg font-semibold text-gray-900 mb-6">Detalles por Estado</h3>
@@ -236,7 +228,6 @@ function porcentaje($valor, $total)
 			</div>
 		</div>
 
-		<!-- Low Stock Products -->
 		<div class="bg-white shadow-lg rounded-lg overflow-hidden">
 			<div class="p-6">
 				<div class="flex items-center justify-between mb-6">
@@ -252,7 +243,6 @@ function porcentaje($valor, $total)
 				</div>
 
 				<div class="space-y-4">
-					<!-- Productos Pesables -->
 					<div class="border border-gray-200 rounded-lg">
 						<button class="w-full px-4 py-3 text-left flex items-center justify-between focus:outline-none focus:bg-gray-50 hover:bg-gray-50 transition-colors duration-200" 
 								onclick="toggleAccordion('pesables')">
@@ -288,7 +278,6 @@ function porcentaje($valor, $total)
 						</div>
 					</div>
 
-					<!-- Productos por Unidad -->
 					<div class="border border-gray-200 rounded-lg">
 						<button class="w-full px-4 py-3 text-left flex items-center justify-between focus:outline-none focus:bg-gray-50 hover:bg-gray-50 transition-colors duration-200" 
 								onclick="toggleAccordion('unidades')">
@@ -332,7 +321,6 @@ function porcentaje($valor, $total)
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-	// Chart.js configuration
 	document.addEventListener('DOMContentLoaded', function() {
 		const ctx = document.getElementById('solicitudesChart').getContext('2d');
 		const data = {
@@ -385,7 +373,6 @@ function porcentaje($valor, $total)
 		new Chart(ctx, config);
 	});
 
-	// Accordion functionality
 	function toggleAccordion(type) {
 		const accordion = document.getElementById(`accordion-${type}`);
 		const chevron = document.getElementById(`chevron-${type}`);
