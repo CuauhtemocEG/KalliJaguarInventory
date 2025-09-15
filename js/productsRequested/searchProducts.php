@@ -73,9 +73,9 @@ foreach ($datos as $row) {
         $cantidadRequested = '
         <form class="add-product-form">
             <input type="hidden" name="idProduct" value="' . $row['ProductoID'] . '">
-            <input type="hidden" name="precioProduct" value="' . $row['PrecioUnitario'] . '">
-            <input type="hidden" name="nameProduct" value="' . $row['nombreProducto'] . '">
-            <input type="hidden" name="typeProduct" value="' . $row['Tipo'] . '">
+            <input type="hidden" name="precio" value="' . $row['PrecioUnitario'] . '">
+            <input type="hidden" name="nombre" value="' . $row['nombreProducto'] . '">
+            <input type="hidden" name="tipo" value="' . $row['Tipo'] . '">
             <div class="quantity-section">
                 <label class="quantity-label">
                     <i class="fas fa-calculator text-primary"></i>
@@ -87,7 +87,7 @@ foreach ($datos as $row) {
                     </button>
                     <div class="quantity-display">
                         <input class="quantity-input" type="text" id="cantidadVisible_' . $row['ProductoID'] . '" value="' . $cantidadVisible . '" readonly>
-                        <input type="hidden" name="cantidadProduct" id="cantidad_' . $row['ProductoID'] . '" value="' . $value . '" step="' . $step . '">
+                        <input type="hidden" name="cantidad" id="cantidad_' . $row['ProductoID'] . '" value="' . $value . '" step="' . $step . '">
                     </div>
                     <button type="button" class="btn-quantity btn-increase" data-action="increase" data-product="' . $row['ProductoID'] . '">
                         <i class="fas fa-plus"></i>
