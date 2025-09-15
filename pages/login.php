@@ -3,40 +3,66 @@
 		<div class="col-md-6 offset-md-3">
 			<h2 class="text-center h2 text-dark mt-5">Kalli Jaguar Inventory</h2>
 			<div class="card my-3">
-
-				<form class="card-body cardbody-color p-lg-5" action="" method="POST" autocomplete="off">
-
+				<form id="loginForm" class="card-body cardbody-color p-lg-5" autocomplete="off">
 					<div class="text-center">
-						<img src="./img/Login.jpg" class="img-fluid  img-thumbnail my-4"
-							width="130px" alt="profile">
+						<img src="./img/Login.jpg" class="img-fluid img-thumbnail my-4" width="130px" alt="profile">
 					</div>
 
 					<div class="mb-3">
 						<label class="label font-weight-bold">Usuario:</label>
-						<div class="control">
-							<input class="form-control" type="text" name="login_usuario" pattern="[a-zA-Z0-9]{4,20}" maxlength="20" required>
-						</div>
+						<input class="form-control" type="text" name="login_usuario" id="login_usuario">
 					</div>
 
 					<div class="mb-4">
 						<label class="label font-weight-bold">Password:</label>
-						<div class="control">
-							<input class="form-control" type="password" name="login_clave" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100" required>
-						</div>
+						<input class="form-control" type="password" name="login_clave" id="login_clave">
 					</div>
+
+					<div id="loginMessage" class="mb-3"></div>
 
 					<div class="text-center">
-						<button type="submit" class="btn btn-warning mb-3 w-100 font-weight-bold">Iniciar sesion</button>
+						<button type="submit" class="btn btn-warning w-100 font-weight-bold">Iniciar sesión</button>
 					</div>
-
-					<?php
-					if (isset($_POST['login_usuario']) && isset($_POST['login_clave'])) {
-						require_once "./controllers/mainController.php";
-						require_once "./controllers/iniciar_sesion.php";
-					}
-					?>
 				</form>
 			</div>
 		</div>
 	</div>
 </div>
+
+<script>
+	document.getElementById("loginForm").addEventListener("submit", function(e) {
+		e.preventDefault();
+
+		const usuario = document.getElementById("login_usuario").value.trim();
+		const clave = document.getElementById("login_clave").value.trim();
+		const msgDiv = document.getElementById("loginMessage");
+
+		msgDiv.innerHTML = "";
+
+		if (usuario === "" || clave === "") {
+			msgDiv.innerHTML = '<div class="alert alert-danger">Completa todos los campos.</div>';
+			return;
+		}
+
+		const formData = new FormData();
+		formData.append("login_usuario", usuario);
+		formData.append("login_clave", clave);
+
+		fetch("./api/loginHandler.php", {
+				method: "POST",
+				body: formData
+			})
+			.then(response => response.json())
+			.then(data => {
+				if (data.success) {
+					window.location.href = "index.php?page=home";
+				} else {
+					msgDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+				}
+			})
+			.catch(error => {
+				console.error("Error en el login:", error);
+				msgDiv.innerHTML = '<div class="alert alert-danger">Error inesperado.</div>';
+			});
+	});
+</script>
