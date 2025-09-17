@@ -131,16 +131,16 @@
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700" id="tablaProductos">
                                 <thead class="bg-gray-50 dark:bg-gray-900">
                                     <tr>
-                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-white uppercase tracking-wider">
                                             <i class="fas fa-box mr-2"></i>Producto
                                         </th>
-                                        <th class="px-6 py-4 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                        <th class="px-6 py-4 text-center text-xs font-medium text-gray-500 dark:text-white uppercase tracking-wider">
                                             <i class="fas fa-calculator mr-2"></i>Cantidad
                                         </th>
-                                        <th class="px-6 py-4 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                        <th class="px-6 py-4 text-center text-xs font-medium text-gray-500 dark:text-white uppercase tracking-wider">
                                             <i class="fas fa-dollar-sign mr-2"></i>Precio Final
                                         </th>
-                                        <th class="px-6 py-4 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                        <th class="px-6 py-4 text-center text-xs font-medium text-gray-500 dark:text-white uppercase tracking-wider">
                                             <i class="fas fa-cogs mr-2"></i>Acciones
                                         </th>
                                     </tr>
@@ -154,7 +154,7 @@
                     <div class="p-6 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
                         <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                             <div class="flex items-center space-x-4">
-                                <div class="flex items-center text-gray-600 dark:text-gray-400">
+                                <div class="flex items-center text-gray-600 dark:text-white">
                                     <i class="fas fa-info-circle mr-2"></i>
                                     <span class="text-sm">Los cambios se aplicarán al confirmar</span>
                                 </div>
