@@ -298,10 +298,10 @@
                                               </button>
                                               <div class="flex items-center space-x-1">
                                                   <input type="number" 
-                                                         min="0.001" 
+                                                         min="0" 
                                                          max="${producto.Cantidad}" 
-                                                         step="${producto.Tipo === 'Pesable' ? '0.001' : '1'}"
-                                                         value="${producto.Tipo === 'Pesable' ? '0.001' : '1'}" 
+                                                         step="${producto.Tipo === 'Pesable' ? '0.25' : '1'}"
+                                                         value="${producto.Tipo === 'Pesable' ? '0.25' : '1'}" 
                                                          class="inputDevolver w-20 px-2 py-1 text-center border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500">
                                                   <button class="devolver inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors">
                                                       <i class="fas fa-undo mr-1"></i>
