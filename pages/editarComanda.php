@@ -245,6 +245,17 @@
                                 }
 
                                 res.productos.forEach((producto, index) => {
+                                    // Aplicar lógica de tipo de inventario
+                                    const unidad = producto.Tipo === "Pesable" 
+                                        ? (parseFloat(producto.Cantidad) >= 1.0 ? 'Kg' : 'g') 
+                                        : 'Unidad(es)';
+                                    
+                                    const cantidadFormateada = producto.Tipo === "Pesable" 
+                                        ? (parseFloat(producto.Cantidad) >= 1.0 ? 
+                                            parseFloat(producto.Cantidad).toFixed(2) : 
+                                            parseFloat(producto.Cantidad).toFixed(3))
+                                        : parseInt(producto.Cantidad).toString();
+
                                     const fila = `
                                   <tr data-movimiento-id="${producto.ID}" class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors animate-slideIn" style="animation-delay: ${index * 100}ms">
                                       <td class="px-6 py-4">
@@ -259,7 +270,7 @@
                                                       ${producto.Nombre}
                                                   </div>
                                                   <div class="text-sm text-gray-500 dark:text-gray-400">
-                                                      ID: ${producto.ID}
+                                                      ID: ${producto.ID} • Tipo: ${producto.Tipo}
                                                   </div>
                                               </div>
                                           </div>
@@ -267,7 +278,7 @@
                                       <td class="px-6 py-4 text-center">
                                           <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
                                               <i class="fas fa-calculator mr-1 text-xs"></i>
-                                              ${producto.Cantidad}
+                                              ${cantidadFormateada} ${unidad}
                                           </span>
                                       </td>
                                       <td class="px-6 py-4 text-center">
@@ -283,10 +294,11 @@
                                               </button>
                                               <div class="flex items-center space-x-1">
                                                   <input type="number" 
-                                                         min="1" 
+                                                         min="0.001" 
                                                          max="${producto.Cantidad}" 
-                                                         value="1" 
-                                                         class="inputDevolver w-16 px-2 py-1 text-center border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500">
+                                                         step="${producto.Tipo === 'Pesable' ? '0.001' : '1'}"
+                                                         value="${producto.Tipo === 'Pesable' ? '0.001' : '1'}" 
+                                                         class="inputDevolver w-20 px-2 py-1 text-center border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500">
                                                   <button class="devolver inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors">
                                                       <i class="fas fa-undo mr-1"></i>
                                                       Devolver
@@ -433,9 +445,19 @@
                         return;
                     }
 
+                    // Obtener información del producto para mostrar unidades correctas
+                    const productoActual = productosActuales.find(p => p.ID == movimientoId);
+                    const unidad = productoActual && productoActual.Tipo === "Pesable" 
+                        ? (cantidad >= 1.0 ? 'Kg' : 'g') 
+                        : (cantidad === 1 ? 'unidad' : 'unidades');
+                    
+                    const cantidadFormateada = productoActual && productoActual.Tipo === "Pesable"
+                        ? (cantidad >= 1.0 ? cantidad.toFixed(2) : cantidad.toFixed(3))
+                        : cantidad.toString();
+
                     Swal.fire({
                         title: '¿Devolver producto?',
-                        text: `Se devolverán ${cantidad} unidades al inventario.`,
+                        text: `Se devolverán ${cantidadFormateada} ${unidad} al inventario.`,
                         icon: 'question',
                         showCancelButton: true,
                         confirmButtonColor: '#F59E0B',
