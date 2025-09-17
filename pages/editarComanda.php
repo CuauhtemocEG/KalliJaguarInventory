@@ -266,17 +266,17 @@
                                                   </div>
                                               </div>
                                               <div class="ml-4">
-                                                  <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                                  <div class="text-sm font-medium text-white-900 dark:text-white">
                                                       ${producto.Nombre}
                                                   </div>
-                                                  <div class="text-sm text-gray-500 dark:text-gray-400">
+                                                  <div class="text-sm text-white-500 dark:text-gray-400">
                                                       ID: ${producto.ID} • Tipo: ${producto.Tipo}
                                                   </div>
                                               </div>
                                           </div>
                                       </td>
                                       <td class="px-6 py-4 text-center">
-                                          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-white-800 dark:bg-blue-900 dark:text-blue-200">
                                               <i class="fas fa-calculator mr-1 text-xs"></i>
                                               ${cantidadFormateada} ${unidad}
                                           </span>

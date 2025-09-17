@@ -52,6 +52,7 @@ try {
             'ProductoID' => $mov['ProductoID'],
             'Nombre' => $producto['Nombre'] ?? 'N/D',
             'Cantidad' => $mov['Cantidad'],
+            'Tipo' => $mov['Tipo'],
             'PrecioFinal' => $mov['PrecioFinal'],
             'PrecioUnitario' => $mov['PrecioUnitario']
         ];
