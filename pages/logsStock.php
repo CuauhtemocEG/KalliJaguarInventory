@@ -34,7 +34,6 @@ sort($products);
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
     <style>
         .fade-in {
             animation: fadeIn 0.5s ease-in;
@@ -421,8 +420,6 @@ sort($products);
             let currentPage = 1;
             let pageSize = 25;
 
-            console.log('Datos cargados:', allData.length, 'registros');
-
             function isMobile() {
                 return window.innerWidth < 640;
             }
@@ -460,9 +457,13 @@ sort($products);
                 goToPage(parseInt($(this).data('page')));
             });
 
+            let resizeTimeout;
             $(window).on('resize', function() {
-                renderTable();
-                updatePagination();
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(function() {
+                    renderTable();
+                    updatePagination();
+                }, 100);
             });
 
             function applyFilters() {
@@ -506,8 +507,12 @@ sort($products);
 
             function renderTable() {
                 if (isMobile()) {
+                    $('#mobileView').show();
+                    $('.sm\\:block').hide();
                     renderMobileCards();
                 } else {
+                    $('#mobileView').hide();
+                    $('.sm\\:block').show();
                     renderDesktopTable();
                 }
             }
@@ -728,7 +733,7 @@ sort($products);
 
                 $('#mobilePrevPage').prop('disabled', currentPage === 1);
                 $('#mobileNextPage').prop('disabled', currentPage === totalPages || totalPages === 0);
-                $('#mobilePageInfo').text(`Página ${currentPage} de ${totalPages || 1}`);
+                $('#mobilePageInfo').text(`Página ${currentPage} de ${Math.max(1, totalPages)}`);
 
                 if (!isMobile()) {
                     const pageNumbers = $('#pageNumbers');
@@ -774,14 +779,28 @@ sort($products);
 
             function goToPage(page) {
                 const totalPages = Math.ceil(filteredData.length / pageSize);
-                if (page < 1 || page > totalPages) return;
+                
+                if (page < 1) page = 1;
+                if (page > totalPages) page = totalPages;
+                if (totalPages === 0) page = 1;
 
-                currentPage = page;
-                renderTable();
-                updatePagination();
+                if (currentPage !== page) {
+                    currentPage = page;
+                    renderTable();
+                    updatePagination();
+                }
             }
 
             function updateCounters(from, to, total) {
+                from = Math.max(1, from);
+                to = Math.max(from, to);
+                total = Math.max(0, total);
+                
+                if (total === 0) {
+                    from = 0;
+                    to = 0;
+                }
+                
                 $('#showingFrom').text(from);
                 $('#showingTo').text(to);
                 $('#showingTotal').text(total);
@@ -789,6 +808,15 @@ sort($products);
             }
 
             function updateMobileCounters(from, to, total) {
+                from = Math.max(1, from);
+                to = Math.max(from, to);
+                total = Math.max(0, total);
+                
+                if (total === 0) {
+                    from = 0;
+                    to = 0;
+                }
+                
                 $('#mobileShowingFrom').text(from);
                 $('#mobileShowingTo').text(to);
                 $('#mobileShowingTotal').text(total);
@@ -882,18 +910,6 @@ sort($products);
                     setTimeout(() => toast.remove(), 300);
                 }, 3000);
             }
-
-            function isMobile() {
-                return window.innerWidth < 640;
-            }
-
-            $(window).on('resize', function() {
-                renderTable();
-                updatePagination();
-            });
-
-            $('#mobilePrevPage').on('click', () => goToPage(currentPage - 1));
-            $('#mobileNextPage').on('click', () => goToPage(currentPage + 1));
 
             console.log('Inicialización completa - Página responsive funcional');
         });
