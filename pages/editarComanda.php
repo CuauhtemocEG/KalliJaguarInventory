@@ -221,7 +221,7 @@
                     showBadge('Buscando comanda...', 'info');
                     $('#emptyState').addClass('hidden');
 
-                    $.getJSON('../api/getProductosComanda.php', {
+                    $.getJSON(window.location.origin + '/api/getProductosComanda.php', {
                             comanda_id: comandaId
                         })
                         .done(function(res) {
@@ -345,7 +345,6 @@
                     cargarProductos(comandaId);
                 });
 
-                // Permitir buscar con Enter
                 $('#comandaId').keypress(function(e) {
                     if (e.which === 13) {
                         $('#buscarComanda').click();
@@ -369,7 +368,6 @@
                         reverseButtons: true
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            // Mostrar loading
                             Swal.fire({
                                 title: 'Eliminando...',
                                 text: 'Por favor espera un momento',
@@ -380,7 +378,7 @@
                             });
 
                             $.ajax({
-                                url: 'https://stagging.kallijaguar-inventory.com/api/eliminarProductoComanda.php',
+                                url: window.location.origin + '/api/eliminarProductoComanda.php',
                                 method: 'POST',
                                 contentType: 'application/json',
                                 data: JSON.stringify({
@@ -447,7 +445,6 @@
                         reverseButtons: true
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            // Mostrar loading
                             Swal.fire({
                                 title: 'Procesando devolución...',
                                 text: 'Por favor espera un momento',
@@ -458,7 +455,7 @@
                             });
 
                             $.ajax({
-                                url: 'https://stagging.kallijaguar-inventory.com/api/devolverProductoComanda.php',
+                                url: window.location.origin + '/api/devolverProductoComanda.php',
                                 method: 'POST',
                                 contentType: 'application/json',
                                 data: JSON.stringify({
@@ -523,7 +520,6 @@
                         reverseButtons: true
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            // Mostrar loading
                             Swal.fire({
                                 title: 'Regenerando PDF...',
                                 text: 'Por favor espera un momento',
@@ -533,7 +529,7 @@
                                 }
                             });
 
-                            $.post('https://stagging.kallijaguar-inventory.com/api/regenerarComandaPDF.php', {
+                            $.post(window.location.origin + '/api/regenerarComandaPDF.php', {
                                 comanda_id: comandaId
                             }, function(res) {
                                 if (res.status === 'success') {
