@@ -34,11 +34,6 @@ if (file_exists($pathPDF)) {
                     
                     <!-- Botones de acción -->
                     <div class="flex items-center space-x-3">
-                        <button onclick="window.print()" 
-                                class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
-                            <i class="fas fa-print mr-2"></i>
-                            Imprimir
-                        </button>
                         
                         <a href="' . $pathPDF . '" download="' . htmlspecialchars($comandaID) . '.pdf"
                            class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
