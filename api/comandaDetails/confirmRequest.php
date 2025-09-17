@@ -242,7 +242,8 @@ try {
         ? ($item['Cantidad'] >= 1.0 ? number_format($item['Cantidad'], 2) : number_format($item['Cantidad'], 3))
         : number_format($item['Cantidad'], 0);
     
-    $subtotal = floatval($item['PrecioUnitario']) * floatval($item['Cantidad']);
+    $precioConIVA = floatval($item['PrecioUnitario']) * 1.16;
+    $subtotal = $precioConIVA * floatval($item['Cantidad']);
     $totalGeneral += $subtotal;
     
     $fill = ($contador % 2 == 0) ? true : false;
@@ -255,12 +256,12 @@ try {
     $pdf->Cell(8, 8, $contador, 1, 0, 'C', $fill);
     $pdf->Cell(90, 8, utf8_decode(ucwords(strtolower($nombreProducto))), 1, 0, 'L', $fill);
     $pdf->Cell(30, 8, $cantidadFormateada . ' ' . $unidad, 1, 0, 'C', $fill);
-    $pdf->Cell(30, 8, '$' . number_format(floatval($item['PrecioUnitario']), 2), 1, 0, 'R', $fill);
+    $pdf->Cell(30, 8, '$' . number_format($precioConIVA, 2), 1, 0, 'R', $fill);
     $pdf->Cell(32, 8, '$' . number_format($subtotal, 2), 1, 1, 'R', $fill);
     
     $contador++;
     
-    unset($item, $subtotal, $nombreProducto);
+    unset($item, $subtotal, $nombreProducto, $precioConIVA);
   }
   
   $pdf->SetFont('Arial', 'B', 10);
