@@ -129,7 +129,7 @@
                     <div class="overflow-hidden">
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700" id="tablaProductos">
-                                <thead class="bg-gray-50 dark:bg-gray-900">
+                                <thead class="bg-gray-50 dark:bg-gray-800">
                                     <tr>
                                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-white uppercase tracking-wider">
                                             <i class="fas fa-box mr-2"></i>Producto
@@ -181,6 +181,10 @@
         </div>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
+            // Forzar modo oscuro para depuración
+            document.documentElement.classList.add('dark');
+            
+            // También mantener la detección automática
             if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 document.documentElement.classList.add('dark');
             }
@@ -276,7 +280,7 @@
                                           </div>
                                       </td>
                                       <td class="px-6 py-4 text-center">
-                                          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-600 text-white dark:bg-blue-900 dark:text-blue-200">
                                               <i class="fas fa-calculator mr-1 text-xs"></i>
                                               ${cantidadFormateada} ${unidad}
                                           </span>
