@@ -191,10 +191,30 @@ $total = 0;
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-center">
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
-                                <i class="fas fa-hashtag mr-1 text-xs"></i>
-                                <?php echo number_format($producto['Cantidad']); ?>
-                            </span>
+                             <?php
+                                // Lógica para determinar unidades y formato
+                                if ($producto['Tipo'] == "Pesable") {
+                                    if ($producto['Cantidad'] >= 1.0) {
+                                        $unidadesResult = 'Kg';
+                                        $quantityRes = number_format($producto['Cantidad'], 2, '.', '');
+                                    } else {
+                                        $unidadesResult = 'grs';
+                                        $quantityRes = number_format($producto['Cantidad'] * 1000, 0, '.', '');
+                                    }
+                                } else {
+                                    $unidadesResult = 'Unidad(es)';
+                                    $quantityRes = number_format($producto['Cantidad'], 0, '.', '');
+                                }
+                            ?>
+                            <div class="flex flex-col items-center space-y-1">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-blue-600 dark:bg-blue-700 text-white shadow-sm">
+                                    <i class="fas fa-hashtag mr-1 text-xs"></i>
+                                    <?php echo $quantityRes; ?>
+                                </span>
+                                <span class="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">
+                                    <?php echo $unidadesResult; ?>
+                                </span>
+                            </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right">
                             <div class="text-sm font-semibold text-gray-900 dark:text-white">
