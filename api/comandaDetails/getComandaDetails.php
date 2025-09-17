@@ -20,6 +20,7 @@ $query = $conn->prepare("
     p.Nombre, 
     p.Descripcion, 
     p.PrecioUnitario, 
+    p.Tipo,
     m.Cantidad, 
     m.PrecioFinal, 
     (m.Cantidad * (p.PrecioUnitario*1.16)) AS Subtotal, 
