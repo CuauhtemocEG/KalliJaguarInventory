@@ -280,7 +280,7 @@
                                           </div>
                                       </td>
                                       <td class="px-6 py-4 text-center">
-                                          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-600 text-white dark:bg-blue-900 dark:text-blue-200">
+                                          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-amber-100 text-amber-800 dark:bg-amber-200 dark:text-amber-900">
                                               <i class="fas fa-calculator mr-1 text-xs"></i>
                                               ${cantidadFormateada} ${unidad}
                                           </span>
