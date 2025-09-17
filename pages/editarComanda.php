@@ -221,7 +221,7 @@
                     showBadge('Buscando comanda...', 'info');
                     $('#emptyState').addClass('hidden');
 
-                    $.getJSON(window.location.origin + '/api/getProductosComanda.php', {
+                    $.getJSON(window.location.origin + '/api/recreateComanda/getProductosComanda.php', {
                             comanda_id: comandaId
                         })
                         .done(function(res) {
@@ -378,7 +378,7 @@
                             });
 
                             $.ajax({
-                                url: window.location.origin + '/api/eliminarProductoComanda.php',
+                                url: window.location.origin + '/api/recreateComanda/eliminarProductoComanda.php',
                                 method: 'POST',
                                 contentType: 'application/json',
                                 data: JSON.stringify({
@@ -455,7 +455,7 @@
                             });
 
                             $.ajax({
-                                url: window.location.origin + '/api/devolverProductoComanda.php',
+                                url: window.location.origin + '/api/recreateComanda/devolverProductoComanda.php',
                                 method: 'POST',
                                 contentType: 'application/json',
                                 data: JSON.stringify({
@@ -529,7 +529,7 @@
                                 }
                             });
 
-                            $.post(window.location.origin + '/api/regenerarComandaPDF.php', {
+                            $.post(window.location.origin + '/api/recreateComanda/regenerarComandaPDF.php', {
                                 comanda_id: comandaId
                             }, function(res) {
                                 if (res.status === 'success') {
