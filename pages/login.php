@@ -184,28 +184,6 @@
 			</div>
 		</div>
 	</div>
-	<button
-		type="submit"
-		id="loginBtn"
-		class="w-full bg-gradient-to-r from-accent-yellow to-accent-yellow-dark hover:from-accent-yellow-dark hover:to-accent-yellow text-inventory-dark font-bold py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-accent-yellow/50 relative overflow-hidden group">
-		<span class="relative z-10 flex items-center justify-center">
-			<i class="fas fa-sign-in-alt mr-3 group-hover:rotate-12 transition-transform duration-300"></i>
-			<span id="loginBtnText">Iniciar Sesión</span>
-		</span>
-		<div class="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-	</button>
-
-	<div class="text-center pt-6 border-t border-white/10">
-		<p class="text-blue-200 text-sm flex items-center justify-center">
-			<i class="fas fa-shield-alt mr-2 text-accent-yellow"></i>
-			Acceso seguro y encriptado
-		</p>
-	</div>
-	</form>
-	</div>
-
-	</div>
-	</div>
 
 	<script>
 		document.getElementById('togglePassword').addEventListener('click', function() {
