@@ -78,6 +78,11 @@
 			body {
 				-webkit-text-size-adjust: 100%;
 				-webkit-tap-highlight-color: transparent;
+				/* Prevenir zoom en Android */
+				-webkit-user-select: none;
+				-moz-user-select: none;
+				user-select: none;
+				-webkit-touch-callout: none;
 			}
 
 			input[type="text"],
@@ -85,14 +90,57 @@
 				-webkit-appearance: none;
 				-moz-appearance: none;
 				appearance: none;
+				/* Prevenir zoom automático en Android */
+				font-size: 16px !important;
+				/* Mejorar compatibilidad táctil */
+				-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+				-webkit-user-select: text;
+				-moz-user-select: text;
+				user-select: text;
+			}
+
+			/* Mejoras para Android WebView */
+			input:focus {
+				-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+				outline: none;
+			}
+
+			button {
+				-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+				-webkit-appearance: none;
+				-moz-appearance: none;
+				appearance: none;
+				border: none;
 			}
 		}
 
 		@media (hover: none) and (pointer: coarse) {
-
 			button,
 			input {
 				min-height: 44px;
+				/* Mejor área táctil para Android */
+				min-width: 44px;
+			}
+
+			/* Eliminar efectos hover en dispositivos táctiles */
+			.input-focus:focus {
+				transform: none !important;
+			}
+
+			button:hover {
+				transform: none !important;
+			}
+		}
+
+		/* Específico para Android Chrome */
+		@supports (-webkit-touch-callout: none) {
+			input[type="text"], 
+			input[type="password"] {
+				font-size: 16px;
+				-webkit-appearance: none;
+				-moz-appearance: none;
+				appearance: none;
+				border-radius: 0;
 			}
 		}
 	</style>
@@ -186,7 +234,27 @@
 	</div>
 
 	<script>
-		document.getElementById('togglePassword').addEventListener('click', function() {
+		const isAndroid = /Android/i.test(navigator.userAgent);
+		const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+		
+		if (isAndroid) {
+			console.log('Android detected, applying Android-specific fixes');
+			
+			const viewportMeta = document.createElement('meta');
+			viewportMeta.name = 'viewport';
+			viewportMeta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+			document.getElementsByTagName('head')[0].appendChild(viewportMeta);
+			
+			document.querySelectorAll('input[type="text"], input[type="password"]').forEach(input => {
+				input.style.fontSize = '16px';
+				input.style.transform = 'translateZ(0)';
+			});
+		}
+
+		document.getElementById('togglePassword').addEventListener('click', function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			
 			const passwordInput = document.getElementById('login_clave');
 			const eyeIcon = document.getElementById('eyeIcon');
 
@@ -219,32 +287,60 @@
 			loginBtn.disabled = true;
 			loginBtn.classList.add("opacity-75", "cursor-not-allowed");
 			loginBtnText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Iniciando sesión...';
-
+			
+			const xhr = new XMLHttpRequest();
 			const formData = new FormData();
 			formData.append("login_usuario", usuario);
 			formData.append("login_clave", clave);
 
-			fetch("./api/loginHandler.php", {
-					method: "POST",
-					body: formData
-				})
-				.then(response => response.json())
-				.then(data => {
-					if (data.success) {
-						showMessage("¡Bienvenido! Redirigiendo...", "success");
-						setTimeout(() => {
-							window.location.href = "index.php?page=home";
-						}, 1500);
+			xhr.open("POST", "./api/loginHandler.php", true);
+			
+			xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+			
+			xhr.onreadystatechange = function() {
+				
+				if (xhr.readyState === 4) {
+					if (xhr.status === 200) {
+						try {
+							const data = JSON.parse(xhr.responseText);							
+							if (data.success) {
+								showMessage("¡Bienvenido! Redirigiendo...", "success");
+								setTimeout(() => {
+									window.location.href = "index.php?page=home";
+								}, 1500);
+							} else {
+								showMessage(data.message || "Credenciales incorrectas.", "error");
+								resetButton();
+							}
+						} catch (error) {
+							showMessage("Error en la respuesta del servidor. Revisa la consola para más detalles.", "error");
+							resetButton();
+						}
 					} else {
-						showMessage(data.message || "Credenciales incorrectas.", "error");
+						showMessage("Error de conexión. Código: " + xhr.status + ". Revisa la consola.", "error");
 						resetButton();
 					}
-				})
-				.catch(error => {
-					console.error("Error en el login:", error);
-					showMessage("Error de conexión. Inténtalo de nuevo.", "error");
-					resetButton();
-				});
+				}
+			};
+
+			xhr.onerror = function() {
+				showMessage("Error de red. Verifica tu conexión y revisa la consola.", "error");
+				resetButton();
+			};
+
+			xhr.ontimeout = function() {
+				showMessage("Tiempo de espera agotado. Inténtalo de nuevo.", "error");
+				resetButton();
+			};
+
+			xhr.timeout = 30000;
+
+			try {
+				xhr.send(formData);
+			} catch (error) {
+				showMessage("Error al enviar la solicitud. Revisa la consola.", "error");
+				resetButton();
+			}
 		});
 
 		function showMessage(message, type) {
@@ -277,12 +373,30 @@
 
 		document.querySelectorAll('input').forEach(input => {
 			input.addEventListener('focus', function() {
-				this.classList.add('animate-pulse');
+				if (!isAndroid) {
+					this.classList.add('animate-pulse');
+				}
+				
+				if (isAndroid) {
+					setTimeout(() => {
+						this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+					}, 300);
+				}
 			});
 
 			input.addEventListener('blur', function() {
 				this.classList.remove('animate-pulse');
 			});
+			
+			if (isAndroid) {
+				input.addEventListener('touchstart', function(e) {
+					e.stopPropagation();
+				}, { passive: true });
+				
+				input.addEventListener('touchend', function(e) {
+					e.stopPropagation();
+				}, { passive: true });
+			}
 		});
 
 		document.addEventListener('keydown', function(e) {
@@ -290,20 +404,28 @@
 				e.preventDefault();
 				const form = document.getElementById('loginForm');
 				if (form) {
-					form.dispatchEvent(new Event('submit'));
+					const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+					form.dispatchEvent(submitEvent);
 				}
 			}
 		});
 
-		if ('ontouchstart' in window) {
+		if (isMobile) {
 			document.querySelectorAll('button, input').forEach(element => {
-				element.addEventListener('touchstart', function() {
+				element.addEventListener('touchstart', function(e) {
 					this.style.transform = 'scale(0.98)';
-				});
+					this.style.opacity = '0.8';
+				}, { passive: true });
 
-				element.addEventListener('touchend', function() {
+				element.addEventListener('touchend', function(e) {
 					this.style.transform = '';
-				});
+					this.style.opacity = '';
+				}, { passive: true });
+				
+				element.addEventListener('touchcancel', function(e) {
+					this.style.transform = '';
+					this.style.opacity = '';
+				}, { passive: true });
 			});
 
 			document.querySelectorAll('input[type="text"], input[type="password"]').forEach(input => {
@@ -313,18 +435,41 @@
 			});
 		}
 
-		document.getElementById('loginForm').addEventListener('submit', function() {
-			document.activeElement.blur();
+		if (!isMobile) {
+			document.addEventListener('DOMContentLoaded', function() {
+				const firstInput = document.getElementById('login_usuario');
+				if (firstInput) {
+					firstInput.focus();
+				}
+			});
+		}
+
+		document.getElementById('loginForm').addEventListener('submit', function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			
+			if (isMobile && document.activeElement) {
+				document.activeElement.blur();
+			}
 		});
 
 		function scrollToTop() {
-			if (window.innerWidth <= 640) {
+			if (isMobile) {
 				window.scrollTo({
 					top: 0,
 					behavior: 'smooth'
 				});
 			}
 		}
+		
+		window.addEventListener('online', function() {
+			console.log('Connection restored');
+		});
+
+		window.addEventListener('offline', function() {
+			console.log('Connection lost');
+			showMessage('Conexión perdida. Verifica tu conexión a internet.', 'error');
+		});
 	</script>
 </body>
 
