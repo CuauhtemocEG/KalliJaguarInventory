@@ -1,141 +1,225 @@
-<div class="container py-5">
-  <div class="card shadow-lg">
-    <div class="card-header bg-primary text-white text-center">
-      <h3 class="mb-0">Generación de Reportes</h3>
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100">
+  <div class="container mx-auto px-4 py-8">
+    <div class="text-center mb-8 md:mb-10">
+      <div class="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-3 md:mb-4">
+        <i class="fas fa-chart-bar text-white text-lg md:text-2xl"></i>
+      </div>
+      <h1 class="text-2xl md:text-4xl font-bold text-gray-900 mb-2 px-2">Generación de Reportes</h1>
+      <p class="text-sm md:text-lg text-gray-600 max-w-2xl mx-auto px-4">
+        Genera reportes detallados y análisis de inventario con solo unos clics
+      </p>
     </div>
-    <div class="card-body">
-      <div class="mb-4 text-center">
-        <button id="btnStockBajoPDF" class="btn btn-danger mx-1">
-          <i class="fas fa-file-pdf"></i> PDF Stock Bajo
-        </button>
-        <button id="btnStockBajoTagPDF" class="btn btn-secondary mx-1">
-          <i class="fas fa-tags"></i> PDF Stock Bajo por Tag
-        </button>
-      </div>
 
-      <div class="row">
-        <div class="col-md-6">
-          <div class="card mb-4 border-left-primary shadow">
-            <div class="card-header bg-light font-weight-bold">
-              Reporte por Comandas y Sucursal
+    <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-3 md:gap-4 mb-8 md:mb-10 px-2">
+      <button id="btnStockBajoPDF" class="group bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 md:px-8 py-3 md:py-4 rounded-2xl font-semibold shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 w-full sm:w-auto">
+        <div class="flex items-center justify-center sm:justify-start space-x-3">
+          <div class="w-8 h-8 md:w-10 md:h-10 bg-white/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+            <i class="fas fa-file-pdf text-sm md:text-lg"></i>
+          </div>
+          <span class="text-sm md:text-base">PDF Stock Bajo</span>
+        </div>
+      </button>
+      <button id="btnStockBajoTagPDF" class="group bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white px-4 md:px-8 py-3 md:py-4 rounded-2xl font-semibold shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 w-full sm:w-auto">
+        <div class="flex items-center justify-center sm:justify-start space-x-3">
+          <div class="w-8 h-8 md:w-10 md:h-10 bg-white/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+            <i class="fas fa-tags text-sm md:text-lg"></i>
+          </div>
+          <span class="text-sm md:text-base">PDF Stock por Tag</span>
+        </div>
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-8 md:mb-10">
+      <div class="group bg-white rounded-2xl md:rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden border border-blue-100">
+        <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-4 md:p-6">
+          <div class="flex items-center space-x-3 md:space-x-4">
+            <div class="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-full flex items-center justify-center">
+              <i class="fas fa-clipboard-list text-white text-lg md:text-xl"></i>
             </div>
-            <div class="card-body">
-              <form id="formReporteComandas">
-                <div class="form-group">
-                  <label for="fecha_desde_comanda">Desde:</label>
-                  <input type="date" class="form-control" name="fecha_desde" id="fecha_desde_comanda" required>
-                </div>
-                <div class="form-group">
-                  <label for="fecha_hasta_comanda">Hasta:</label>
-                  <input type="date" class="form-control" name="fecha_hasta" id="fecha_hasta_comanda" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block" id="btnGenerarComandas">
-                  <i class="fas fa-file-pdf"></i> Generar PDF
-                </button>
-              </form>
+            <div>
+              <h3 class="text-lg md:text-xl font-bold text-white">Reporte por Comandas</h3>
+              <p class="text-xs md:text-sm text-blue-100">Análisis detallado por sucursal</p>
             </div>
           </div>
         </div>
-
-        <div class="col-md-6">
-          <div class="card mb-4 border-left-success shadow">
-            <div class="card-header bg-light font-weight-bold">
-              Reporte Consolidado de Productos
+        
+        <div class="p-4 md:p-8">
+          <form id="formReporteComandas" class="space-y-4 md:space-y-6">
+            <div class="space-y-2">
+              <label for="fecha_desde_comanda" class="block text-xs md:text-sm font-semibold text-gray-700">
+                <i class="fas fa-calendar-alt text-blue-500 mr-2"></i>Fecha desde:
+              </label>
+              <input type="date" name="fecha_desde" id="fecha_desde_comanda" required
+                class="w-full px-3 md:px-4 py-2 md:py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 text-sm md:text-base">
             </div>
-            <div class="card-body">
-              <form id="formReporteProductos">
-                <div class="form-group">
-                  <label for="fecha_desde_productos">Desde:</label>
-                  <input type="date" class="form-control" name="fecha_desde" id="fecha_desde_productos" required>
-                </div>
-                <div class="form-group">
-                  <label for="fecha_hasta_productos">Hasta:</label>
-                  <input type="date" class="form-control" name="fecha_hasta" id="fecha_hasta_productos" required>
-                </div>
-                <button type="submit" class="btn btn-success btn-block" id="btnGenerarProductos">
-                  <i class="fas fa-file-pdf"></i> Generar PDF
-                </button>
-              </form>
+            
+            <div class="space-y-2">
+              <label for="fecha_hasta_comanda" class="block text-xs md:text-sm font-semibold text-gray-700">
+                <i class="fas fa-calendar-alt text-blue-500 mr-2"></i>Fecha hasta:
+              </label>
+              <input type="date" name="fecha_hasta" id="fecha_hasta_comanda" required
+                class="w-full px-3 md:px-4 py-2 md:py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 text-sm md:text-base">
             </div>
-          </div>
+            
+            <button type="submit" id="btnGenerarComandas" 
+              class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3 md:py-4 px-4 md:px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-3 group text-sm md:text-base mb-2">
+              <i class="fas fa-file-pdf group-hover:scale-110 transition-transform"></i>
+              <span>Generar Reporte PDF</span>
+            </button>
+            
+            <button type="button" onclick="previewReporte('formReporteComandas')" 
+              class="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-2 md:py-3 px-4 md:px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-3 group text-sm md:text-base">
+              <i class="fas fa-eye group-hover:scale-110 transition-transform"></i>
+              <span>Vista Previa</span>
+            </button>
+          </form>
         </div>
       </div>
 
-      <!-- Nuevo reporte de productos más solicitados -->
-      <div class="row">
-        <div class="col-md-12">
-          <div class="card mb-4 border-left-warning shadow">
-            <div class="card-header bg-light font-weight-bold">
-              <i class="fas fa-chart-line"></i> Reporte de Productos Más Solicitados por Tag
+      <div class="group bg-white rounded-2xl md:rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden border border-green-100">
+        <div class="bg-gradient-to-r from-green-500 to-green-600 p-4 md:p-6">
+          <div class="flex items-center space-x-3 md:space-x-4">
+            <div class="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-full flex items-center justify-center">
+              <i class="fas fa-box text-white text-lg md:text-xl"></i>
             </div>
-            <div class="card-body">
-              <form id="formReporteProductosSolicitados">
-                <div class="row">
-                  <div class="col-md-3">
-                    <div class="form-group">
-                      <label for="tag_filter">Filtrar por Tag:</label>
-                      <select class="form-control" name="tag" id="tag_filter" required>
-                        <option value="">Seleccionar Tag...</option>
-                        <!-- Las opciones se cargarán dinámicamente -->
-                      </select>
-                    </div>
-                  </div>
-                  <div class="col-md-2">
-                    <div class="form-group">
-                      <label for="tipo_filter">Tipo:</label>
-                      <select class="form-control" name="tipo" id="tipo_filter">
-                        <option value="">Todos</option>
-                        <option value="Unidad">Unidad</option>
-                        <option value="Pesable">Pesable</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="col-md-2">
-                    <div class="form-group">
-                      <label for="fecha_desde_solicitados">Desde:</label>
-                      <input type="date" class="form-control" name="fecha_desde" id="fecha_desde_solicitados" required>
-                    </div>
-                  </div>
-                  <div class="col-md-2">
-                    <div class="form-group">
-                      <label for="fecha_hasta_solicitados">Hasta:</label>
-                      <input type="date" class="form-control" name="fecha_hasta" id="fecha_hasta_solicitados" required>
-                    </div>
-                  </div>
-                  <div class="col-md-1">
-                    <div class="form-group">
-                      <label for="limite_productos">Límite:</label>
-                      <select class="form-control" name="limite" id="limite_productos">
-                        <option value="10">Top 10</option>
-                        <option value="20">Top 20</option>
-                        <option value="50">Top 50</option>
-                        <option value="100">Top 100</option>
-                        <option value="">Todos</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <button type="submit" class="btn btn-warning btn-block" id="btnGenerarSolicitados">
-                  <i class="fas fa-chart-line"></i> Generar Reporte PDF
-                </button>
-              </form>
+            <div>
+              <h3 class="text-lg md:text-xl font-bold text-white">Reporte Consolidado</h3>
+              <p class="text-xs md:text-sm text-green-100">Productos y movimientos</p>
             </div>
           </div>
         </div>
-      </div>
-
-      <div id="loader" style="display: none; text-align:center;">
-        <div class="spinner-border text-primary" role="status">
-          <span class="sr-only">Generando PDF...</span>
+        
+        <div class="p-4 md:p-8">
+          <form id="formReporteProductos" class="space-y-4 md:space-y-6">
+            <div class="space-y-2">
+              <label for="fecha_desde_productos" class="block text-xs md:text-sm font-semibold text-gray-700">
+                <i class="fas fa-calendar-alt text-green-500 mr-2"></i>Fecha desde:
+              </label>
+              <input type="date" name="fecha_desde" id="fecha_desde_productos" required
+                class="w-full px-3 md:px-4 py-2 md:py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 text-sm md:text-base">
+            </div>
+            
+            <div class="space-y-2">
+              <label for="fecha_hasta_productos" class="block text-xs md:text-sm font-semibold text-gray-700">
+                <i class="fas fa-calendar-alt text-green-500 mr-2"></i>Fecha hasta:
+              </label>
+              <input type="date" name="fecha_hasta" id="fecha_hasta_productos" required
+                class="w-full px-3 md:px-4 py-2 md:py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 text-sm md:text-base">
+            </div>
+            
+            <button type="submit" id="btnGenerarProductos"
+              class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 md:py-4 px-4 md:px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-3 group text-sm md:text-base mb-2">
+              <i class="fas fa-file-pdf group-hover:scale-110 transition-transform"></i>
+              <span>Generar Reporte PDF</span>
+            </button>
+            
+            <button type="button" onclick="previewReporte('formReporteProductos')" 
+              class="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-2 md:py-3 px-4 md:px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-3 group text-sm md:text-base">
+              <i class="fas fa-eye group-hover:scale-110 transition-transform"></i>
+              <span>Vista Previa</span>
+            </button>
+          </form>
         </div>
-        <p class="mt-2">Generando PDF, por favor espera...</p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl md:rounded-3xl shadow-xl border border-yellow-100 overflow-hidden mb-8 md:mb-10">
+      <div class="bg-gradient-to-r from-yellow-500 to-orange-500 p-4 md:p-6">
+        <div class="flex items-center space-x-3 md:space-x-4">
+          <div class="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-full flex items-center justify-center">
+            <i class="fas fa-chart-line text-white text-lg md:text-xl"></i>
+          </div>
+          <div>
+            <h3 class="text-lg md:text-xl font-bold text-white">Productos Más Solicitados</h3>
+            <p class="text-xs md:text-sm text-yellow-100">Análisis avanzado de demanda por tag</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="p-4 md:p-8">
+        <form id="formReporteProductosSolicitados" class="space-y-4 md:space-y-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6">
+            <div class="lg:col-span-2 space-y-2">
+              <label for="tag_filter" class="block text-xs md:text-sm font-semibold text-gray-700">
+                <i class="fas fa-tag text-yellow-500 mr-2"></i>Tag <span class="text-red-500">*</span>
+              </label>
+              <select name="tag" id="tag_filter" required
+                class="w-full px-3 md:px-4 py-2 md:py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all duration-200 text-sm md:text-base">
+                <option value="">Seleccionar Tag...</option>
+              </select>
+            </div>
+            
+            <div class="space-y-2">
+              <label for="tipo_filter" class="block text-xs md:text-sm font-semibold text-gray-700">
+                <i class="fas fa-cube text-yellow-500 mr-2"></i>Tipo
+              </label>
+              <select name="tipo" id="tipo_filter"
+                class="w-full px-3 md:px-4 py-2 md:py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all duration-200 text-sm md:text-base">
+                <option value="">Todos</option>
+                <option value="Unidad">Unidad</option>
+                <option value="Pesable">Pesable</option>
+              </select>
+            </div>
+            
+            <div class="space-y-2">
+              <label for="fecha_desde_solicitados" class="block text-xs md:text-sm font-semibold text-gray-700">
+                <i class="fas fa-calendar-alt text-yellow-500 mr-2"></i>Desde <span class="text-red-500">*</span>
+              </label>
+              <input type="date" name="fecha_desde" id="fecha_desde_solicitados" required
+                class="w-full px-3 md:px-4 py-2 md:py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all duration-200 text-sm md:text-base">
+            </div>
+            
+            <div class="space-y-2">
+              <label for="fecha_hasta_solicitados" class="block text-xs md:text-sm font-semibold text-gray-700">
+                <i class="fas fa-calendar-alt text-yellow-500 mr-2"></i>Hasta <span class="text-red-500">*</span>
+              </label>
+              <input type="date" name="fecha_hasta" id="fecha_hasta_solicitados" required
+                class="w-full px-3 md:px-4 py-2 md:py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all duration-200 text-sm md:text-base">
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6">
+            <div class="sm:col-span-2 lg:col-span-1 space-y-2">
+              <label for="limite_productos" class="block text-xs md:text-sm font-semibold text-gray-700">
+                <i class="fas fa-sort-numeric-up text-yellow-500 mr-2"></i>Límite de resultados
+              </label>
+              <select name="limite" id="limite_productos"
+                class="w-full px-3 md:px-4 py-2 md:py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all duration-200 text-sm md:text-base">
+                <option value="10">Top 10</option>
+                <option value="20">Top 20</option>
+                <option value="50">Top 50</option>
+                <option value="100">Top 100</option>
+                <option value="">Todos</option>
+              </select>
+            </div>
+          </div>
+          
+          <button type="submit" id="btnGenerarSolicitados"
+            class="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold py-3 md:py-4 px-4 md:px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-3 group text-sm md:text-base">
+            <i class="fas fa-chart-line group-hover:scale-110 transition-transform"></i>
+            <span class="hidden sm:inline">Generar Reporte Avanzado</span>
+            <span class="sm:hidden">Generar Reporte</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div id="loader" class="hidden">
+      <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 md:p-8 shadow-2xl text-center max-w-xs md:max-w-sm mx-auto">
+          <div class="w-12 h-12 md:w-16 md:h-16 mx-auto mb-3 md:mb-4 relative">
+            <div class="absolute inset-0 border-4 border-blue-200 rounded-full"></div>
+            <div class="absolute inset-0 border-4 border-blue-600 rounded-full animate-spin border-t-transparent"></div>
+          </div>
+          <h3 class="text-base md:text-lg font-semibold text-gray-900 mb-2">Generando PDF...</h3>
+          <p class="text-sm md:text-base text-gray-600">Por favor espera un momento</p>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-// Cargar tags dinámicamente
 document.addEventListener('DOMContentLoaded', function() {
   cargarTags();
 });
@@ -207,6 +291,7 @@ function generarPDF(formId, btnId, urlAPI, fileNamePrefix) {
         });
 
         btn.disabled = true;
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin group-hover:scale-110 transition-transform"></i><span>Generando...</span>`;
 
         fetch(urlAPI, {
                 method: "POST",
@@ -245,7 +330,7 @@ function generarPDF(formId, btnId, urlAPI, fileNamePrefix) {
             })
             .finally(() => {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-file-pdf"></i> Generar PDF';
+                btn.innerHTML = '<i class="fas fa-file-pdf group-hover:scale-110 transition-transform"></i><span>Generar Reporte PDF</span>';
             });
     });
 }
@@ -253,7 +338,7 @@ function generarPDF(formId, btnId, urlAPI, fileNamePrefix) {
 document.getElementById("btnStockBajoPDF").addEventListener("click", function () {
   const btn = this;
   btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
+  btn.innerHTML = '<div class="flex items-center space-x-3"><div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"><i class="fas fa-spinner fa-spin text-lg"></i></div><span>Generando...</span></div>';
 
   Swal.fire({
     title: "Generando PDF de stock bajo...",
@@ -297,14 +382,14 @@ document.getElementById("btnStockBajoPDF").addEventListener("click", function ()
     })
     .finally(() => {
       btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-file-pdf"></i> PDF Stock Bajo';
+      btn.innerHTML = '<div class="flex items-center space-x-3"><div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform"><i class="fas fa-file-pdf text-lg"></i></div><span>PDF Stock Bajo</span></div>';
     });
 });
 
 document.getElementById("btnStockBajoTagPDF").addEventListener("click", function () {
   const btn = this;
   btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
+  btn.innerHTML = '<div class="flex items-center space-x-3"><div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"><i class="fas fa-spinner fa-spin text-lg"></i></div><span>Generando...</span></div>';
 
   Swal.fire({
     title: "Generando PDF por Tag...",
@@ -349,7 +434,7 @@ document.getElementById("btnStockBajoTagPDF").addEventListener("click", function
     })
     .finally(() => {
       btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-tags"></i> PDF Stock Bajo por Tag';
+      btn.innerHTML = '<div class="flex items-center space-x-3"><div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform"><i class="fas fa-tags text-lg"></i></div><span>PDF Stock por Tag</span></div>';
     });
 });
 
@@ -366,7 +451,6 @@ generarPDF(
   "reporteProductos"
 );
 
-// Nuevo reporte de productos más solicitados
 document.getElementById("formReporteProductosSolicitados").addEventListener("submit", async function (e) {
     e.preventDefault();
     const formData = new FormData(this);
@@ -414,7 +498,7 @@ document.getElementById("formReporteProductosSolicitados").addEventListener("sub
     });
 
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin group-hover:scale-110 transition-transform"></i><span>Generando...</span>';
 
     const reportUrl = window.location.origin + "/api/generarReporteProductosSolicitadosPDF.php";
     fetch(reportUrl, {
@@ -462,18 +546,189 @@ document.getElementById("formReporteProductosSolicitados").addEventListener("sub
         })
         .finally(() => {
             btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-chart-line"></i> Generar Reporte PDF';
+            btn.innerHTML = '<i class="fas fa-chart-line group-hover:scale-110 transition-transform"></i><span>Generar Reporte Avanzado</span>';
         });
 });
+
+function previewReporte(formId) {
+    const form = document.getElementById(formId);
+    const formData = new FormData(form);
+    const fechaDesde = formData.get("fecha_desde");
+    const fechaHasta = formData.get("fecha_hasta");
+
+    if (!fechaDesde || !fechaHasta) {
+        Swal.fire({
+            icon: "warning",
+            title: "Fechas requeridas",
+            text: "Por favor, selecciona ambas fechas para la vista previa.",
+        });
+        return;
+    }
+
+    if (fechaDesde > fechaHasta) {
+        Swal.fire({
+            icon: "error",
+            title: "Rango inválido",
+            text: "La fecha 'Desde' no puede ser mayor que la fecha 'Hasta'.",
+        });
+        return;
+    }
+
+    const url = `index.php?page=previewReporte&fecha_desde=${fechaDesde}&fecha_hasta=${fechaHasta}`;
+    window.open(url, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+}
 </script>
 
 <style>
-.swal-wide {
-    width: 600px !important;
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
 }
-.swal2-popup .swal2-content {
-    text-align: left !important;
-    font-family: monospace !important;
-    white-space: pre-wrap !important;
+
+@keyframes pulse-glow {
+    0%, 100% { 
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); 
+    }
+    50% { 
+        box-shadow: 0 0 30px rgba(59, 130, 246, 0.5), 0 0 40px rgba(59, 130, 246, 0.3); 
+    }
+}
+
+@media (min-width: 1024px) {
+  .hover-float:hover {
+      animation: float 2s ease-in-out infinite;
+  }
+
+  .glow-on-hover:hover {
+      animation: pulse-glow 2s ease-in-out infinite;
+  }
+}
+
+.gradient-card {
+    background: linear-gradient(145deg, #ffffff, #f8fafc);
+    border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+input:focus, select:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px -3px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+@media (min-width: 768px) {
+  input:focus, select:focus {
+    box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  }
+}
+
+button:disabled {
+    background: linear-gradient(135deg, #9ca3af, #6b7280) !important;
+    transform: none !important;
+    box-shadow: none !important;
+    cursor: not-allowed;
+}
+
+.loading-shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+@media (max-width: 640px) {
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    form {
+        padding: 0;
+    }
+    
+    label {
+        font-weight: 600;
+        color: #374151;
+    }
+    
+    button {
+        min-height: 48px;
+        font-size: 0.875rem;
+    }
+    
+    .card-body {
+        padding: 1rem !important;
+    }
+    
+    input, select {
+        min-height: 44px;
+        font-size: 16px;
+    }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+    .container {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}
+
+@media (min-width: 769px) {
+    .grid {
+        gap: 2rem;
+    }
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+@media (min-width: 768px) {
+  ::-webkit-scrollbar {
+      width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+  }
+
+  ::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #64748b, #475569);
+      border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, #475569, #334155);
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+    * {
+        transition-duration: 0.1s !important;
+    }
+    
+    button, input, select {
+        min-height: 48px;
+        padding: 0.75rem 1rem;
+    }
+    
+    .hover\:shadow-xl:hover {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+button:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
 }
 </style>
