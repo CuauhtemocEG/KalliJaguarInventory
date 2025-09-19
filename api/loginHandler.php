@@ -1,13 +1,21 @@
 <?php
-header("Content-Type: application/json");
+header("Content-Type: application/json; charset=UTF-8");
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, X-Requested-With");
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit(0);
+}
+
 require_once "../controllers/mainController.php";
 
-// La sesión se configura en session_start.php
-session_name("INV");
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 if (!isset($_POST['login_usuario']) || !isset($_POST['login_clave'])) {
-    echo json_encode(["success" => false, "message" => "Datos no recibidos"]);
+    echo json_encode(["success" => false, "message" => "Datos no recibidos correctamente"]);
     exit;
 }
 
@@ -51,23 +59,14 @@ try {
             $_SESSION['rol'] = $user['Rol'];
             $_SESSION['usuario'] = $user['Username'];
 
-            // Debug para verificar que la sesión se guardó correctamente
-            error_log("Login exitoso para usuario: " . $user['Username']);
-            error_log("Session ID después del login: " . session_id());
-            error_log("Datos de sesión guardados: " . print_r($_SESSION, true));
-
             echo json_encode([
                 "success" => true, 
-                "message" => "Login completado",
-                "debug" => [
-                    "session_id" => session_id(),
-                    "user_id" => $_SESSION['id'],
-                    "username" => $_SESSION['usuario']
-                ]
+                "message" => "Login exitoso",
+                "user" => $user['Nombre']
             ]);
             exit;
         } else {
-            echo json_encode(["success" => false, "message" => "Password reconocido"]);
+            echo json_encode(["success" => false, "message" => "Contraseña incorrecta"]);
             exit;
         }
     } else {
