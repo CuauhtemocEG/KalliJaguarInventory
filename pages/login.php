@@ -6,7 +6,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Kalli Jaguar Inventory - Login</title>
 	<script src="https://cdn.tailwindcss.com"></script>
-	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 	<script>
@@ -223,115 +222,128 @@
 	</div>
 
 	<script>
-		$(document).ready(function() {
-			$("#togglePassword").click(function() {
-				const passwordInput = $("#login_clave")[0];
-				const eyeIcon = $("#eyeIcon");
-				
-				if (passwordInput.type === 'password') {
-					passwordInput.type = 'text';
-					eyeIcon.removeClass('fa-eye').addClass('fa-eye-slash');
-				} else {
-					passwordInput.type = 'password';
-					eyeIcon.removeClass('fa-eye-slash').addClass('fa-eye');
-				}
-			});
+		document.getElementById('togglePassword').addEventListener('click', function() {
+			const passwordInput = document.getElementById('login_clave');
+			const eyeIcon = document.getElementById('eyeIcon');
 
-			$("#loginForm").submit(function(e) {
-				e.preventDefault();
-
-				const usuario = $("#login_usuario").val().trim();
-				const clave = $("#login_clave").val().trim();
-
-				$("#loginMessage").addClass("hidden").html("");
-
-				if (!usuario || !clave) {
-					showMessage("Por favor, completa todos los campos.", "error");
-					return;
-				}
-
-				const $loginBtn = $("#loginBtn");
-				const $loginBtnText = $("#loginBtnText");
-				
-				$loginBtn.prop('disabled', true).addClass("opacity-75 cursor-not-allowed");
-				$loginBtnText.html('<i class="fas fa-spinner fa-spin mr-2"></i>Iniciando sesión...');
-
-				$.ajax({
-					url: 'api/loginHandler.php',
-					type: 'POST',
-					data: {
-						login_usuario: usuario,
-						login_clave: clave
-					},
-					dataType: 'json',
-					timeout: 15000,
-					cache: false,
-					success: function(response) {
-						console.log('Login response:', response);
-						if (response.success) {
-							showMessage("¡Bienvenido " + (response.user || '') + "! Redirigiendo...", "success");
-							
-							setTimeout(function() {
-								const redirectUrl = response.redirect || "index.php?page=home";
-								console.log('Redirecting to:', redirectUrl);
-								
-								window.location.replace(redirectUrl);
-							}, 2000);
-						} else {
-							showMessage(response.message || "Credenciales incorrectas.", "error");
-							resetButton();
-						}
-					},
-					error: function(xhr, status, error) {
-						console.error('Ajax Error:', status, error);
-						console.error('Response status:', xhr.status);
-						console.error('Response text:', xhr.responseText);
-						
-						let errorMsg = "Error de conexión.";
-						
-						if (status === 'timeout') {
-							errorMsg = "Tiempo de espera agotado. Inténtalo de nuevo.";
-						} else if (xhr.status === 404) {
-							errorMsg = "Servicio no encontrado. Verifica la URL.";
-						} else if (xhr.status === 500) {
-							errorMsg = "Error interno del servidor.";
-						} else if (status === 'parsererror') {
-							errorMsg = "Error procesando respuesta del servidor.";
-						} else if (xhr.status === 0) {
-							errorMsg = "No se puede conectar al servidor. Verifica tu conexión.";
-						}
-						
-						showMessage(errorMsg, "error");
-						resetButton();
-					}
-				});
-			});
-
-			function showMessage(message, type) {
-				const isError = type === "error";
-				const $msgDiv = $("#loginMessage");
-
-				$msgDiv.html(`
-					<div class="flex items-center p-3 sm:p-4 rounded-xl sm:rounded-2xl ${isError ? 'bg-red-500/20 border border-red-500/50 text-red-200' : 'bg-green-500/20 border border-green-500/50 text-green-200'} backdrop-blur-sm">
-						<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'} mr-2 sm:mr-3 text-base sm:text-lg flex-shrink-0"></i>
-						<span class="font-medium text-sm sm:text-base">${message}</span>
-					</div>
-				`).removeClass("hidden");
-
-				if (!isError) {
-					setTimeout(function() {
-						$msgDiv.addClass("hidden");
-					}, 3000);
-				}
-			}
-
-			function resetButton() {
-				$("#loginBtn")
-					.prop('disabled', false)
-					.removeClass("opacity-75 cursor-not-allowed");
-				$("#loginBtnText").html('Iniciar Sesión');
+			if (passwordInput.type === 'password') {
+				passwordInput.type = 'text';
+				eyeIcon.className = 'fas fa-eye-slash';
+			} else {
+				passwordInput.type = 'password';
+				eyeIcon.className = 'fas fa-eye';
 			}
 		});
+
+		document.getElementById("loginForm").addEventListener("submit", function(e) {
+			e.preventDefault();
+
+			const usuario = document.getElementById("login_usuario").value.trim();
+			const clave = document.getElementById("login_clave").value.trim();
+			const msgDiv = document.getElementById("loginMessage");
+			const loginBtn = document.getElementById("loginBtn");
+			const loginBtnText = document.getElementById("loginBtnText");
+
+			msgDiv.innerHTML = "";
+			msgDiv.classList.add("hidden");
+
+			if (usuario === "" || clave === "") {
+				showMessage("Por favor, completa todos los campos.", "error");
+				return;
+			}
+
+			loginBtn.disabled = true;
+			loginBtn.classList.add("opacity-75", "cursor-not-allowed");
+			loginBtnText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Iniciando sesión...';
+
+			const params = "login_usuario=" + encodeURIComponent(usuario) + "&login_clave=" + encodeURIComponent(clave);
+			const xhr = new XMLHttpRequest();
+
+			xhr.open("POST", "./api/loginHandler.php", true);
+			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState === 4 && xhr.status === 200) {
+					try {
+						const data = JSON.parse(xhr.responseText);
+						if (data.success) {
+							showMessage("¡Bienvenido! Redirigiendo...", "success");
+							setTimeout(function() {
+								window.location.href = "index.php?page=home";
+							}, 1500);
+						} else {
+							showMessage(data.message || "Credenciales incorrectas.", "error");
+							resetButton();
+						}
+					} catch (error) {
+						showMessage("Error del servidor.", "error");
+						resetButton();
+					}
+				} else if (xhr.readyState === 4) {
+					showMessage("Error de conexión.", "error");
+					resetButton();
+				}
+			};
+
+			xhr.send(params);
+		});
+
+		function showMessage(message, type) {
+			const msgDiv = document.getElementById("loginMessage");
+			const isError = type === "error";
+
+			msgDiv.innerHTML = `
+                <div class="flex items-center p-3 sm:p-4 rounded-xl sm:rounded-2xl ${isError ? 'bg-red-500/20 border border-red-500/50 text-red-200' : 'bg-green-500/20 border border-green-500/50 text-green-200'} backdrop-blur-sm">
+                    <i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'} mr-2 sm:mr-3 text-base sm:text-lg flex-shrink-0"></i>
+                    <span class="font-medium text-sm sm:text-base">${message}</span>
+                </div>
+            `;
+			msgDiv.classList.remove("hidden");
+
+			if (!isError) {
+				setTimeout(() => {
+					msgDiv.classList.add("hidden");
+				}, 3000);
+			}
+		}
+
+		function resetButton() {
+			const loginBtn = document.getElementById("loginBtn");
+			const loginBtnText = document.getElementById("loginBtnText");
+
+			loginBtn.disabled = false;
+			loginBtn.classList.remove("opacity-75", "cursor-not-allowed");
+			loginBtnText.innerHTML = 'Iniciar Sesión';
+		}
+
+		function showMessage(message, type) {
+			const msgDiv = document.getElementById("loginMessage");
+			const isError = type === "error";
+
+			msgDiv.innerHTML = `
+                <div class="flex items-center p-3 sm:p-4 rounded-xl sm:rounded-2xl ${isError ? 'bg-red-500/20 border border-red-500/50 text-red-200' : 'bg-green-500/20 border border-green-500/50 text-green-200'} backdrop-blur-sm">
+                    <i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'} mr-2 sm:mr-3 text-base sm:text-lg flex-shrink-0"></i>
+                    <span class="font-medium text-sm sm:text-base">${message}</span>
+                </div>
+            `;
+			msgDiv.classList.remove("hidden");
+
+			if (!isError) {
+				setTimeout(function() {
+					msgDiv.classList.add("hidden");
+				}, 3000);
+			}
+		}
+
+		function resetButton() {
+			const loginBtn = document.getElementById("loginBtn");
+			const loginBtnText = document.getElementById("loginBtnText");
+
+			loginBtn.disabled = false;
+			loginBtn.classList.remove("opacity-75", "cursor-not-allowed");
+			loginBtnText.innerHTML = 'Iniciar Sesión';
+		}
+	</script>
 	</script>
 </body>
 

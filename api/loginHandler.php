@@ -1,28 +1,12 @@
 <?php
-ini_set('session.cookie_httponly', 1);
-ini_set('session.cookie_secure', 0);
-ini_set('session.cookie_samesite', 'Lax');
-ini_set('session.use_only_cookies', 1);
-ini_set('session.cookie_lifetime', 3600);
-session_start();
-
-header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, X-Requested-With");
-header("Cache-Control: no-cache, no-store, must-revalidate");
-header("Pragma: no-cache");
-header("Expires: 0");
-
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    exit(0);
-}
-
+header("Content-Type: application/json");
 require_once "../controllers/mainController.php";
 
+session_name("INV");
+session_start();
 
 if (!isset($_POST['login_usuario']) || !isset($_POST['login_clave'])) {
-    echo json_encode(["success" => false, "message" => "Datos no recibidos correctamente"]);
+    echo json_encode(["success" => false, "message" => "Datos no recibidos"]);
     exit;
 }
 
@@ -61,25 +45,23 @@ try {
 
         if (password_verify($clave, $user['Password'])) {
             session_regenerate_id(true);
-            
             $_SESSION['id'] = $user['UsuarioID'];
             $_SESSION['nombre'] = $user['Nombre'];
             $_SESSION['rol'] = $user['Rol'];
             $_SESSION['usuario'] = $user['Username'];
-            $_SESSION['login_time'] = time();
-            
-            session_write_close();
 
             echo json_encode([
                 "success" => true, 
-                "message" => "Login exitoso",
-                "user" => $user['Nombre'],
-                "session_id" => session_id(),
-                "redirect" => "index.php?page=home"
+                "message" => "Login completado",
+                "debug" => [
+                    "session_id" => session_id(),
+                    "user_id" => $_SESSION['id'],
+                    "username" => $_SESSION['usuario']
+                ]
             ]);
             exit;
         } else {
-            echo json_encode(["success" => false, "message" => "Contraseña incorrecta"]);
+            echo json_encode(["success" => false, "message" => "Password reconocido"]);
             exit;
         }
     } else {
