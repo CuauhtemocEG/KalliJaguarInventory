@@ -264,15 +264,19 @@
 						login_clave: clave
 					},
 					dataType: 'json',
-					timeout: 15000, // 15 segundos timeout
+					timeout: 15000,
 					cache: false,
 					success: function(response) {
 						console.log('Login response:', response);
 						if (response.success) {
-							showMessage("¡Bienvenido! Redirigiendo...", "success");
+							showMessage("¡Bienvenido " + (response.user || '') + "! Redirigiendo...", "success");
+							
 							setTimeout(function() {
-								window.location.href = "index.php?page=home";
-							}, 1500);
+								const redirectUrl = response.redirect || "index.php?page=home";
+								console.log('Redirecting to:', redirectUrl);
+								
+								window.location.replace(redirectUrl);
+							}, 2000);
 						} else {
 							showMessage(response.message || "Credenciales incorrectas.", "error");
 							resetButton();
