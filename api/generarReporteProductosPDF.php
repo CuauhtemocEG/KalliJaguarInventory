@@ -3,8 +3,8 @@ ob_start();
 require_once('../fpdf/fpdf.php');
 require_once('../controllers/mainController.php');
 
-$fechaInicio = $_POST['fecha_desde'] ?? '';
-$fechaFin = $_POST['fecha_hasta'] ?? '';
+$fechaInicio = $_POST['fecha_desde'] ?? date('Y-m-01 00:00:00');
+$fechaFin = $_POST['fecha_hasta'] ?? date('Y-m-d 23:59:59');
 
 class PDF extends FPDF {
     function Header() {
