@@ -29,7 +29,7 @@ class PDF extends FPDF {
                 // Información de la empresa
         $this->SetFont('Arial', 'B', 16);
         $this->SetXY(50, 10);
-        $this->Cell(0, 8, utf8_decode('Kalli Jaguar Inventory'), 0, 1);
+        $this->Cell(0, 8, utf8_decode('Kalli Jaguar'), 0, 1);
         
         $this->SetFont('Arial', '', 10);
         $this->SetXY(50, 18);
@@ -83,7 +83,7 @@ class PDF extends FPDF {
         $this->SetTextColor(100, 100, 100);
         
         // Información del pie
-        $this->Cell(0, 5, utf8_decode('Kalli Jaguar Inventory - Sistema de Gestión Integral'), 0, 1, 'C');
+        $this->Cell(0, 5, utf8_decode('Kalli Jaguar Inventory - Sistema de Inventario'), 0, 1, 'C');
         $this->Cell(0, 5, utf8_decode('Página ') . $this->PageNo() . ' - Generado el ' . date('d/m/Y H:i:s'), 0, 0, 'C');
         
         // Resetear color
