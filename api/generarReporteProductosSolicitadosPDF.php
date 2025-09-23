@@ -113,35 +113,103 @@ try {
     header('Cache-Control: no-cache, must-revalidate');
     header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
     
-    // Crear PDF
-    $pdf = new FPDF();
+    // Crear PDF con clase personalizada
+    class PDFProductosSolicitados extends FPDF {
+        private $tag;
+        private $tipo;
+        private $fechaDesde;
+        private $fechaHasta;
+        
+        function __construct($tag = '', $tipo = '', $fechaDesde = '', $fechaHasta = '') {
+            parent::__construct();
+            $this->tag = $tag;
+            $this->tipo = $tipo;
+            $this->fechaDesde = $fechaDesde;
+            $this->fechaHasta = $fechaHasta;
+        }
+        
+        function Header() {
+            // Logo
+            $logoPath = '../img/logo.png';
+            if (file_exists($logoPath)) {
+                $this->Image($logoPath, 10, 6, 30);
+            }
+            
+            // Información de la empresa
+            $this->SetFont('Arial', 'B', 16);
+            $this->SetXY(50, 10);
+            $this->Cell(0, 8, utf8_decode('Kalli Jaguar'), 0, 1);
+            
+            $this->SetFont('Arial', '', 10);
+            $this->SetXY(50, 18);
+            $this->Cell(0, 5, utf8_decode('Sistema de Gestión de Inventario'), 0, 1);
+            $this->SetXY(50, 23);
+            $this->Cell(0, 5, utf8_decode('Generado: ') . date('d/m/Y H:i:s'), 0, 1);
+            
+            // Información del reporte centrada
+            $this->SetFont('Arial', 'B', 12);
+            $this->SetXY(120, 10);
+            $this->Cell(70, 6, utf8_decode('Reporte de Productos'), 0, 1, 'C');
+            
+            // Tag y período en una sola línea, centrado
+            $this->SetFont('Arial', 'B', 10);
+            $this->SetXY(120, 18);
+            $periodoTexto = 'Tag: ' . $this->tag;
+            $this->Cell(70, 5, utf8_decode($periodoTexto), 0, 1, 'C');
+            
+            $this->SetFont('Arial', '', 9);
+            $this->SetXY(120, 23);
+            $fechaFormateada = date('d/m/Y', strtotime($this->fechaDesde)) . ' al ' . date('d/m/Y', strtotime($this->fechaHasta));
+            $this->Cell(70, 5, utf8_decode($fechaFormateada), 0, 1, 'C');
+            
+            // Línea separadora
+            $this->SetY(35);
+            $this->SetDrawColor(200, 200, 200);
+            $this->Line(10, 35, 200, 35);
+            
+            // Título principal
+            $this->SetY(40);
+            $this->SetFont('Arial', 'B', 14);
+            $this->SetFillColor(52, 73, 94);
+            $this->SetTextColor(255, 255, 255);
+            $this->Cell(0, 10, utf8_decode('Reporte de Productos por Tag con Solicitudes'), 1, 1, 'C', true);
+            
+            // Información adicional
+            if (!empty($this->tipo)) {
+                $this->SetFont('Arial', '', 10);
+                $this->SetFillColor(236, 240, 241);
+                $this->SetTextColor(0, 0, 0);
+                $this->Cell(0, 6, utf8_decode("Filtrado por tipo: " . $this->tipo), 1, 1, 'C', true);
+            }
+            
+            // Resetear colores
+            $this->SetTextColor(0, 0, 0);
+            $this->SetDrawColor(0, 0, 0);
+            $this->Ln(5);
+        }
+
+        function Footer() {
+            $this->SetY(-25);
+            
+            // Línea separadora
+            $this->SetDrawColor(200, 200, 200);
+            $this->Line(10, $this->GetY(), 200, $this->GetY());
+            
+            $this->Ln(2);
+            $this->SetFont('Arial', 'I', 8);
+            $this->SetTextColor(100, 100, 100);
+            
+            // Información del pie
+            $this->Cell(0, 5, utf8_decode('Kalli Jaguar Inventory - Sistema de Inventario'), 0, 1, 'C');
+            $this->Cell(0, 5, utf8_decode('Página ') . $this->PageNo() . ' - Generado el ' . date('d/m/Y H:i:s'), 0, 1, 'C');
+            
+            // Resetear color
+            $this->SetTextColor(0, 0, 0);
+        }
+    }
+
+    $pdf = new PDFProductosSolicitados($tag, $tipo, $fechaDesde, $fechaHasta);
     $pdf->AddPage();
-    
-    // Agregar logo con mejor proporción
-    $logoPath = '../img/logo.png';
-    if (file_exists($logoPath)) {
-        // Posición centrada horizontalmente para el logo
-        $pdf->Image($logoPath, 85, 15, 40, 0); // x, y, width, height (0 = mantener proporción)
-    }
-    
-    // Encabezado principal
-    $pdf->SetFont('Arial', 'B', 18);
-    $pdf->Cell(0, 35, '', 0, 1); // Espacio para el logo (aumentado)
-    $pdf->Cell(0, 10, utf8_decode('Kalli Jaguar Inventory'), 0, 1, 'C');
-    
-    $pdf->SetFont('Arial', 'B', 14);
-    $pdf->Cell(0, 8, utf8_decode('Reporte de Productos por Tag con Solicitudes'), 0, 1, 'C');
-    
-    // Información del reporte
-    $pdf->SetFont('Arial', '', 11);
-    $pdf->Cell(0, 6, utf8_decode("Tag Filtrado: $tag"), 0, 1, 'C');
-    if (!empty($tipo)) {
-        $pdf->Cell(0, 6, utf8_decode("Tipo: $tipo"), 0, 1, 'C');
-    }
-    $pdf->Cell(0, 6, utf8_decode("Período: $fechaDesde al $fechaHasta"), 0, 1, 'C');
-    $pdf->Cell(0, 6, utf8_decode("Generado el: " . date('d/m/Y H:i:s')), 0, 1, 'C');
-    
-    $pdf->Ln(8);
     
     // Encabezados de tabla con diseño profesional
     $pdf->SetFillColor(52, 115, 223); // Color azul corporativo
@@ -212,34 +280,17 @@ try {
         }
     }
     
-    // Pie de página profesional
-    $pdf->Ln(10);
-    
-    // Línea separadora
-    $pdf->SetDrawColor(52, 115, 223);
-    $pdf->SetLineWidth(0.5);
-    $pdf->Line(15, $pdf->GetY(), 195, $pdf->GetY());
+    // Nota importante específica para productos solicitados
     $pdf->Ln(5);
-    
-    $pdf->SetFont('Arial', 'I', 8);
-    $pdf->SetTextColor(100, 100, 100);
-    
-    // Información de la empresa y fecha
-    $pdf->Cell(90, 4, utf8_decode('Kalli Jaguar Inventory System'), 0, 0, 'L');
-    $pdf->Cell(90, 4, utf8_decode('Página 1'), 0, 1, 'R');
-    
-    $pdf->Cell(90, 4, utf8_decode('Sistema de Gestión de Inventarios'), 0, 0, 'L');
-    $pdf->Cell(90, 4, utf8_decode('Generado automáticamente'), 0, 1, 'R');
-    
-    // Nota importante
-    $pdf->Ln(3);
     $pdf->SetFont('Arial', '', 7);
     $pdf->SetTextColor(150, 150, 150);
     $pdf->MultiCell(180, 3, utf8_decode('NOTA: Este reporte muestra TODOS los productos del tag seleccionado. La columna "Total Solicitado" muestra las cantidades solicitadas en el período especificado, mostrando "No solicitado" para productos sin movimientos. La columna "Observaciones" está disponible para anotaciones manuales.'), 0, 'J');
     
     // Generar nombre del archivo
     $timestamp = date('Ymd_His');
-    $filename = "reporte_productos_solicitados_{$tag}_{$timestamp}.pdf";    // Enviar headers finales
+    $filename = "reporte_productos_solicitados_{$tag}_{$timestamp}.pdf";
+    
+    // Enviar headers finales
     header('Content-Disposition: attachment; filename="' . $filename . '"');
     header('Content-Length: ' . strlen($pdf->Output('S')));
     
