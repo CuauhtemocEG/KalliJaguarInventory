@@ -210,24 +210,6 @@ try {
             
             $contador++;
         }
-        
-        // Resumen estadístico
-        $totalProductos = count($productos);
-        $productosSolicitados = count(array_filter($productos, function($p) { return $p['total_solicitado'] > 0; }));
-        $totalSolicitado = array_sum(array_column($productos, 'total_solicitado'));
-        
-        $pdf->Ln(5);
-        $pdf->SetFont('Arial', 'B', 10);
-        $pdf->SetFillColor(52, 115, 223);
-        $pdf->SetTextColor(255, 255, 255);
-        $pdf->Cell(180, 8, 'RESUMEN ESTADÍSTICO', 1, 1, 'C', true);
-        
-        $pdf->SetTextColor(0, 0, 0);
-        $pdf->SetFillColor(240, 240, 240);
-        $pdf->SetFont('Arial', '', 9);
-        $pdf->Cell(60, 6, utf8_decode("Total productos del tag: $totalProductos"), 1, 0, 'L', true);
-        $pdf->Cell(60, 6, utf8_decode("Productos solicitados: $productosSolicitados"), 1, 0, 'L', true);
-        $pdf->Cell(60, 6, utf8_decode("Total cantidad solicitada: " . number_format($totalSolicitado)), 1, 1, 'L', true);
     }
     
     // Pie de página profesional
