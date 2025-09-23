@@ -223,7 +223,7 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['usuario'])) {
                             <i class="fas fa-search mr-2 text-xs"></i>
                             <span class="nav-text-small">Buscar Usuarios</span>
                         </a>
-                        
+
                         <?php if ($_SESSION['id'] == '1') { ?>
                             <div class="border-t border-white border-opacity-10 my-2"></div>
 
@@ -242,7 +242,7 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['usuario'])) {
                     </div>
                 </div>
 
-                <?php if ($_SESSION['id'] == '1') { ?>
+                <?php if ($_SESSION['id'] == '1' || $_SESSION['id'] == '16') { ?>
                     <div class="mb-2">
                         <button onclick="toggleDropdown('ordenes')" class="nav-item nav-item-hover w-full flex items-center justify-between px-4 py-2.5 text-white text-opacity-80 hover:text-white rounded-lg group">
                             <div class="flex items-center">
