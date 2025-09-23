@@ -117,24 +117,6 @@ class PDF extends FPDF {
         $this->SetTextColor(0, 0, 0);
         $this->SetFillColor(255, 255, 255);
         
-        // Información adicional
-        $this->Ln(5);
-        $this->SetFont('Arial', 'B', 10);
-        $this->SetFillColor(52, 152, 219);
-        $this->SetTextColor(255, 255, 255);
-        $this->Cell(0, 8, utf8_decode('📊 RESUMEN ESTADÍSTICO'), 1, 1, 'C', true);
-        
-        $this->SetTextColor(0, 0, 0);
-        $this->SetFont('Arial', '', 9);
-        $this->Cell(95, 6, utf8_decode('Total de productos diferentes:'), 1, 0, 'L');
-        $this->Cell(95, 6, $cantidadProductos . ' productos', 1, 1, 'C');
-        
-        $promedioProducto = $cantidadProductos > 0 ? $total / $cantidadProductos : 0;
-        $this->Cell(95, 6, utf8_decode('Promedio de venta por producto:'), 1, 0, 'L');
-        $this->Cell(95, 6, '$' . number_format($promedioProducto, 2), 1, 1, 'C');
-        
-        $this->Cell(95, 6, utf8_decode('Rango de fechas procesado:'), 1, 0, 'L');
-        $this->Cell(95, 6, utf8_decode(date('d/m/Y', strtotime($this->fechaInicio)) . ' al ' . date('d/m/Y', strtotime($this->fechaFin))), 1, 1, 'C');
     }
 }
 
