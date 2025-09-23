@@ -306,25 +306,6 @@ if (!$fechaInicio || !$fechaFin) {
 
             // Total general (muy destacado)
             $pdf->TotalGeneral($totalGeneral);
-            
-            // Resumen estadístico
-            $pdf->Ln(10);
-            $pdf->SetFont('Arial', 'B', 10);
-            $pdf->SetFillColor(52, 152, 219);
-            $pdf->SetTextColor(255, 255, 255);
-            $pdf->Cell(0, 8, utf8_decode('RESUMEN ESTADÍSTICO'), 1, 1, 'C', true);
-            
-            $pdf->SetTextColor(0, 0, 0);
-            $pdf->SetFont('Arial', '', 9);
-            $pdf->Cell(60, 6, utf8_decode('Sucursales procesadas:'), 1, 0, 'L');
-            $pdf->Cell(30, 6, $contadorSucursales, 1, 0, 'C');
-            $pdf->Cell(60, 6, utf8_decode('Total de registros:'), 1, 0, 'L');
-            $pdf->Cell(40, 6, count($rows), 1, 1, 'C');
-            
-            $pdf->Cell(60, 6, utf8_decode('Promedio por sucursal:'), 1, 0, 'L');
-            $pdf->Cell(30, 6, '$' . number_format($totalGeneral / $contadorSucursales, 2), 1, 0, 'C');
-            $pdf->Cell(60, 6, utf8_decode('Rango de fechas:'), 1, 0, 'L');
-            $pdf->Cell(40, 6, utf8_decode(date('d/m/Y', strtotime($fechaInicio)) . ' al ' . date('d/m/Y', strtotime($fechaFin))), 1, 1, 'C');
         }
 
     } catch (PDOException $e) {
