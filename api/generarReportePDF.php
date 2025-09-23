@@ -312,7 +312,7 @@ if (!$fechaInicio || !$fechaFin) {
             $pdf->SetFont('Arial', 'B', 10);
             $pdf->SetFillColor(52, 152, 219);
             $pdf->SetTextColor(255, 255, 255);
-            $pdf->Cell(0, 8, utf8_decode('📊 RESUMEN ESTADÍSTICO'), 1, 1, 'C', true);
+            $pdf->Cell(0, 8, utf8_decode('RESUMEN ESTADÍSTICO'), 1, 1, 'C', true);
             
             $pdf->SetTextColor(0, 0, 0);
             $pdf->SetFont('Arial', '', 9);
