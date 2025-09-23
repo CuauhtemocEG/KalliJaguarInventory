@@ -47,17 +47,17 @@
           <form id="formReporteComandas" class="space-y-4 md:space-y-6">
             <div class="space-y-2">
               <label for="fecha_desde_comanda" class="block text-xs md:text-sm font-semibold text-gray-700">
-                <i class="fas fa-calendar-alt text-blue-500 mr-2"></i>Fecha desde:
+                <i class="fas fa-calendar-alt text-blue-500 mr-2"></i>Fecha y hora desde:
               </label>
-              <input type="date" name="fecha_desde" id="fecha_desde_comanda" required
+              <input type="datetime-local" name="fecha_desde" id="fecha_desde_comanda" required
                 class="w-full px-3 md:px-4 py-2 md:py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 text-sm md:text-base">
             </div>
             
             <div class="space-y-2">
               <label for="fecha_hasta_comanda" class="block text-xs md:text-sm font-semibold text-gray-700">
-                <i class="fas fa-calendar-alt text-blue-500 mr-2"></i>Fecha hasta:
+                <i class="fas fa-calendar-alt text-blue-500 mr-2"></i>Fecha y hora hasta:
               </label>
-              <input type="date" name="fecha_hasta" id="fecha_hasta_comanda" required
+              <input type="datetime-local" name="fecha_hasta" id="fecha_hasta_comanda" required
                 class="w-full px-3 md:px-4 py-2 md:py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 text-sm md:text-base">
             </div>
             
@@ -65,12 +65,6 @@
               class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3 md:py-4 px-4 md:px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-3 group text-sm md:text-base mb-2">
               <i class="fas fa-file-pdf group-hover:scale-110 transition-transform"></i>
               <span>Generar Reporte PDF</span>
-            </button>
-            
-            <button type="button" onclick="previewReporte('formReporteComandas')" 
-              class="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-2 md:py-3 px-4 md:px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-3 group text-sm md:text-base">
-              <i class="fas fa-eye group-hover:scale-110 transition-transform"></i>
-              <span>Vista Previa</span>
             </button>
           </form>
         </div>
@@ -93,17 +87,17 @@
           <form id="formReporteProductos" class="space-y-4 md:space-y-6">
             <div class="space-y-2">
               <label for="fecha_desde_productos" class="block text-xs md:text-sm font-semibold text-gray-700">
-                <i class="fas fa-calendar-alt text-green-500 mr-2"></i>Fecha desde:
+                <i class="fas fa-calendar-alt text-green-500 mr-2"></i>Fecha y hora desde:
               </label>
-              <input type="date" name="fecha_desde" id="fecha_desde_productos" required
+              <input type="datetime-local" name="fecha_desde" id="fecha_desde_productos" required
                 class="w-full px-3 md:px-4 py-2 md:py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 text-sm md:text-base">
             </div>
             
             <div class="space-y-2">
               <label for="fecha_hasta_productos" class="block text-xs md:text-sm font-semibold text-gray-700">
-                <i class="fas fa-calendar-alt text-green-500 mr-2"></i>Fecha hasta:
+                <i class="fas fa-calendar-alt text-green-500 mr-2"></i>Fecha y hora hasta:
               </label>
-              <input type="date" name="fecha_hasta" id="fecha_hasta_productos" required
+              <input type="datetime-local" name="fecha_hasta" id="fecha_hasta_productos" required
                 class="w-full px-3 md:px-4 py-2 md:py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 text-sm md:text-base">
             </div>
             
@@ -111,12 +105,6 @@
               class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 md:py-4 px-4 md:px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-3 group text-sm md:text-base mb-2">
               <i class="fas fa-file-pdf group-hover:scale-110 transition-transform"></i>
               <span>Generar Reporte PDF</span>
-            </button>
-            
-            <button type="button" onclick="previewReporte('formReporteProductos')" 
-              class="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-2 md:py-3 px-4 md:px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-3 group text-sm md:text-base">
-              <i class="fas fa-eye group-hover:scale-110 transition-transform"></i>
-              <span>Vista Previa</span>
             </button>
           </form>
         </div>
@@ -163,17 +151,17 @@
             
             <div class="space-y-2">
               <label for="fecha_desde_solicitados" class="block text-xs md:text-sm font-semibold text-gray-700">
-                <i class="fas fa-calendar-alt text-yellow-500 mr-2"></i>Desde <span class="text-red-500">*</span>
+                <i class="fas fa-calendar-alt text-yellow-500 mr-2"></i>Fecha y hora desde <span class="text-red-500">*</span>
               </label>
-              <input type="date" name="fecha_desde" id="fecha_desde_solicitados" required
+              <input type="datetime-local" name="fecha_desde" id="fecha_desde_solicitados" required
                 class="w-full px-3 md:px-4 py-2 md:py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all duration-200 text-sm md:text-base">
             </div>
             
             <div class="space-y-2">
               <label for="fecha_hasta_solicitados" class="block text-xs md:text-sm font-semibold text-gray-700">
-                <i class="fas fa-calendar-alt text-yellow-500 mr-2"></i>Hasta <span class="text-red-500">*</span>
+                <i class="fas fa-calendar-alt text-yellow-500 mr-2"></i>Fecha y hora hasta <span class="text-red-500">*</span>
               </label>
-              <input type="date" name="fecha_hasta" id="fecha_hasta_solicitados" required
+              <input type="datetime-local" name="fecha_hasta" id="fecha_hasta_solicitados" required
                 class="w-full px-3 md:px-4 py-2 md:py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all duration-200 text-sm md:text-base">
             </div>
           </div>
@@ -549,34 +537,6 @@ document.getElementById("formReporteProductosSolicitados").addEventListener("sub
             btn.innerHTML = '<i class="fas fa-chart-line group-hover:scale-110 transition-transform"></i><span>Generar Reporte Avanzado</span>';
         });
 });
-
-function previewReporte(formId) {
-    const form = document.getElementById(formId);
-    const formData = new FormData(form);
-    const fechaDesde = formData.get("fecha_desde");
-    const fechaHasta = formData.get("fecha_hasta");
-
-    if (!fechaDesde || !fechaHasta) {
-        Swal.fire({
-            icon: "warning",
-            title: "Fechas requeridas",
-            text: "Por favor, selecciona ambas fechas para la vista previa.",
-        });
-        return;
-    }
-
-    if (fechaDesde > fechaHasta) {
-        Swal.fire({
-            icon: "error",
-            title: "Rango inválido",
-            text: "La fecha 'Desde' no puede ser mayor que la fecha 'Hasta'.",
-        });
-        return;
-    }
-
-    const url = `index.php?page=previewReporte&fecha_desde=${fechaDesde}&fecha_hasta=${fechaHasta}`;
-    window.open(url, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
-}
 </script>
 
 <style>
