@@ -3,6 +3,14 @@ header("Content-Type: application/json");
 require_once "../controllers/mainController.php";
 
 session_name("INV");
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => '',
+    'secure' => false,
+    'httponly' => true,
+    'samesite' => 'Lax'
+]);
 session_start();
 
 if (!isset($_POST['login_usuario']) || !isset($_POST['login_clave'])) {
@@ -56,7 +64,10 @@ try {
                 "debug" => [
                     "session_id" => session_id(),
                     "user_id" => $_SESSION['id'],
-                    "username" => $_SESSION['usuario']
+                    "username" => $_SESSION['usuario'],
+                    "role" => $_SESSION['rol'],
+                    "host" => $_SERVER['HTTP_HOST'],
+                    "cookie_params" => session_get_cookie_params()
                 ]
             ]);
             exit;

@@ -64,7 +64,6 @@
 			background: rgba(255, 255, 255, 0.1);
 		}
 
-		/* Fallback para navegadores que no soportan backdrop-filter */
 		@supports not (backdrop-filter: blur(20px)) {
 			.glass-effect {
 				background: rgba(255, 255, 255, 0.15);
@@ -81,7 +80,6 @@
 			transition: all 0.3s ease;
 		}
 
-		/* Optimizaciones móviles mejoradas */
 		@media (max-width: 640px) {
 			.input-focus:focus {
 				transform: scale(1.01);
@@ -90,7 +88,7 @@
 			body {
 				-webkit-text-size-adjust: 100%;
 				-webkit-tap-highlight-color: transparent;
-				font-size: 16px; /* Prevenir zoom en iOS */
+				font-size: 16px;
 			}
 
 			input[type="text"],
@@ -98,7 +96,7 @@
 				-webkit-appearance: none;
 				-moz-appearance: none;
 				appearance: none;
-				font-size: 16px; /* Prevenir zoom en iOS */
+				font-size: 16px;
 			}
 
 			button {
@@ -106,7 +104,6 @@
 			}
 		}
 
-		/* Optimizaciones para dispositivos táctiles */
 		@media (hover: none) and (pointer: coarse) {
 			button,
 			input {
@@ -118,7 +115,6 @@
 			}
 		}
 
-		/* Mejoras para desktop */
 		@media (min-width: 1024px) {
 			.glass-effect {
 				backdrop-filter: blur(25px);
@@ -323,6 +319,7 @@
 				console.log('Respuesta recibida:', data);
 
 				if (data && data.success) {
+					console.log('Login exitoso, datos de sesión:', data.debug);
 					showMessage("¡Bienvenido! Redirigiendo...", "success");
 					
 					setTimeout(() => {
@@ -330,6 +327,7 @@
 					}, 1500);
 				} else {
 					const errorMessage = data?.message || "Credenciales incorrectas.";
+					console.error('Error en login:', data);
 					showMessage(errorMessage, "error");
 					setLoadingState(false);
 				}
@@ -355,23 +353,29 @@
 			const homeUrl = "index.php?page=home";
 			
 			console.log('Redirigiendo a:', homeUrl);
+			console.log('URL actual:', window.location.href);
 
 			try {
-				if (isAndroid || isMobile) {
-					window.location.replace(homeUrl);
-					
-					setTimeout(() => {
-						if (window.location.href.includes('login.php')) {
-							console.log('Fallback redirection para móvil');
-							window.location.href = homeUrl;
-						}
-					}, 1000);
-				} else {
-					window.location.href = homeUrl;
-				}
+				
+				window.location.href = homeUrl;
+				
+				setTimeout(() => {
+					if (window.location.href.includes('login.php')) {
+						console.log('Fallback: usando location.replace');
+						window.location.replace(homeUrl);
+					}
+				}, 500);
+				
+				setTimeout(() => {
+					if (window.location.href.includes('login.php')) {
+						console.log('Fallback final: usando location.assign');
+						window.location.assign(homeUrl);
+					}
+				}, 1500);
+				
 			} catch (error) {
 				console.error('Error en redirección:', error);
-				document.location = homeUrl;
+				document.location.href = homeUrl;
 			}
 		}
 
