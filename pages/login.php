@@ -211,20 +211,47 @@
 	</div>
 
 	<script>
-		const isAndroid = /Android/i.test(navigator.userAgent);
-		const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-		const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-		const isChrome = /Chrome/i.test(navigator.userAgent);
+		// Detectar tipo de dispositivo y navegador con más detalle
+		const userAgent = navigator.userAgent;
+		const isAndroid = /Android/i.test(userAgent);
+		const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+		const isWindows = /Windows/i.test(userAgent);
+		const isMac = /Mac/i.test(userAgent);
+		const isChrome = /Chrome/i.test(userAgent);
+		const isEdge = /Edge|Edg/i.test(userAgent);
+		const isSafari = /Safari/i.test(userAgent) && !/Chrome/i.test(userAgent);
+		const isFirefox = /Firefox/i.test(userAgent);
+		const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
 
-		console.log('Device Info:', {
-			userAgent: navigator.userAgent,
+		// Debug detallado inicial
+		console.log('=== ANÁLISIS COMPLETO DEL NAVEGADOR ===');
+		console.log('User Agent completo:', userAgent);
+		console.log('Detección de plataforma:', {
 			isAndroid,
-			isIOS,
-			isMobile,
-			isChrome,
-			screen: `${screen.width}x${screen.height}`,
-			viewport: `${window.innerWidth}x${window.innerHeight}`
+			isIOS, 
+			isWindows,
+			isMac,
+			isMobile
 		});
+		console.log('Detección de navegador:', {
+			isChrome,
+			isEdge,
+			isSafari,
+			isFirefox
+		});
+		console.log('Capacidades del navegador:', {
+			cookiesEnabled: navigator.cookieEnabled,
+			localStorage: typeof(Storage) !== "undefined",
+			sessionStorage: typeof(Storage) !== "undefined",
+			fetch: typeof fetch !== 'undefined',
+			promises: typeof Promise !== 'undefined'
+		});
+		console.log('Información de pantalla:', {
+			screen: `${screen.width}x${screen.height}`,
+			viewport: `${window.innerWidth}x${window.innerHeight}`,
+			devicePixelRatio: window.devicePixelRatio
+		});
+		console.log('======================================');
 
 		document.getElementById('togglePassword').addEventListener('click', function() {
 			const passwordInput = document.getElementById('login_clave');
@@ -239,54 +266,99 @@
 			}
 		});
 
+		// Función mejorada específica para navegadores problemáticos
 		async function makeLoginRequest(formData, retryCount = 0) {
-			const maxRetries = 3;
-			const timeout = isAndroid ? 10000 : 8000;
+			const maxRetries = isAndroid || isWindows ? 5 : 3; // Más reintentos para plataformas problemáticas
+			const timeout = isAndroid ? 15000 : (isWindows ? 12000 : 8000); // Timeouts más largos
+			
+			console.log(`Intento ${retryCount + 1}/${maxRetries} - Timeout: ${timeout}ms`);
+			
 			const controller = new AbortController();
-			const timeoutId = setTimeout(() => controller.abort(), timeout);
+			const timeoutId = setTimeout(() => {
+				console.log('Timeout alcanzado, abortando request');
+				controller.abort();
+			}, timeout);
 
 			try {
-				const response = await fetch("./api/loginHandler.php", {
+				// Configuración específica por navegador
+				const fetchConfig = {
 					method: "POST",
 					body: formData,
-					credentials: 'same-origin',
-					cache: 'no-cache',
-					redirect: 'follow',
 					signal: controller.signal,
 					headers: {
 						'X-Requested-With': 'XMLHttpRequest',
 						'Accept': 'application/json, text/plain, */*',
-						...(isAndroid && { 'Cache-Control': 'no-cache' })
 					}
-				});
+				};
+
+				// Configuraciones específicas para navegadores problemáticos
+				if (isAndroid || isWindows) {
+					fetchConfig.credentials = 'same-origin';
+					fetchConfig.cache = 'no-store';
+					fetchConfig.mode = 'same-origin';
+					fetchConfig.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+					fetchConfig.headers['Pragma'] = 'no-cache';
+					fetchConfig.headers['Expires'] = '0';
+				}
+
+				console.log('Configuración de fetch:', fetchConfig);
+				console.log('Enviando request a:', "./api/loginHandler.php");
+
+				const response = await fetch("./api/loginHandler.php", fetchConfig);
 
 				clearTimeout(timeoutId);
+				console.log('Respuesta recibida:', {
+					ok: response.ok,
+					status: response.status,
+					statusText: response.statusText,
+					headers: Object.fromEntries(response.headers.entries())
+				});
 
 				if (!response.ok) {
 					throw new Error(`HTTP ${response.status}: ${response.statusText}`);
 				}
 
+				// Verificar content-type con más flexibilidad
 				const contentType = response.headers.get("content-type");
-				if (!contentType || !contentType.includes("application/json")) {
-					const textResponse = await response.text();
-					console.error('Respuesta no-JSON recibida:', textResponse);
-					throw new Error("Respuesta inválida del servidor");
+				console.log('Content-Type recibido:', contentType);
+				
+				const responseText = await response.text();
+				console.log('Respuesta como texto:', responseText.substring(0, 200) + (responseText.length > 200 ? '...' : ''));
+
+				// Intentar parsear JSON con manejo de errores
+				let data;
+				try {
+					data = JSON.parse(responseText);
+					console.log('JSON parseado correctamente:', data);
+				} catch (parseError) {
+					console.error('Error parseando JSON:', parseError);
+					console.error('Respuesta completa:', responseText);
+					throw new Error("Respuesta del servidor no es JSON válido");
 				}
 
-				const data = await response.json();
 				return data;
 
 			} catch (error) {
 				clearTimeout(timeoutId);
-				console.error(`Intento ${retryCount + 1} falló:`, error);
+				console.error(`Error en intento ${retryCount + 1}:`, error);
+				console.error('Tipo de error:', error.name);
+				console.error('Mensaje:', error.message);
 
-				if (retryCount < maxRetries && (
+				// Condiciones de reintento específicas por plataforma
+				const shouldRetry = retryCount < maxRetries && (
 					error.name === 'AbortError' ||
 					error.message.includes('Failed to fetch') ||
-					error.message.includes('Network request failed')
-				)) {
-					console.log(`Reintentando... (${retryCount + 1}/${maxRetries})`);
-					await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
+					error.message.includes('Network request failed') ||
+					error.message.includes('NetworkError') ||
+					error.message.includes('TypeError') ||
+					(isAndroid && error.message.includes('HTTP')) ||
+					(isWindows && error.message.includes('JSON'))
+				);
+
+				if (shouldRetry) {
+					const delay = Math.min(1000 * Math.pow(2, retryCount), 5000); // Backoff exponencial, max 5s
+					console.log(`Reintentando en ${delay}ms... (${retryCount + 1}/${maxRetries})`);
+					await new Promise(resolve => setTimeout(resolve, delay));
 					return makeLoginRequest(formData, retryCount + 1);
 				}
 
@@ -300,8 +372,18 @@
 			const usuario = document.getElementById("login_usuario").value.trim();
 			const clave = document.getElementById("login_clave").value.trim();
 
+			console.log('=== INICIANDO PROCESO DE LOGIN ===');
+			console.log('Usuario:', usuario);
+			console.log('Contraseña length:', clave.length);
+
 			if (!usuario || !clave) {
 				showMessage("Por favor, completa todos los campos.", "error");
+				return;
+			}
+
+			// Verificar soporte de cookies antes de continuar
+			if (!checkCookieSupport()) {
+				setLoadingState(false);
 				return;
 			}
 
@@ -312,14 +394,16 @@
 				formData.append("login_usuario", usuario);
 				formData.append("login_clave", clave);
 
-				console.log('Iniciando login para:', usuario);
+				// Log específico para debugging
+				console.log('FormData creado, enviando request...');
 				
 				const data = await makeLoginRequest(formData);
 				
-				console.log('Respuesta recibida:', data);
+				console.log('=== RESPUESTA DE LOGIN RECIBIDA ===');
+				console.log('Datos completos:', data);
 
 				if (data && data.success) {
-					console.log('Login exitoso, datos de sesión:', data.debug);
+					console.log('Login exitoso, información de debug:', data.debug);
 					showMessage("¡Bienvenido! Redirigiendo...", "success");
 					
 					setTimeout(() => {
@@ -327,21 +411,27 @@
 					}, 1500);
 				} else {
 					const errorMessage = data?.message || "Credenciales incorrectas.";
-					console.error('Error en login:', data);
+					console.error('Login falló:', data);
 					showMessage(errorMessage, "error");
 					setLoadingState(false);
 				}
 
 			} catch (error) {
-				console.error("Error en login:", error);
+				console.error('=== ERROR FINAL EN LOGIN ===');
+				console.error('Error object:', error);
+				console.error('Stack trace:', error.stack);
 				
 				let errorMessage = "Error de conexión. Inténtalo de nuevo.";
 				if (error.name === 'AbortError') {
-					errorMessage = "Tiempo de espera agotado. Verifica tu conexión.";
+					errorMessage = "Tiempo de espera agotado. Verifica tu conexión a internet.";
 				} else if (error.message.includes('HTTP')) {
-					errorMessage = "Error del servidor. Inténtalo más tarde.";
-				} else if (error.message.includes('JSON') || error.message.includes('inválida')) {
-					errorMessage = "Error en la respuesta del servidor.";
+					errorMessage = "Error del servidor. Por favor inténtalo más tarde.";
+				} else if (error.message.includes('JSON') || error.message.includes('válido')) {
+					errorMessage = "Error en la respuesta del servidor. Contacta al administrador.";
+				} else if (isAndroid) {
+					errorMessage = "Error específico de Android. Intenta con otro navegador.";
+				} else if (isWindows) {
+					errorMessage = "Error de compatibilidad. Intenta actualizar tu navegador.";
 				}
 
 				showMessage(errorMessage, "error");
@@ -352,30 +442,98 @@
 		function redirectToHome() {
 			const homeUrl = "index.php?page=home";
 			
-			console.log('Redirigiendo a:', homeUrl);
+			console.log('=== INICIANDO REDIRECCIÓN ===');
+			console.log('URL objetivo:', homeUrl);
 			console.log('URL actual:', window.location.href);
+			console.log('Navegador detectado:', {
+				isChrome, isEdge, isSafari, isFirefox,
+				isAndroid, isWindows, isMac, isIOS
+			});
 
 			try {
-				
-				window.location.href = homeUrl;
-				
-				setTimeout(() => {
-					if (window.location.href.includes('login.php')) {
-						console.log('Fallback: usando location.replace');
-						window.location.replace(homeUrl);
-					}
-				}, 500);
-				
-				setTimeout(() => {
-					if (window.location.href.includes('login.php')) {
-						console.log('Fallback final: usando location.assign');
-						window.location.assign(homeUrl);
-					}
-				}, 1500);
+				// Estrategias específicas por navegador
+				if (isAndroid || isWindows) {
+					console.log('Usando estrategia para Android/Windows');
+					
+					// Método 1: location.href directo
+					console.log('Método 1: location.href');
+					window.location.href = homeUrl;
+					
+					// Método 2: Fallback con replace
+					setTimeout(() => {
+						if (window.location.href.includes('login.php')) {
+							console.log('Método 2: location.replace');
+							window.location.replace(homeUrl);
+						}
+					}, 1000);
+					
+					// Método 3: Fallback con assign
+					setTimeout(() => {
+						if (window.location.href.includes('login.php')) {
+							console.log('Método 3: location.assign');
+							window.location.assign(homeUrl);
+						}
+					}, 2000);
+					
+					// Método 4: Fallback extremo con form submit
+					setTimeout(() => {
+						if (window.location.href.includes('login.php')) {
+							console.log('Método 4: form submit fallback');
+							const form = document.createElement('form');
+							form.method = 'GET';
+							form.action = 'index.php';
+							const pageInput = document.createElement('input');
+							pageInput.type = 'hidden';
+							pageInput.name = 'page';
+							pageInput.value = 'home';
+							form.appendChild(pageInput);
+							document.body.appendChild(form);
+							form.submit();
+						}
+					}, 3000);
+					
+				} else {
+					// Método estándar para Safari/Mac/iOS
+					console.log('Usando método estándar para Safari/Mac/iOS');
+					window.location.href = homeUrl;
+				}
 				
 			} catch (error) {
 				console.error('Error en redirección:', error);
-				document.location.href = homeUrl;
+				// Último recurso: recarga forzada
+				console.log('Último recurso: recarga con nueva URL');
+				document.location = homeUrl;
+			}
+		}
+
+		// Función para verificar cookies antes del login
+		function checkCookieSupport() {
+			console.log('=== VERIFICANDO SOPORTE DE COOKIES ===');
+			
+			// Verificación básica
+			if (!navigator.cookieEnabled) {
+				console.error('Las cookies están deshabilitadas');
+				showMessage("Las cookies están deshabilitadas. Habílitalas para continuar.", "error");
+				return false;
+			}
+			
+			// Prueba de cookie de test
+			document.cookie = "test_cookie=1; path=/; SameSite=Lax";
+			const cookieExists = document.cookie.indexOf("test_cookie=1") !== -1;
+			
+			if (cookieExists) {
+				console.log('Soporte de cookies verificado correctamente');
+				// Limpiar cookie de test
+				document.cookie = "test_cookie=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+				return true;
+			} else {
+				console.error('Falla en la escritura de cookies');
+				if (isAndroid || isWindows) {
+					showMessage("Problema con cookies en este navegador. Intenta en modo incógnito.", "error");
+				} else {
+					showMessage("Error con cookies. Verifica la configuración del navegador.", "error");
+				}
+				return false;
 			}
 		}
 
@@ -465,7 +623,26 @@
 			}
 		});
 
-		console.log('Login script inicializado correctamente');
+		// Ejecutar verificación de cookies al cargar la página
+		document.addEventListener('DOMContentLoaded', function() {
+			console.log('DOM cargado, verificando cookies...');
+			checkCookieSupport();
+		});
+
+		// Si DOMContentLoaded ya pasó, ejecutar inmediatamente
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', function() {
+				checkCookieSupport();
+			});
+		} else {
+			checkCookieSupport();
+		}
+
+		console.log('Login script inicializado correctamente para navegador:', {
+			userAgent: userAgent.substring(0, 100) + '...',
+			isProblematic: isAndroid || isWindows,
+			platform: isAndroid ? 'Android' : isWindows ? 'Windows' : isMac ? 'Mac' : isIOS ? 'iOS' : 'Unknown'
+		});
 	</script>
 </body>
 
