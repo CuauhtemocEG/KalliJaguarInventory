@@ -3,7 +3,11 @@
 
 <head>
 	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 	<title>Kalli Jaguar Inventory - Login</title>
 	<script src="https://cdn.tailwindcss.com"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
@@ -60,6 +64,14 @@
 			background: rgba(255, 255, 255, 0.1);
 		}
 
+		/* Fallback para navegadores que no soportan backdrop-filter */
+		@supports not (backdrop-filter: blur(20px)) {
+			.glass-effect {
+				background: rgba(255, 255, 255, 0.15);
+				border: 1px solid rgba(255, 255, 255, 0.2);
+			}
+		}
+
 		.inventory-gradient {
 			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 		}
@@ -69,7 +81,7 @@
 			transition: all 0.3s ease;
 		}
 
-		/* Mobile optimizations */
+		/* Optimizaciones móviles mejoradas */
 		@media (max-width: 640px) {
 			.input-focus:focus {
 				transform: scale(1.01);
@@ -78,6 +90,7 @@
 			body {
 				-webkit-text-size-adjust: 100%;
 				-webkit-tap-highlight-color: transparent;
+				font-size: 16px; /* Prevenir zoom en iOS */
 			}
 
 			input[type="text"],
@@ -85,14 +98,30 @@
 				-webkit-appearance: none;
 				-moz-appearance: none;
 				appearance: none;
+				font-size: 16px; /* Prevenir zoom en iOS */
+			}
+
+			button {
+				-webkit-tap-highlight-color: transparent;
 			}
 		}
 
+		/* Optimizaciones para dispositivos táctiles */
 		@media (hover: none) and (pointer: coarse) {
-
 			button,
 			input {
 				min-height: 44px;
+			}
+			
+			.input-focus:focus {
+				transform: none;
+			}
+		}
+
+		/* Mejoras para desktop */
+		@media (min-width: 1024px) {
+			.glass-effect {
+				backdrop-filter: blur(25px);
 			}
 		}
 	</style>
@@ -184,30 +213,23 @@
 			</div>
 		</div>
 	</div>
-	<button
-		type="submit"
-		id="loginBtn"
-		class="w-full bg-gradient-to-r from-accent-yellow to-accent-yellow-dark hover:from-accent-yellow-dark hover:to-accent-yellow text-inventory-dark font-bold py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-accent-yellow/50 relative overflow-hidden group">
-		<span class="relative z-10 flex items-center justify-center">
-			<i class="fas fa-sign-in-alt mr-3 group-hover:rotate-12 transition-transform duration-300"></i>
-			<span id="loginBtnText">Iniciar Sesión</span>
-		</span>
-		<div class="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-	</button>
-
-	<div class="text-center pt-6 border-t border-white/10">
-		<p class="text-blue-200 text-sm flex items-center justify-center">
-			<i class="fas fa-shield-alt mr-2 text-accent-yellow"></i>
-			Acceso seguro y encriptado
-		</p>
-	</div>
-	</form>
-	</div>
-
-	</div>
-	</div>
 
 	<script>
+		const isAndroid = /Android/i.test(navigator.userAgent);
+		const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+		const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+		const isChrome = /Chrome/i.test(navigator.userAgent);
+
+		console.log('Device Info:', {
+			userAgent: navigator.userAgent,
+			isAndroid,
+			isIOS,
+			isMobile,
+			isChrome,
+			screen: `${screen.width}x${screen.height}`,
+			viewport: `${window.innerWidth}x${window.innerHeight}`
+		});
+
 		document.getElementById('togglePassword').addEventListener('click', function() {
 			const passwordInput = document.getElementById('login_clave');
 			const eyeIcon = document.getElementById('eyeIcon');
@@ -221,61 +243,166 @@
 			}
 		});
 
-		document.getElementById("loginForm").addEventListener("submit", function(e) {
+		async function makeLoginRequest(formData, retryCount = 0) {
+			const maxRetries = 3;
+			const timeout = isAndroid ? 10000 : 8000;
+			const controller = new AbortController();
+			const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+			try {
+				const response = await fetch("./api/loginHandler.php", {
+					method: "POST",
+					body: formData,
+					credentials: 'same-origin',
+					cache: 'no-cache',
+					redirect: 'follow',
+					signal: controller.signal,
+					headers: {
+						'X-Requested-With': 'XMLHttpRequest',
+						'Accept': 'application/json, text/plain, */*',
+						...(isAndroid && { 'Cache-Control': 'no-cache' })
+					}
+				});
+
+				clearTimeout(timeoutId);
+
+				if (!response.ok) {
+					throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+				}
+
+				const contentType = response.headers.get("content-type");
+				if (!contentType || !contentType.includes("application/json")) {
+					const textResponse = await response.text();
+					console.error('Respuesta no-JSON recibida:', textResponse);
+					throw new Error("Respuesta inválida del servidor");
+				}
+
+				const data = await response.json();
+				return data;
+
+			} catch (error) {
+				clearTimeout(timeoutId);
+				console.error(`Intento ${retryCount + 1} falló:`, error);
+
+				if (retryCount < maxRetries && (
+					error.name === 'AbortError' ||
+					error.message.includes('Failed to fetch') ||
+					error.message.includes('Network request failed')
+				)) {
+					console.log(`Reintentando... (${retryCount + 1}/${maxRetries})`);
+					await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
+					return makeLoginRequest(formData, retryCount + 1);
+				}
+
+				throw error;
+			}
+		}
+
+		document.getElementById("loginForm").addEventListener("submit", async function(e) {
 			e.preventDefault();
 
 			const usuario = document.getElementById("login_usuario").value.trim();
 			const clave = document.getElementById("login_clave").value.trim();
-			const msgDiv = document.getElementById("loginMessage");
-			const loginBtn = document.getElementById("loginBtn");
-			const loginBtnText = document.getElementById("loginBtnText");
 
-			msgDiv.innerHTML = "";
-			msgDiv.classList.add("hidden");
-
-			if (usuario === "" || clave === "") {
+			if (!usuario || !clave) {
 				showMessage("Por favor, completa todos los campos.", "error");
 				return;
 			}
 
-			loginBtn.disabled = true;
-			loginBtn.classList.add("opacity-75", "cursor-not-allowed");
-			loginBtnText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Iniciando sesión...';
+			setLoadingState(true);
 
-			const formData = new FormData();
-			formData.append("login_usuario", usuario);
-			formData.append("login_clave", clave);
+			try {
+				const formData = new FormData();
+				formData.append("login_usuario", usuario);
+				formData.append("login_clave", clave);
 
-			fetch("./api/loginHandler.php", {
-					method: "POST",
-					body: formData
-				})
-				.then(response => response.json())
-				.then(data => {
-					if (data.success) {
-						showMessage("¡Bienvenido! Redirigiendo...", "success");
-						setTimeout(() => {
-							window.location.href = "index.php?page=home";
-						}, 1500);
-					} else {
-						showMessage(data.message || "Credenciales incorrectas.", "error");
-						resetButton();
-					}
-				})
-				.catch(error => {
-					console.error("Error en el login:", error);
-					showMessage("Error de conexión. Inténtalo de nuevo.", "error");
-					resetButton();
-				});
+				console.log('Iniciando login para:', usuario);
+				
+				const data = await makeLoginRequest(formData);
+				
+				console.log('Respuesta recibida:', data);
+
+				if (data && data.success) {
+					showMessage("¡Bienvenido! Redirigiendo...", "success");
+					
+					setTimeout(() => {
+						redirectToHome();
+					}, 1500);
+				} else {
+					const errorMessage = data?.message || "Credenciales incorrectas.";
+					showMessage(errorMessage, "error");
+					setLoadingState(false);
+				}
+
+			} catch (error) {
+				console.error("Error en login:", error);
+				
+				let errorMessage = "Error de conexión. Inténtalo de nuevo.";
+				if (error.name === 'AbortError') {
+					errorMessage = "Tiempo de espera agotado. Verifica tu conexión.";
+				} else if (error.message.includes('HTTP')) {
+					errorMessage = "Error del servidor. Inténtalo más tarde.";
+				} else if (error.message.includes('JSON') || error.message.includes('inválida')) {
+					errorMessage = "Error en la respuesta del servidor.";
+				}
+
+				showMessage(errorMessage, "error");
+				setLoadingState(false);
+			}
 		});
+
+		function redirectToHome() {
+			const homeUrl = "index.php?page=home";
+			
+			console.log('Redirigiendo a:', homeUrl);
+
+			try {
+				if (isAndroid || isMobile) {
+					window.location.replace(homeUrl);
+					
+					setTimeout(() => {
+						if (window.location.href.includes('login.php')) {
+							console.log('Fallback redirection para móvil');
+							window.location.href = homeUrl;
+						}
+					}, 1000);
+				} else {
+					window.location.href = homeUrl;
+				}
+			} catch (error) {
+				console.error('Error en redirección:', error);
+				document.location = homeUrl;
+			}
+		}
+
+		function setLoadingState(isLoading) {
+			const loginBtn = document.getElementById("loginBtn");
+			const loginBtnText = document.getElementById("loginBtnText");
+
+			if (isLoading) {
+				loginBtn.disabled = true;
+				loginBtn.classList.add("opacity-75", "cursor-not-allowed");
+				loginBtnText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Iniciando sesión...';
+			} else {
+				loginBtn.disabled = false;
+				loginBtn.classList.remove("opacity-75", "cursor-not-allowed");
+				loginBtnText.textContent = 'Iniciar Sesión';
+			}
+		}
 
 		function showMessage(message, type) {
 			const msgDiv = document.getElementById("loginMessage");
 			const isError = type === "error";
 
 			msgDiv.innerHTML = `
-                <div class="flex items-center p-3 sm:p-4 rounded-xl sm:rounded-2xl ${isError ? 'bg-red-500/20 border border-red-500/50 text-red-200' : 'bg-green-500/20 border border-green-500/50 text-green-200'} backdrop-blur-sm">
-                    <i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'} mr-2 sm:mr-3 text-base sm:text-lg flex-shrink-0"></i>
+                <div class="flex items-center p-3 sm:p-4 rounded-xl sm:rounded-2xl ${
+					isError 
+						? 'bg-red-500/20 border border-red-500/50 text-red-200' 
+						: 'bg-green-500/20 border border-green-500/50 text-green-200'
+				} backdrop-blur-sm">
+                    <i class="fas ${
+						isError ? 'fa-exclamation-triangle' : 'fa-check-circle'
+					} mr-2 sm:mr-3 text-base sm:text-lg flex-shrink-0"></i>
                     <span class="font-medium text-sm sm:text-base">${message}</span>
                 </div>
             `;
@@ -288,13 +415,24 @@
 			}
 		}
 
-		function resetButton() {
-			const loginBtn = document.getElementById("loginBtn");
-			const loginBtnText = document.getElementById("loginBtnText");
+		if (isMobile) {
+			document.querySelectorAll('input[type="text"], input[type="password"]').forEach(input => {
+				input.addEventListener('focus', function() {
+					if (isIOS) {
+						this.style.fontSize = '16px';
+					}
+				});
+			});
 
-			loginBtn.disabled = false;
-			loginBtn.classList.remove("opacity-75", "cursor-not-allowed");
-			loginBtnText.innerHTML = 'Iniciar Sesión';
+			document.querySelectorAll('button, input').forEach(element => {
+				element.addEventListener('touchstart', function() {
+					this.style.transform = 'scale(0.98)';
+				}, { passive: true });
+
+				element.addEventListener('touchend', function() {
+					this.style.transform = '';
+				}, { passive: true });
+			});
 		}
 
 		document.querySelectorAll('input').forEach(input => {
@@ -311,42 +449,19 @@
 			if (e.key === 'Enter' && e.target.tagName !== 'BUTTON') {
 				e.preventDefault();
 				const form = document.getElementById('loginForm');
-				if (form) {
+				if (form && !document.getElementById("loginBtn").disabled) {
 					form.dispatchEvent(new Event('submit'));
 				}
 			}
 		});
 
-		if ('ontouchstart' in window) {
-			document.querySelectorAll('button, input').forEach(element => {
-				element.addEventListener('touchstart', function() {
-					this.style.transform = 'scale(0.98)';
-				});
-
-				element.addEventListener('touchend', function() {
-					this.style.transform = '';
-				});
-			});
-
-			document.querySelectorAll('input[type="text"], input[type="password"]').forEach(input => {
-				input.addEventListener('focus', function() {
-					this.style.fontSize = '16px';
-				});
-			});
-		}
-
 		document.getElementById('loginForm').addEventListener('submit', function() {
-			document.activeElement.blur();
+			if (document.activeElement) {
+				document.activeElement.blur();
+			}
 		});
 
-		function scrollToTop() {
-			if (window.innerWidth <= 640) {
-				window.scrollTo({
-					top: 0,
-					behavior: 'smooth'
-				});
-			}
-		}
+		console.log('Login script inicializado correctamente');
 	</script>
 </body>
 
