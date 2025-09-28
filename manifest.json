@@ -1,0 +1,95 @@
+{
+    "name": "Kalli Jaguar Inventory System",
+    "short_name": "Kalli Jaguar",
+    "description": "Sistema completo de gestión de inventarios para restaurantes y negocios",
+    "start_url": "/index.php?page=home",
+    "display": "standalone",
+    "background_color": "#1e293b",
+    "theme_color": "#F5C842",
+    "orientation": "portrait-primary",
+    "scope": "/",
+    "lang": "es-ES",
+    "categories": ["business", "productivity", "utilities"],
+    "icons": [
+        {
+            "src": "img/logo.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "img/logo.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "img/Kalli-Amarillo.png",
+            "sizes": "144x144",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "img/Kalli-Amarillo.png",
+            "sizes": "96x96",
+            "type": "image/png",
+            "purpose": "any"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "img/screenshot-mobile.png",
+            "sizes": "640x1136",
+            "type": "image/png",
+            "form_factor": "narrow"
+        },
+        {
+            "src": "img/screenshot-desktop.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "form_factor": "wide"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Escanear Productos",
+            "short_name": "Escanear",
+            "description": "Acceso rápido al escáner de productos",
+            "url": "/index.php?page=scanProducts",
+            "icons": [
+                {
+                    "src": "img/Kalli-Amarillo.png",
+                    "sizes": "96x96"
+                }
+            ]
+        },
+        {
+            "name": "Productos",
+            "short_name": "Productos",
+            "description": "Gestionar inventario de productos",
+            "url": "/index.php?page=showProduct",
+            "icons": [
+                {
+                    "src": "img/Kalli-Amarillo.png",
+                    "sizes": "96x96"
+                }
+            ]
+        },
+        {
+            "name": "Reportes",
+            "short_name": "Reportes",
+            "description": "Ver reportes y estadísticas",
+            "url": "/index.php?page=reportOrders",
+            "icons": [
+                {
+                    "src": "img/Kalli-Amarillo.png",
+                    "sizes": "96x96"
+                }
+            ]
+        }
+    ],
+    "prefer_related_applications": false,
+    "edge_side_panel": {
+        "preferred_width": 400
+    }
+}
