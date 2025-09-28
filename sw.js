@@ -10,9 +10,15 @@ const urlsToCache = [
     '/js/sb-admin-2.min.js',
     '/js/ajax.js',
     '/js/functions.js',
-    '/img/logo.png',
-    '/img/Kalli-Amarillo.png',
-    '/img/Login.jpg',
+    // Recursos estáticos
+    '/img/icons/icon-72x72.png',
+    '/img/icons/icon-96x96.png',
+    '/img/icons/icon-128x128.png',
+    '/img/icons/icon-144x144.png',
+    '/img/icons/icon-152x152.png',
+    '/img/icons/icon-192x192.png',
+    '/img/icons/icon-384x384.png',
+    '/img/icons/icon-512x512.png',
     'https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css',
     'https://cdn.tailwindcss.com'
@@ -121,8 +127,8 @@ self.addEventListener('push', event => {
         const data = event.data.json();
         const options = {
             body: data.body,
-            icon: '/img/logo.png',
-            badge: '/img/Kalli-Amarillo.png',
+            icon: '/img/icons/icon-192x192.png',
+            badge: '/img/icons/icon-96x96.png',
             vibrate: [100, 50, 100],
             data: {
                 dateOfArrival: Date.now(),

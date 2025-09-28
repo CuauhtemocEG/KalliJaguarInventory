@@ -16,11 +16,11 @@
     <meta name="apple-mobile-web-app-title" content="Kalli Jaguar">
     <meta name="format-detection" content="telephone=no">
     
-    <link rel="icon" href="img/Login.jpg" type="image/jpg">
-    <link rel="apple-touch-icon" href="img/logo.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="img/logo.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="img/logo.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="img/logo.png">
+    <link rel="icon" href="img/icons/icon-96x96.png" type="image/png">
+    <link rel="apple-touch-icon" href="img/icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="img/icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="img/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="img/icons/icon-192x192.png">
     
     <link rel="manifest" href="manifest.json">
     
