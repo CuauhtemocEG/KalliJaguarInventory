@@ -1,6 +1,6 @@
 <div class="request-products-container">
     <?php
-    session_start();
+    require_once "./includes/session_start.php";
     require_once "./controllers/mainController.php";
     ?>
     <div class="page-header">

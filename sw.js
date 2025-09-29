@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kalli-jaguar-inventory-v1.0.0';
+const CACHE_NAME = 'kalli-jaguar-inventory-v1.0.1';
 const urlsToCache = [
     '/',
     '/index.php',
@@ -66,6 +66,34 @@ self.addEventListener('fetch', event => {
     // Solo cachear peticiones GET
     if (event.request.method !== 'GET') {
         return;
+    }
+
+    // Lista de URLs que NUNCA deben ser cacheadas (críticas para funcionamiento)
+    const neverCache = [
+        '/controllers/',
+        '/includes/session_start.php',
+        '/includes/',
+        'iniciar_sesion.php',
+        'logout.php',
+        '/api/',
+        'session',
+        'login',
+        'auth',
+        'debug-session.php',
+        'verify-pwa.html'
+    ];
+
+    // Verificar si la URL contiene algún patrón que no debe ser cacheado
+    const shouldNotCache = neverCache.some(pattern => event.request.url.includes(pattern));
+    
+    if (shouldNotCache) {
+        // Para requests críticos, ir directo a la red
+        return fetch(event.request).catch(() => {
+            // Si falla, devolver página offline solo para navegación HTML
+            if (event.request.headers.get('accept').includes('text/html')) {
+                return caches.match('/pages/offline.html');
+            }
+        });
     }
 
     // Ignorar peticiones a APIs externas que cambien frecuentemente
