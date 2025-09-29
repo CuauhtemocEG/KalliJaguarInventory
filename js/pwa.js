@@ -3,11 +3,38 @@ class PWAManager {
     constructor() {
         this.deferredPrompt = null;
         this.isOnline = navigator.onLine;
-        this.init();
+        this.isEnabled = this.checkPWAEnabled();
+        
+        if (this.isEnabled) {
+            this.init();
+        } else {
+            console.log('PWA deshabilitada - funcionamiento normal sin Service Worker');
+        }
+    }
+    
+    checkPWAEnabled() {
+        // Verificar si PWA está habilitada
+        const pwaSetting = localStorage.getItem('pwa-enabled');
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // Permitir desactivar PWA via URL
+        if (urlParams.get('pwa') === 'false') {
+            localStorage.setItem('pwa-enabled', 'false');
+            return false;
+        }
+        
+        // Permitir activar PWA via URL
+        if (urlParams.get('pwa') === 'true') {
+            localStorage.setItem('pwa-enabled', 'true');
+            return true;
+        }
+        
+        // Por defecto, PWA habilitada (pero respeta configuración local)
+        return pwaSetting !== 'false';
     }
 
     async init() {
-        // Registrar Service Worker
+        // Solo registrar SW si está habilitado
         await this.registerServiceWorker();
         
         // Configurar evento de instalación PWA

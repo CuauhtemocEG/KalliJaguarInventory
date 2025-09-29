@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kalli-jaguar-inventory-v1.0.1';
+const CACHE_NAME = 'kalli-jaguar-inventory-v1.2.0';
 const urlsToCache = [
     '/',
     '/index.php',
@@ -63,45 +63,52 @@ self.addEventListener('activate', event => {
 
 // Interceptar peticiones de red
 self.addEventListener('fetch', event => {
-    // Solo cachear peticiones GET
-    if (event.request.method !== 'GET') {
-        return;
-    }
-
+    const url = new URL(event.request.url);
+    
     // Lista de URLs que NUNCA deben ser cacheadas (críticas para funcionamiento)
     const neverCache = [
         '/controllers/',
-        '/includes/session_start.php',
         '/includes/',
+        '/js/productsRequested/',
+        '/api/',
         'iniciar_sesion.php',
         'logout.php',
-        '/api/',
         'session',
         'login',
         'auth',
-        'debug-session.php',
-        'verify-pwa.html'
+        'searchProducts.php',
+        'addToCart.php',
+        'removeFromCart.php',
+        'confirmRequest.php',
+        'requestInsumos',
+        '.php'
     ];
 
     // Verificar si la URL contiene algún patrón que no debe ser cacheado
     const shouldNotCache = neverCache.some(pattern => event.request.url.includes(pattern));
     
-    if (shouldNotCache) {
-        // Para requests críticos, ir directo a la red
-        return fetch(event.request).catch(() => {
-            // Si falla, devolver página offline solo para navegación HTML
-            if (event.request.headers.get('accept').includes('text/html')) {
-                return caches.match('/pages/offline.html');
-            }
-        });
+    // Si es una petición crítica, siempre ir a la red
+    if (shouldNotCache || event.request.method !== 'GET') {
+        console.log('SW: Bypassing cache for:', event.request.url);
+        return; // No interceptar, dejar que vaya directo a la red
     }
 
-    // Ignorar peticiones a APIs externas que cambien frecuentemente
-    if (event.request.url.includes('/api/') && 
-        (event.request.url.includes('generarReporte') || 
-         event.request.url.includes('loginHandler') ||
-         event.request.url.includes('updateStock'))) {
-        return;
+    // Solo cachear recursos estáticos (CSS, JS, imágenes, etc.)
+    const staticResourcePatterns = [
+        /\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$/,
+        /vendor\//,
+        /css\//,
+        /img\//,
+        /fonts\//
+    ];
+
+    const isStaticResource = staticResourcePatterns.some(pattern => 
+        pattern.test(url.pathname)
+    );
+
+    if (!isStaticResource) {
+        console.log('SW: Not caching dynamic content:', event.request.url);
+        return; // No cachear contenido dinámico
     }
 
     event.respondWith(
