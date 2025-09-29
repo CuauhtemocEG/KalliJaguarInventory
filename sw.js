@@ -76,9 +76,10 @@ self.addEventListener('fetch', event => {
         'session',
         'login',
         'auth',
+        'getCart.php',
         'searchProducts.php',
-        'addToCart.php',
-        'removeFromCart.php',
+        'saveToCart.php',
+        'deleteToCart.php',
         'confirmRequest.php',
         'requestInsumos',
         '.php'
