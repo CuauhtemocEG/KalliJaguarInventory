@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba Functions.js - Kalli Jaguar</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+        h1 { color: #4e73df; text-align: center; }
+        .test-section {
+            background: #f8f9fc;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #4e73df;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        
+        .btn {
+            background: #4e73df;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .btn:hover { background: #2653d4; }
+        .btn.danger { background: #dc3545; }
+        .btn.success { background: #28a745; }
+        
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .url-info {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            word-break: break-all;
+        }
+        
+        .ajax-test {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin: 10px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .ajax-test input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        
+        .ajax-test .btn {
+            margin: 0;
+            padding: 8px 15px;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Prueba Functions.js</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">
+            Herramienta para probar las funciones AJAX y detectar interferencias del Service Worker
+        </p>
+        
+        <div class="test-section">
+            <h2>📍 URLs Detectadas</h2>
+            <div id="url-detection">
+                <div class="url-info">
+                    <strong>Página actual:</strong> <span id="current-page"></span>
+                </div>
+                <div class="url-info">
+                    <strong>Base URL:</strong> <span id="base-url"></span>
+                </div>
+                <div class="url-info">
+                    <strong>urlAPI:</strong> <span id="url-api"></span>
+                </div>
+                <div class="url-info">
+                    <strong>v2urlAPI:</strong> <span id="v2url-api"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔍 Prueba de Búsqueda de Productos</h2>
+            <div class="ajax-test">
+                <input type="text" id="search-query" placeholder="Término de búsqueda (ej: arroz)" value="">
+                <button class="btn" onclick="testSearchProducts()">🔍 Probar Búsqueda</button>
+                <button class="btn" onclick="testDirectSearch()">🔗 Directo</button>
+            </div>
+            <div id="search-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🛒 Prueba de Carrito</h2>
+            <div class="ajax-test">
+                <input type="number" id="product-id" placeholder="ID Producto" value="1">
+                <input type="number" id="quantity" placeholder="Cantidad" value="1" step="0.001">
+                <button class="btn success" onclick="testAddToCart()">➕ Agregar</button>
+                <button class="btn" onclick="testGetCart()">👁️ Ver Carrito</button>
+                <button class="btn danger" onclick="testDeleteFromCart()">🗑️ Eliminar</button>
+            </div>
+            <div id="cart-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔧 Pruebas de Red Directas</h2>
+            <button class="btn" onclick="testNetworkDirect()">🌐 Fetch Directo</button>
+            <button class="btn" onclick="testNetworkWithCache()">📦 Con Cache</button>
+            <button class="btn" onclick="testNetworkBypass()">🚫 Bypass SW</button>
+            <div id="network-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 Estado Service Worker</h2>
+            <div id="sw-status"></div>
+            <button class="btn" onclick="checkServiceWorkerStatus()">🔄 Verificar SW</button>
+            <button class="btn danger" onclick="unregisterSW()">🚨 Desregistrar SW</button>
+        </div>
+
+        <div class="test-section">
+            <h2>📝 Log de Eventos</h2>
+            <button class="btn" onclick="clearLog()">🗑️ Limpiar Log</button>
+            <pre id="event-log"></pre>
+        </div>
+    </div>
+
+    <script>
+        let eventLog = [];
+        
+        // Cargar functions.js
+        $.getScript('js/functions.js').done(function() {
+            log('✅ functions.js cargado correctamente');
+            detectURLs();
+        }).fail(function() {
+            log('❌ Error cargando functions.js');
+        });
+        
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            eventLog.push(`[${timestamp}] ${message}`);
+            document.getElementById('event-log').textContent = eventLog.slice(-30).join('\n');
+        }
+
+        function detectURLs() {
+            try {
+                const currentPath = window.location.pathname;
+                document.getElementById('current-page').textContent = currentPath;
+                
+                // Detectar baseURL
+                let baseURL = window.location.pathname.includes('index.php') 
+                    ? window.location.pathname.replace('index.php', '') 
+                    : window.location.pathname.endsWith('/') 
+                        ? window.location.pathname 
+                        : window.location.pathname + '/';
+                
+                document.getElementById('base-url').textContent = baseURL;
+                
+                // URLs de API
+                const urlAPI = baseURL + "js/productsRequested/";
+                const v2urlAPI = baseURL + "api/requestInsumos/";
+                
+                document.getElementById('url-api').textContent = urlAPI;
+                document.getElementById('v2url-api').textContent = v2urlAPI;
+                
+                // Guardar globalmente
+                window.testBaseURL = baseURL;
+                window.testUrlAPI = urlAPI;
+                window.testV2urlAPI = v2urlAPI;
+                
+                log('URLs detectadas correctamente');
+                
+            } catch (error) {
+                log('❌ Error detectando URLs: ' + error.message);
+            }
+        }
+
+        function testSearchProducts() {
+            const query = document.getElementById('search-query').value;
+            const resultsDiv = document.getElementById('search-results');
+            
+            log(`🔍 Probando búsqueda: "${query}"`);
+            resultsDiv.innerHTML = '<div class="info">🔄 Buscando productos...</div>';
+            
+            $.ajax({
+                url: window.testUrlAPI + 'searchProducts.php',
+                method: 'GET',
+                data: { query: query },
+                success: function (response) {
+                    log('✅ Búsqueda exitosa - Respuesta: ' + response.length + ' caracteres');
+                    
+                    if (response && response.indexOf('product-card') !== -1) {
+                        const productCount = (response.match(/product-card/g) || []).length;
+                        resultsDiv.innerHTML = `
+                            <div class="success">✅ ${productCount} productos encontrados</div>
+                            <div class="info">Respuesta: ${response.length} caracteres</div>
+                        `;
+                    } else {
+                        resultsDiv.innerHTML = `
+                            <div class="warning">⚠️ Respuesta sin productos</div>
+                            <pre>${response.substring(0, 500)}...</pre>
+                        `;
+                    }
+                },
+                error: function (xhr, status, error) {
+                    log('❌ Error en búsqueda: ' + error);
+                    resultsDiv.innerHTML = `
+                        <div class="error">❌ Error: ${error}</div>
+                        <div class="error">Estado: ${status}</div>
+                        <div class="error">Código: ${xhr.status}</div>
+                    `;
+                }
+            });
+        }
+
+        function testDirectSearch() {
+            const query = document.getElementById('search-query').value;
+            const url = window.testUrlAPI + 'searchProducts.php?query=' + encodeURIComponent(query);
+            
+            log('🔗 Abriendo búsqueda directa: ' + url);
+            window.open(url, '_blank');
+        }
+
+        function testGetCart() {
+            const resultsDiv = document.getElementById('cart-results');
+            
+            log('👁️ Probando obtener carrito');
+            resultsDiv.innerHTML = '<div class="info">🔄 Obteniendo carrito...</div>';
+            
+            $.ajax({
+                url: window.testV2urlAPI + 'getCart.php',
+                method: 'GET',
+                success: function (response) {
+                    log('✅ Carrito obtenido correctamente');
+                    
+                    try {
+                        let res = typeof response === 'string' ? JSON.parse(response) : response;
+                        
+                        if (res.status === 'success') {
+                            const cartCount = res.cart ? res.cart.length : 0;
+                            resultsDiv.innerHTML = `
+                                <div class="success">✅ Carrito: ${cartCount} productos</div>
+                                <pre>${JSON.stringify(res, null, 2)}</pre>
+                            `;
+                        } else {
+                            resultsDiv.innerHTML = `
+                                <div class="warning">⚠️ ${res.message || 'Respuesta sin datos'}</div>
+                                <pre>${JSON.stringify(res, null, 2)}</pre>
+                            `;
+                        }
+                    } catch (e) {
+                        resultsDiv.innerHTML = `
+                            <div class="error">❌ Error parseando JSON</div>
+                            <pre>${response}</pre>
+                        `;
+                    }
+                },
+                error: function (xhr, status, error) {
+                    log('❌ Error obteniendo carrito: ' + error);
+                    resultsDiv.innerHTML = `
+                        <div class="error">❌ Error: ${error}</div>
+                        <div class="error">Estado: ${status}</div>
+                    `;
+                }
+            });
+        }
+
+        function testAddToCart() {
+            const productId = document.getElementById('product-id').value;
+            const quantity = document.getElementById('quantity').value;
+            const resultsDiv = document.getElementById('cart-results');
+            
+            if (!productId || !quantity) {
+                resultsDiv.innerHTML = '<div class="error">❌ Ingresa ID y cantidad</div>';
+                return;
+            }
+            
+            log(`➕ Probando agregar al carrito: ID=${productId}, Cantidad=${quantity}`);
+            resultsDiv.innerHTML = '<div class="info">🔄 Agregando al carrito...</div>';
+            
+            const data = {
+                idProduct: productId,
+                quantity: quantity
+            };
+            
+            $.ajax({
+                url: window.testV2urlAPI + 'saveToCart.php',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (response) {
+                    log('✅ Producto agregado correctamente');
+                    
+                    try {
+                        let res = typeof response === 'string' ? JSON.parse(response) : response;
+                        
+                        if (res.status === 'success') {
+                            resultsDiv.innerHTML = `
+                                <div class="success">✅ ${res.message}</div>
+                                <pre>${JSON.stringify(res, null, 2)}</pre>
+                            `;
+                        } else {
+                            resultsDiv.innerHTML = `
+                                <div class="warning">⚠️ ${res.message}</div>
+                                <pre>${JSON.stringify(res, null, 2)}</pre>
+                            `;
+                        }
+                    } catch (e) {
+                        resultsDiv.innerHTML = `
+                            <div class="error">❌ Error parseando respuesta</div>
+                            <pre>${response}</pre>
+                        `;
+                    }
+                },
+                error: function (xhr, status, error) {
+                    log('❌ Error agregando al carrito: ' + error);
+                    resultsDiv.innerHTML = `
+                        <div class="error">❌ Error: ${error}</div>
+                        <div class="error">Estado: ${status}</div>
+                    `;
+                }
+            });
+        }
+
+        function testDeleteFromCart() {
+            const productId = document.getElementById('product-id').value;
+            const resultsDiv = document.getElementById('cart-results');
+            
+            if (!productId) {
+                resultsDiv.innerHTML = '<div class="error">❌ Ingresa ID del producto</div>';
+                return;
+            }
+            
+            log(`🗑️ Probando eliminar del carrito: ID=${productId}`);
+            resultsDiv.innerHTML = '<div class="info">🔄 Eliminando del carrito...</div>';
+            
+            $.ajax({
+                url: window.testV2urlAPI + 'deleteToCart.php',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ idProduct: productId }),
+                success: function (response) {
+                    log('✅ Producto eliminado correctamente');
+                    
+                    try {
+                        let res = typeof response === 'string' ? JSON.parse(response) : response;
+                        resultsDiv.innerHTML = `
+                            <div class="success">✅ ${res.message || 'Eliminado'}</div>
+                            <pre>${JSON.stringify(res, null, 2)}</pre>
+                        `;
+                    } catch (e) {
+                        resultsDiv.innerHTML = `
+                            <div class="error">❌ Error parseando respuesta</div>
+                            <pre>${response}</pre>
+                        `;
+                    }
+                },
+                error: function (xhr, status, error) {
+                    log('❌ Error eliminando: ' + error);
+                    resultsDiv.innerHTML = `
+                        <div class="error">❌ Error: ${error}</div>
+                        <div class="error">Estado: ${status}</div>
+                    `;
+                }
+            });
+        }
+
+        async function testNetworkDirect() {
+            const resultsDiv = document.getElementById('network-results');
+            log('🌐 Probando fetch directo');
+            
+            try {
+                const response = await fetch(window.testV2urlAPI + 'getCart.php');
+                const data = await response.text();
+                
+                resultsDiv.innerHTML = `
+                    <div class="success">✅ Fetch directo exitoso</div>
+                    <div class="info">Status: ${response.status}</div>
+                    <div class="info">Headers: ${JSON.stringify([...response.headers])}</div>
+                    <pre>${data.substring(0, 500)}...</pre>
+                `;
+                log('✅ Fetch directo completado');
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Error fetch: ${error.message}</div>`;
+                log('❌ Error en fetch directo: ' + error.message);
+            }
+        }
+
+        async function testNetworkBypass() {
+            const resultsDiv = document.getElementById('network-results');
+            log('🚫 Probando bypass Service Worker');
+            
+            try {
+                const response = await fetch(window.testV2urlAPI + 'getCart.php?_bypass=' + Date.now(), {
+                    cache: 'no-cache',
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate'
+                    }
+                });
+                
+                const data = await response.text();
+                
+                resultsDiv.innerHTML = `
+                    <div class="success">✅ Bypass exitoso</div>
+                    <div class="info">Status: ${response.status}</div>
+                    <pre>${data.substring(0, 500)}...</pre>
+                `;
+                log('✅ Bypass completado');
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Error bypass: ${error.message}</div>`;
+                log('❌ Error en bypass: ' + error.message);
+            }
+        }
+
+        async function checkServiceWorkerStatus() {
+            const statusDiv = document.getElementById('sw-status');
+            
+            try {
+                if ('serviceWorker' in navigator) {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    
+                    let html = '';
+                    if (registrations.length === 0) {
+                        html = '<div class="success">✅ No hay Service Workers registrados</div>';
+                        log('SW: Ninguno registrado');
+                    } else {
+                        html = '<div class="warning">⚠️ Service Workers encontrados:</div>';
+                        registrations.forEach((reg, index) => {
+                            html += `<div class="info">SW ${index + 1}: ${reg.scope}</div>`;
+                            html += `<div class="info">Estado: ${reg.active ? 'Activo' : 'Inactivo'}</div>`;
+                            log(`SW encontrado: ${reg.scope} - ${reg.active ? 'Activo' : 'Inactivo'}`);
+                        });
+                    }
+                    
+                    if (navigator.serviceWorker.controller) {
+                        html += '<div class="warning">⚠️ Página controlada por Service Worker</div>';
+                        log('Página bajo control SW');
+                    } else {
+                        html += '<div class="success">✅ Página NO controlada por Service Worker</div>';
+                        log('Página libre de control SW');
+                    }
+                    
+                    statusDiv.innerHTML = html;
+                } else {
+                    statusDiv.innerHTML = '<div class="error">❌ Service Worker no soportado</div>';
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                log('❌ Error verificando SW: ' + error.message);
+            }
+        }
+
+        async function unregisterSW() {
+            log('🚨 Desregistrando Service Workers');
+            
+            try {
+                if ('serviceWorker' in navigator) {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    
+                    for (let registration of registrations) {
+                        await registration.unregister();
+                        log(`✅ SW desregistrado: ${registration.scope}`);
+                    }
+                    
+                    // Limpiar cachés
+                    if ('caches' in window) {
+                        const cacheNames = await caches.keys();
+                        for (let name of cacheNames) {
+                            await caches.delete(name);
+                            log(`✅ Caché eliminado: ${name}`);
+                        }
+                    }
+                    
+                    alert('Service Workers desregistrados. Recargando página...');
+                    location.reload();
+                }
+            } catch (error) {
+                log('❌ Error desregistrando SW: ' + error.message);
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function clearLog() {
+            eventLog = [];
+            document.getElementById('event-log').textContent = '';
+        }
+
+        // Verificar SW al cargar
+        document.addEventListener('DOMContentLoaded', () => {
+            checkServiceWorkerStatus();
+        });
+    </script>
+</body>
+</html>
