@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kalli-jaguar-inventory-v1.2.0';
+const CACHE_NAME = 'kalli-jaguar-inventory-v1.3.0';
 const urlsToCache = [
     '/',
     '/index.php',
@@ -10,7 +10,6 @@ const urlsToCache = [
     '/js/sb-admin-2.min.js',
     '/js/ajax.js',
     '/js/functions.js',
-    // Recursos estáticos
     '/img/icons/icon-72x72.png',
     '/img/icons/icon-96x96.png',
     '/img/icons/icon-128x128.png',
@@ -61,16 +60,35 @@ self.addEventListener('activate', event => {
     self.clients.claim(); // Controlar todas las páginas inmediatamente
 });
 
-// Interceptar peticiones de red
+// Interceptar peticiones de red - MODO INTELIGENTE
 self.addEventListener('fetch', event => {
     const url = new URL(event.request.url);
     
-    // Lista de URLs que NUNCA deben ser cacheadas (críticas para funcionamiento)
+    // 🚫 BYPASS COMPLETO para páginas críticas de funcionamiento
+    const criticalPages = [
+        'requestProducts',
+        'showRequest',
+        'editarComanda'
+    ];
+    
+    // Si estamos en una página crítica, NO INTERCEPTAR NADA
+    const isCriticalPage = criticalPages.some(page => 
+        event.request.url.includes('page=' + page) || 
+        event.request.url.includes(page + '.php')
+    );
+    
+    if (isCriticalPage) {
+        console.log('SW: BYPASS COMPLETO para página crítica:', event.request.url);
+        return; // No interceptar absolutamente nada
+    }
+    
+    // 🚫 Lista AMPLIADA de URLs que NUNCA deben ser cacheadas 
     const neverCache = [
         '/controllers/',
         '/includes/',
         '/js/productsRequested/',
         '/api/',
+        '/pages/',
         'iniciar_sesion.php',
         'logout.php',
         'session',
@@ -82,7 +100,11 @@ self.addEventListener('fetch', event => {
         'deleteToCart.php',
         'confirmRequest.php',
         'requestInsumos',
-        '.php'
+        'comandaDetails',
+        'updateStock',
+        '.php',
+        'ajax',
+        'fetch'
     ];
 
     // Verificar si la URL contiene algún patrón que no debe ser cacheado

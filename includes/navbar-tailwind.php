@@ -242,7 +242,7 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['usuario'])) {
                     </div>
                 </div>
 
-                <?php if ($_SESSION['id'] == '1' || $_SESSION['id'] == '16') { ?>
+                <?php if ($_SESSION['id'] == '1' || $_SESSION['id'] == '16' || $_SESSION['id'] == '10') { ?>
                     <div class="mb-2">
                         <button onclick="toggleDropdown('ordenes')" class="nav-item nav-item-hover w-full flex items-center justify-between px-4 py-2.5 text-white text-opacity-80 hover:text-white rounded-lg group">
                             <div class="flex items-center">
