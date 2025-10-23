@@ -187,8 +187,8 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['usuario'])) {
                     <div class="mb-2">
                         <button onclick="toggleDropdown('sucursales')" class="nav-item nav-item-hover w-full flex items-center justify-between px-4 py-2.5 text-white text-opacity-80 hover:text-white rounded-lg group">
                             <div class="flex items-center">
-                                <i class="fas fa-home mr-3 text-base group-hover:text-accent-yellow transition-colors"></i>
-                                <span class="nav-text">Gestiones Avanzadas</span>
+                                <i class="fas fa-gear mr-3 text-base group-hover:text-accent-yellow transition-colors"></i>
+                                <span class="nav-text">Opciones Avanzadas</span>
                             </div>
                             <i id="sucursales-icon" class="fas fa-chevron-right transition-transform group-hover:text-accent-yellow text-sm"></i>
                         </button>
@@ -198,7 +198,7 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['usuario'])) {
                                 <i class="fas fa-list mr-2 text-xs"></i>
                                 <span class="nav-text-small">Gestión de Sucursales</span>
                             </a>
-                            
+
                         </div>
                     </div>
 
