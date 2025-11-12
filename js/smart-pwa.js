@@ -90,68 +90,6 @@ class SmartPWAController {
         }
     }
     
-    showPWAStatus(status, message = '') {
-        // Remover status anterior
-        const existingStatus = document.getElementById('pwa-smart-status');
-        if (existingStatus) existingStatus.remove();
-        
-        let statusHTML = '';
-        let statusClass = '';
-        let statusIcon = '';
-        
-        switch (status) {
-            case 'enabled':
-                statusClass = 'alert-success';
-                statusIcon = '🟢';
-                statusHTML = `PWA Activada - Funcionalidades offline disponibles`;
-                break;
-            case 'disabled':
-                statusClass = 'alert-info';
-                statusIcon = '🔴';
-                statusHTML = `PWA Desactivada - Funcionamiento completo garantizado`;
-                break;
-            case 'error':
-                statusClass = 'alert-danger';
-                statusIcon = '❌';
-                statusHTML = `Error PWA: ${message}`;
-                break;
-        }
-        
-        const statusDiv = document.createElement('div');
-        statusDiv.id = 'pwa-smart-status';
-        statusDiv.className = `alert ${statusClass} alert-dismissible fade show`;
-        statusDiv.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            max-width: 350px;
-            font-size: 0.85rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        `;
-        
-        statusDiv.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 1.1rem;">${statusIcon}</span>
-                <span>${statusHTML}</span>
-            </div>
-            <button type="button" class="close" onclick="this.parentElement.remove()">
-                <span>&times;</span>
-            </button>
-        `;
-        
-        document.body.appendChild(statusDiv);
-        
-        // Auto-hide después de 5 segundos (excepto errores)
-        if (status !== 'error') {
-            setTimeout(() => {
-                if (statusDiv.parentElement) {
-                    statusDiv.remove();
-                }
-            }, 5000);
-        }
-    }
-    
     showPWAControls() {
         // Solo mostrar controles en páginas críticas
         const criticalPages = ['requestProducts', 'showRequest', 'editarComanda'];

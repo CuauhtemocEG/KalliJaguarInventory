@@ -178,29 +178,17 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['usuario'])) {
                     <div class="absolute left-0 top-0 bottom-0 w-1 bg-accent-yellow rounded-r-full transform scale-y-0 group-hover:scale-y-100 transition-transform"></div>
                 </a>
 
-                <div class="mt-8 mb-4">
-                    <h3 class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Administración</h3>
-                </div>
-
                 <?php if ($_SESSION['id'] == '1') { ?>
 
-                    <div class="mb-2">
-                        <button onclick="toggleDropdown('sucursales')" class="nav-item nav-item-hover w-full flex items-center justify-between px-4 py-2.5 text-white text-opacity-80 hover:text-white rounded-lg group">
-                            <div class="flex items-center">
-                                <i class="fas fa-gear mr-3 text-base group-hover:text-accent-yellow transition-colors"></i>
-                                <span class="nav-text">Opciones Avanzadas</span>
-                            </div>
-                            <i id="sucursales-icon" class="fas fa-chevron-right transition-transform group-hover:text-accent-yellow text-sm"></i>
-                        </button>
-                        <div id="sucursales-dropdown" class="hidden ml-4 mt-2 space-y-1">
-
-                            <a href="index.php?page=sucursalManagement" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
-                                <i class="fas fa-list mr-2 text-xs"></i>
-                                <span class="nav-text-small">Gestión de Sucursales</span>
-                            </a>
-
-                        </div>
+                    <div class="mt-8 mb-4">
+                        <h3 class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Administración</h3>
                     </div>
+
+                    <a href="index.php?page=sucursalManagement" class="nav-item-hover flex items-center px-4 py-3 text-white text-opacity-80 hover:text-white rounded-lg mb-2 relative group">
+                        <i class="fas fa-home mr-3 text-lg group-hover:text-accent-yellow transition-colors"></i>
+                        <span class="font-medium">Gestión de Sucursales</span>
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-accent-yellow rounded-r-full transform scale-y-0 group-hover:scale-y-100 transition-transform"></div>
+                    </a>
 
                 <?php } ?>
 
@@ -272,6 +260,10 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['usuario'])) {
                             <a href="index.php?page=logsStock" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
                                 <i class="fas fa-history mr-2 text-xs"></i>
                                 <span class="nav-text-small">Historial de Cambios</span>
+                            </a>
+                            <a href="/pages/pickingOrders.php" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-green-400 transition-all">
+                                <i class="fas fa-barcode mr-2 text-xs"></i>
+                                <span class="nav-text-small">Picking de Órdenes</span>
                             </a>
                         </div>
                     </div>
