@@ -344,7 +344,7 @@ function refreshOrders() {
 }
 
 function viewOrderDetails(orderId) {
-    window.open(`index.php?page=showPDF&ComandaID=${orderId}`, '_blank');
+    window.open(`index.php?page=showPDF&ComandaID=${orderId}`);
 }
 
 async function startPicking(orderId) {
