@@ -261,7 +261,7 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['usuario'])) {
                                 <i class="fas fa-history mr-2 text-xs"></i>
                                 <span class="nav-text-small">Historial de Cambios</span>
                             </a>
-                            <a href="/pages/pickingOrders.php" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-green-400 transition-all">
+                            <a href="/pages/pickingOrders" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-green-400 transition-all">
                                 <i class="fas fa-barcode mr-2 text-xs"></i>
                                 <span class="nav-text-small">Picking de Órdenes</span>
                             </a>
