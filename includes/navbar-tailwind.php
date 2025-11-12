@@ -186,7 +186,7 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['usuario'])) {
 
                     <a href="index.php?page=sucursalManagement" class="nav-item-hover flex items-center px-4 py-3 text-white text-opacity-80 hover:text-white rounded-lg mb-2 relative group">
                         <i class="fas fa-home mr-3 text-lg group-hover:text-accent-yellow transition-colors"></i>
-                        <span class="font-medium">Gestión de Sucursales</span>
+                        <span class="nav-text-small">Gestión de Sucursales</span>
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-accent-yellow rounded-r-full transform scale-y-0 group-hover:scale-y-100 transition-transform"></div>
                     </a>
 
