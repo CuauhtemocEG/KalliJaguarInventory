@@ -1,9 +1,10 @@
 <?php
-// NO AGREGAR ESPACIOS ANTES DE <?php - CAUSA CORRUPCIÓN DE IMAGEN
-ob_start(); // Capturar cualquier salida accidental
+ob_start();
+session_name("INV");
+session_start();
 
-require_once __DIR__ . '/../../../vendor/autoload.php';
-require_once __DIR__ . '/../../../controllers/mainController.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../controllers/mainController.php';
 
 use Picqer\Barcode\BarcodeGeneratorPNG;
 
@@ -83,6 +84,11 @@ function generarCodigoConLogo($ean13, $nombreProducto, $logoPath, $fontPath, $sc
 }
 
 try {
+    // Verificar que el usuario esté autenticado
+    if (!isset($_SESSION['id'])) {
+        throw new Exception('No autenticado');
+    }
+    
     if (!isset($_GET['productoId'])) {
         throw new Exception('ProductoID requerido');
     }
@@ -111,8 +117,16 @@ try {
         $validUpc = generateValidEan13($validUpc);
     }
     
-    $logoPath = __DIR__ . '/../img/Logo-Negro.png';
-    $fontPath = __DIR__ . '/../fonts/arial.ttf';
+    $logoPath = __DIR__ . '/../../img/Logo-Negro.png';
+    $fontPath = __DIR__ . '/../../fonts/arial.ttf';
+    
+    // Verificar que los archivos existan
+    if (!file_exists($logoPath)) {
+        throw new Exception('Logo no encontrado: ' . $logoPath);
+    }
+    if (!file_exists($fontPath)) {
+        throw new Exception('Fuente no encontrada: ' . $fontPath);
+    }
     
     $barcodeImage = generarCodigoConLogo($validUpc, $producto['Nombre'], $logoPath, $fontPath);
     
