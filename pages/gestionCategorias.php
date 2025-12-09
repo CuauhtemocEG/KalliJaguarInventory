@@ -188,7 +188,7 @@ if ($_SESSION['id'] != 1) {
 
     <script>
         let categorias = [];
-        const API_URL = './api/categorias/index.php';
+        const API_URL = './v2/categorias/index.php';
 
         document.addEventListener('DOMContentLoaded', () => {
             loadCategorias();

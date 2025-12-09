@@ -252,7 +252,7 @@ if ($_SESSION['id'] != 1) {
 
     <script>
         let tags = [];
-        const API_URL = './api/tags/index.php';
+        const API_URL = './v2/tags/index.php';
 
         document.addEventListener('DOMContentLoaded', () => {
             loadTags();

@@ -446,9 +446,9 @@ function generarCodigoConLogo($ean13, $nombreProducto, $logoPath, $fontPath, $sc
         let totalItems = 0;
         let currentBarcode = null;
 
-        const API_URL = './api/productos/index.php';
-        const API_CATEGORIAS = './api/categorias/index.php';
-        const API_TAGS = './api/tags/index.php';
+        const API_URL = './v2/productos/index.php';
+        const API_CATEGORIAS = './v2/categorias/index.php';
+        const API_TAGS = './v2/tags/index.php';
 
         document.addEventListener('DOMContentLoaded', () => {
             loadCategorias();
