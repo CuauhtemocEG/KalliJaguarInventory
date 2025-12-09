@@ -27,7 +27,6 @@ $puedeVer = isset($permisos['PuedeVer']) ? (bool)$permisos['PuedeVer'] : false;
 $puedeCrear = isset($permisos['PuedeCrear']) ? (bool)$permisos['PuedeCrear'] : false;
 $puedeEditar = isset($permisos['PuedeEditar']) ? (bool)$permisos['PuedeEditar'] : false;
 $puedeEliminar = isset($permisos['PuedeEliminar']) ? (bool)$permisos['PuedeEliminar'] : false;
-?>
 
 // Obtener estadísticas de usuarios
 $stats_query = "
@@ -97,7 +96,6 @@ $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 $stmt->execute();
 $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Contar total para paginación
 $count_query = "SELECT COUNT(*) as total FROM Usuarios $where_clause";
 $count_stmt = $pdo->prepare($count_query);
 foreach ($params as $key => $value) {
@@ -346,7 +344,6 @@ $total_pages = ceil($total_users / $limit);
     </style>
 </head>
 <body class="bg-gray-50">
-    <!-- Header con estadísticas -->
     <div class="gradient-bg text-white p-6 mb-6">
         <div class="max-w-7xl mx-auto">
             <h1 class="text-3xl font-bold mb-6 flex items-center">
@@ -354,7 +351,6 @@ $total_pages = ceil($total_users / $limit);
                 Gestión de Usuarios
             </h1>
             
-            <!-- Tarjetas de estadísticas -->
             <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                 <div class="glass-effect rounded-lg p-4 border border-white/20">
                     <div class="flex items-center">
@@ -400,10 +396,8 @@ $total_pages = ceil($total_users / $limit);
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Barra de herramientas -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-                <!-- Búsqueda y filtros -->
                 <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
                     <div class="relative">
                         <input 
@@ -430,7 +424,6 @@ $total_pages = ceil($total_users / $limit);
                     </select>
                 </div>
                 
-                <!-- Botones de acción -->
                 <div class="flex space-x-2">
                     <?php if ($puedeCrear): ?>
                     <button onclick="openCreateUserModal()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
@@ -447,7 +440,6 @@ $total_pages = ceil($total_users / $limit);
             </div>
         </div>
 
-        <!-- Tabla de usuarios -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
@@ -494,7 +486,6 @@ $total_pages = ceil($total_users / $limit);
                                 </div>
                                 <div class="text-xs text-gray-500 mt-1">
                                     <?php 
-                                    // Solo mostrar estado de conexión si no es "Nunca"
                                     if ($usuario['estado_conexion'] && $usuario['estado_conexion'] !== 'Nunca') {
                                         echo $usuario['estado_conexion'];
                                     } else {
@@ -524,7 +515,6 @@ $total_pages = ceil($total_users / $limit);
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex items-center justify-end space-x-3">
-                                    <!-- Ver detalles - Siempre visible si tiene permiso de Ver -->
                                     <button onclick="viewUser(<?php echo $usuario['UsuarioID']; ?>)" 
                                             class="btn-view text-blue-600 hover:text-blue-800 transition-colors" 
                                             title="Ver detalles">
@@ -532,14 +522,12 @@ $total_pages = ceil($total_users / $limit);
                                     </button>
                                     
                                     <?php if ($puedeEditar): ?>
-                                    <!-- Editar usuario -->
                                     <button onclick="editUser(<?php echo $usuario['UsuarioID']; ?>)" 
                                             class="btn-edit text-purple-600 hover:text-purple-800 transition-colors" 
                                             title="Editar usuario">
                                         <i class="fas fa-edit text-lg"></i>
                                     </button>
                                     
-                                    <!-- Resetear contraseña -->
                                     <button onclick="resetPassword(<?php echo $usuario['UsuarioID']; ?>)" 
                                             class="btn-password text-yellow-600 hover:text-yellow-800 transition-colors" 
                                             title="Resetear contraseña">
@@ -548,7 +536,6 @@ $total_pages = ceil($total_users / $limit);
                                     <?php endif; ?>
                                     
                                     <?php if ($puedeEliminar): ?>
-                                    <!-- Activar/Desactivar -->
                                     <button onclick="toggleUserStatus(<?php echo $usuario['UsuarioID']; ?>, '<?php echo $usuario['estado']; ?>')" 
                                             class="<?php echo $usuario['estado'] === 'activo' ? 'btn-deactivate text-red-600 hover:text-red-800' : 'btn-activate text-green-600 hover:text-green-800'; ?> transition-colors" 
                                             title="<?php echo $usuario['estado'] === 'activo' ? 'Desactivar usuario' : 'Activar usuario'; ?>">
@@ -564,7 +551,6 @@ $total_pages = ceil($total_users / $limit);
             </div>
         </div>
 
-        <!-- Paginación -->
         <?php if ($total_pages > 1): ?>
         <div class="bg-white px-4 py-3 border border-gray-200 rounded-lg mt-4 flex items-center justify-between">
             <div class="text-sm text-gray-700">
@@ -583,9 +569,7 @@ $total_pages = ceil($total_users / $limit);
         <?php endif; ?>
     </div>
 
-    <!-- Scripts -->
     <script>
-        // Permisos del usuario actual
         const userPermissions = {
             puedeVer: <?php echo $puedeVer ? 'true' : 'false'; ?>,
             puedeCrear: <?php echo $puedeCrear ? 'true' : 'false'; ?>,
@@ -593,7 +577,6 @@ $total_pages = ceil($total_users / $limit);
             puedeEliminar: <?php echo $puedeEliminar ? 'true' : 'false'; ?>
         };
         
-        // Filtros en tiempo real
         $('#searchInput, #filterEstado, #filterRol').on('change keyup', function() {
             const search = $('#searchInput').val();
             const estado = $('#filterEstado').val();
@@ -603,12 +586,11 @@ $total_pages = ceil($total_users / $limit);
             url.searchParams.set('search', search);
             url.searchParams.set('estado', estado);
             url.searchParams.set('rol', rol);
-            url.searchParams.set('p', '1'); // Reset to page 1
+            url.searchParams.set('p', '1');
             
             window.location.href = url.toString();
         });
 
-        // Funciones de usuario
         function viewUser(id) {
             window.location.href = `?page=userDetails&id=${id}`;
         }
@@ -628,7 +610,6 @@ $total_pages = ceil($total_users / $limit);
             }
             
             if (confirm('¿Estás seguro de que quieres resetear la contraseña de este usuario?\n\nSe generará una nueva contraseña temporal.')) {
-                // Mostrar indicador de carga
                 const button = event.target.closest('button');
                 const originalContent = button.innerHTML;
                 button.innerHTML = '<span class="loading-spinner"></span>';
@@ -646,7 +627,6 @@ $total_pages = ceil($total_users / $limit);
                         if (response.success) {
                             showNotification('Contraseña reseteada exitosamente', 'success');
                             
-                            // Mostrar nueva contraseña en un modal más elegante
                             const modal = $(`
                                 <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
                                     <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
@@ -682,7 +662,6 @@ $total_pages = ceil($total_users / $limit);
                         showNotification('Error al comunicarse con el servidor', 'error');
                     },
                     complete: function() {
-                        // Restaurar botón
                         button.innerHTML = originalContent;
                         button.disabled = false;
                     }
@@ -700,7 +679,6 @@ $total_pages = ceil($total_users / $limit);
             const action = newStatus === 'activo' ? 'activar' : 'desactivar';
             
             if (confirm(`¿Estás seguro de que quieres ${action} este usuario?`)) {
-                // Mostrar indicador de carga
                 const button = event.target.closest('button');
                 const originalContent = button.innerHTML;
                 button.innerHTML = '<span class="loading-spinner"></span>';
@@ -727,7 +705,6 @@ $total_pages = ceil($total_users / $limit);
                         showNotification('Error al comunicarse con el servidor', 'error');
                     },
                     complete: function() {
-                        // Restaurar botón
                         button.innerHTML = originalContent;
                         button.disabled = false;
                     }
@@ -748,7 +725,6 @@ $total_pages = ceil($total_users / $limit);
             const estado = $('#filterEstado').val();
             const rol = $('#filterRol').val();
             
-            // Mostrar notificación de inicio de exportación
             showNotification('Iniciando exportación de usuarios...', 'info');
             
             let url = 'api/userActions.php?action=export_users';
@@ -756,7 +732,6 @@ $total_pages = ceil($total_users / $limit);
             if (estado) url += '&estado=' + encodeURIComponent(estado);
             if (rol) url += '&rol=' + encodeURIComponent(rol);
             
-            // Crear enlace temporal para descarga
             const link = document.createElement('a');
             link.href = url;
             link.download = 'usuarios_' + new Date().toISOString().slice(0,10) + '.csv';
@@ -764,13 +739,11 @@ $total_pages = ceil($total_users / $limit);
             link.click();
             document.body.removeChild(link);
             
-            // Notificación de éxito después de un breve delay
             setTimeout(() => {
                 showNotification('Exportación completada exitosamente', 'success');
             }, 1000);
         }
 
-        // Función para mostrar notificaciones mejorada
         function showNotification(message, type) {
             const icons = {
                 success: 'fa-check-circle',
@@ -800,7 +773,6 @@ $total_pages = ceil($total_users / $limit);
             
             $('body').append(notification);
             
-            // Auto-remove después de 4 segundos si no es un error
             if (type !== 'error') {
                 setTimeout(() => {
                     notification.fadeOut(300, function() {
@@ -810,30 +782,25 @@ $total_pages = ceil($total_users / $limit);
             }
         }
 
-        // Actualizar estado de conexión cada 30 segundos
         setInterval(function() {
             location.reload();
         }, 30000);
         
-        // Debug: Verificar si Font Awesome está cargando
         $(document).ready(function() {
             console.log('Font Awesome loaded:', window.FontAwesome !== undefined);
             console.log('Icons count:', $('.fas').length);
             
-            // Verificar si los iconos se cargan correctamente después de 2 segundos
             setTimeout(function() {
                 let fontAwesomeLoaded = false;
                 
-                // Verificar si Font Awesome está realmente funcionando
                 $('.fas').each(function() {
                     const computedStyle = window.getComputedStyle(this, ':before');
                     if (computedStyle && computedStyle.content && computedStyle.content !== 'none' && computedStyle.content !== '""') {
                         fontAwesomeLoaded = true;
-                        return false; // Salir del each
+                        return false;
                     }
                 });
                 
-                // Solo aplicar fallback si Font Awesome no está funcionando
                 if (!fontAwesomeLoaded) {
                     console.log('Font Awesome no detectado, aplicando fallback de emojis');
                     $('.btn-view .fas').html('👁').removeClass('fas fa-eye').addClass('emoji-fallback');
