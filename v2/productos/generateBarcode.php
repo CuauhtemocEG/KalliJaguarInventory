@@ -2,8 +2,8 @@
 // NO AGREGAR ESPACIOS ANTES DE <?php - CAUSA CORRUPCIÓN DE IMAGEN
 ob_start(); // Capturar cualquier salida accidental
 
-require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../controllers/mainController.php';
+require_once __DIR__ . '/../../../vendor/autoload.php';
+require_once __DIR__ . '/../../../controllers/mainController.php';
 
 use Picqer\Barcode\BarcodeGeneratorPNG;
 
