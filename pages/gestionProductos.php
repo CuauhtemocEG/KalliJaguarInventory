@@ -220,7 +220,7 @@ function generarCodigoConLogo($ean13, $nombreProducto, $logoPath, $fontPath, $sc
                 <select id="filterTipo" class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 transition text-sm">
                     <option value="">Todos los tipos</option>
                     <option value="Unidad">Contable</option>
-                    <option value="Peso">Pesable</option>
+                    <option value="Pesable">Pesable</option>
                 </select>
                 <div class="flex gap-2">
                     <button onclick="applyFilters()" class="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-semibold flex items-center justify-center gap-2">
@@ -351,7 +351,7 @@ function generarCodigoConLogo($ean13, $nombreProducto, $logoPath, $fontPath, $sc
                         </label>
                         <select id="productoTipo" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 transition">
                             <option value="Unidad">Contable (Unidades)</option>
-                            <option value="Peso">Pesable (Kg)</option>
+                            <option value="Pesable">Pesable (Kg)</option>
                         </select>
                     </div>
 
@@ -589,7 +589,7 @@ function generarCodigoConLogo($ean13, $nombreProducto, $logoPath, $fontPath, $sc
                                 </p>
                                 <p class="flex items-center gap-2">
                                     <i class="fas fa-boxes text-gray-400 w-4"></i>
-                                    <span><strong>${prod.Cantidad}</strong> ${prod.Tipo === 'Peso' ? 'Kg' : 'Uds'}</span>
+                                    <span><strong>${prod.Cantidad}</strong> ${prod.Tipo === 'Pesable' ? 'Kg' : 'Uds'}</span>
                                 </p>
                             </div>
 

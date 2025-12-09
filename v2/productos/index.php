@@ -246,8 +246,8 @@ function handlePost($pdo) {
     if (empty($input['Nombre'])) {
         sendError('El nombre del producto es requerido');
     }
-    if (empty($input['Tipo']) || !in_array($input['Tipo'], ['Unidad', 'Peso'])) {
-        sendError('El tipo debe ser Unidad o Peso');
+    if (empty($input['Tipo']) || !in_array($input['Tipo'], ['Unidad', 'Pesable'])) {
+        sendError('El tipo debe ser Unidad o Pesable');
     }
     if (!isset($input['PrecioUnitario']) || $input['PrecioUnitario'] < 0) {
         sendError('El precio unitario es requerido y debe ser mayor a 0');
