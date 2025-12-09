@@ -1,5 +1,6 @@
 <?php
 header('Content-Type: application/json');
+session_name("INV");
 session_start();
 
 require_once('../../controllers/mainController.php');

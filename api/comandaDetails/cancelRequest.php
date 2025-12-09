@@ -11,6 +11,7 @@ if (!isset($input['ComandaID'])) {
 }
 
 $comandaID = $input['ComandaID'];
+session_name("INV");
 session_start();
 $idUser = $_SESSION['id'] ?? null;
 
