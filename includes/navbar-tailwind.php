@@ -194,7 +194,7 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['usuario'])) {
                     <button onclick="toggleDropdown('usuarios')" class="nav-item nav-item-hover w-full flex items-center justify-between px-4 py-2.5 text-white text-opacity-80 hover:text-white rounded-lg group">
                         <div class="flex items-center">
                             <i class="fas fa-user mr-3 text-base group-hover:text-accent-yellow transition-colors"></i>
-                            <span class="nav-text">Gestión de Usuarios</span>
+                            <span class="nav-text">Usuarios</span>
                         </div>
                         <i id="usuarios-icon" class="fas fa-chevron-right transition-transform group-hover:text-accent-yellow text-sm"></i>
                     </button>
