@@ -5,28 +5,10 @@
 require_once "./controllers/mainController.php";
 $pdo = conexion();
 
-// Obtener permisos del usuario para userManagement
-$permisos_query = "
-    SELECT 
-        perm.PuedeVer,
-        perm.PuedeCrear,
-        perm.PuedeEditar,
-        perm.PuedeEliminar
-    FROM Permisos perm
-    INNER JOIN Paginas p ON perm.PaginaID = p.PaginaID
-    WHERE perm.UsuarioID = :usuarioID 
-    AND p.Slug = 'userManagement'
-    LIMIT 1
-";
-$stmt_permisos = $pdo->prepare($permisos_query);
-$stmt_permisos->execute([':usuarioID' => $_SESSION['id']]);
-$permisos = $stmt_permisos->fetch(PDO::FETCH_ASSOC);
-
-// Almacenar permisos en variables (con valores por defecto si no existen)
-$puedeVer = isset($permisos['PuedeVer']) ? (bool)$permisos['PuedeVer'] : false;
-$puedeCrear = isset($permisos['PuedeCrear']) ? (bool)$permisos['PuedeCrear'] : false;
-$puedeEditar = isset($permisos['PuedeEditar']) ? (bool)$permisos['PuedeEditar'] : false;
-$puedeEliminar = isset($permisos['PuedeEliminar']) ? (bool)$permisos['PuedeEliminar'] : false;
+if (!isset($_SESSION["id"])) {
+    header("Location: index.php?page=login");
+    exit;
+}
 
 // Obtener estadísticas de usuarios
 $stats_query = "
