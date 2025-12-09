@@ -190,16 +190,16 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['usuario'])) {
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-accent-yellow rounded-r-full transform scale-y-0 group-hover:scale-y-100 transition-transform"></div>
                     </a>
 
-                <div class="mb-2">
-                    <button onclick="toggleDropdown('usuarios')" class="nav-item nav-item-hover w-full flex items-center justify-between px-4 py-2.5 text-white text-opacity-80 hover:text-white rounded-lg group">
-                        <div class="flex items-center">
-                            <i class="fas fa-user mr-3 text-base group-hover:text-accent-yellow transition-colors"></i>
-                            <span class="nav-text">Usuarios</span>
-                        </div>
-                        <i id="usuarios-icon" class="fas fa-chevron-right transition-transform group-hover:text-accent-yellow text-sm"></i>
-                    </button>
-                    <div id="usuarios-dropdown" class="hidden ml-4 mt-2 space-y-1">
-                        <a href="index.php?page=userManagement" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
+                    <div class="mb-2">
+                        <button onclick="toggleDropdown('usuarios')" class="nav-item nav-item-hover w-full flex items-center justify-between px-4 py-2.5 text-white text-opacity-80 hover:text-white rounded-lg group">
+                            <div class="flex items-center">
+                                <i class="fas fa-user mr-3 text-base group-hover:text-accent-yellow transition-colors"></i>
+                                <span class="nav-text">Usuarios</span>
+                            </div>
+                            <i id="usuarios-icon" class="fas fa-chevron-right transition-transform group-hover:text-accent-yellow text-sm"></i>
+                        </button>
+                        <div id="usuarios-dropdown" class="hidden ml-4 mt-2 space-y-1">
+                            <a href="index.php?page=userManagement" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
                                 <i class="fas fa-users-cog mr-2 text-xs"></i>
                                 <span class="nav-text-small">Gestión de Usuarios</span>
                             </a>
@@ -207,8 +207,8 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['usuario'])) {
                                 <i class="fas fa-chart-line mr-2 text-xs"></i>
                                 <span class="nav-text-small">Actividad de Usuarios</span>
                             </a>
+                        </div>
                     </div>
-                </div>
                 <?php } ?>
 
                 <?php if ($_SESSION['id'] == '1' || $_SESSION['id'] == '16' || $_SESSION['id'] == '10') { ?>
@@ -248,62 +248,64 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['usuario'])) {
                     </div>
                 <?php } ?>
 
-                <div class="mt-8 mb-4">
-                    <h3 class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Catálogo de Almacén</h3>
-                </div>
-
-                <div class="mb-2">
-                    <button onclick="toggleDropdown('productos')" class="nav-item nav-item-hover w-full flex items-center justify-between px-4 py-2.5 text-white text-opacity-80 hover:text-white rounded-lg group">
-                        <div class="flex items-center">
-                            <i class="fas fa-box mr-3 text-base group-hover:text-accent-yellow transition-colors"></i>
-                            <span class="nav-text">Producto</span>
-                        </div>
-                        <i id="productos-icon" class="fas fa-chevron-right transition-transform group-hover:text-accent-yellow text-sm"></i>
-                    </button>
-                    <div id="productos-dropdown" class="hidden ml-4 mt-2 space-y-1">
-                        <div class="px-4 py-1">
-                            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Categorías</span>
-                        </div>
-                        <a href="index.php?page=addCategory" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
-                            <i class="fas fa-plus mr-2 text-xs"></i>
-                            <span class="nav-text-small">Agregar Categoría</span>
-                        </a>
-                        <a href="index.php?page=showCategory" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
-                            <i class="fas fa-list mr-2 text-xs"></i>
-                            <span class="nav-text-small">Lista de Categoría</span>
-                        </a>
-                        <a href="index.php?page=searchCategory" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
-                            <i class="fas fa-search mr-2 text-xs"></i>
-                            <span class="nav-text-small">Buscar Categoría</span>
-                        </a>
-
-                        <div class="border-t border-white border-opacity-10 my-2"></div>
-
-                        <div class="px-4 py-1">
-                            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Producto</span>
-                        </div>
-                        <a href="index.php?page=addProduct" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
-                            <i class="fas fa-plus mr-2 text-xs"></i>
-                            <span class="nav-text-small">Agregar Productos</span>
-                        </a>
-                        <a href="index.php?page=showProduct" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
-                            <i class="fas fa-boxes mr-2 text-xs"></i>
-                            <span class="nav-text-small">Lista de Productos</span>
-                        </a>
-                        <a href="index.php?page=productsByCategory" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
-                            <i class="fas fa-tags mr-2 text-xs"></i>
-                            <span class="nav-text-small">Productos por Categoría</span>
-                        </a>
-                        <a href="index.php?page=searchProduct" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
-                            <i class="fas fa-search mr-2 text-xs"></i>
-                            <span class="nav-text-small">Buscar Producto</span>
-                        </a>
-                        <a href="index.php?page=scanProducts" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
-                            <i class="fas fa-qrcode mr-2 text-xs"></i>
-                            <span class="nav-text-small">Actualizar Stock</span>
-                        </a>
+                <?php if ($_SESSION['id'] == '1' || $_SESSION['id'] == '16' || $_SESSION['id'] == '10') { ?>
+                    <div class="mt-8 mb-4">
+                        <h3 class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Catálogo de Almacén</h3>
                     </div>
-                </div>
+
+                    <div class="mb-2">
+                        <button onclick="toggleDropdown('productos')" class="nav-item nav-item-hover w-full flex items-center justify-between px-4 py-2.5 text-white text-opacity-80 hover:text-white rounded-lg group">
+                            <div class="flex items-center">
+                                <i class="fas fa-box mr-3 text-base group-hover:text-accent-yellow transition-colors"></i>
+                                <span class="nav-text">Producto</span>
+                            </div>
+                            <i id="productos-icon" class="fas fa-chevron-right transition-transform group-hover:text-accent-yellow text-sm"></i>
+                        </button>
+                        <div id="productos-dropdown" class="hidden ml-4 mt-2 space-y-1">
+                            <div class="px-4 py-1">
+                                <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Categorías</span>
+                            </div>
+                            <a href="index.php?page=addCategory" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
+                                <i class="fas fa-plus mr-2 text-xs"></i>
+                                <span class="nav-text-small">Agregar Categoría</span>
+                            </a>
+                            <a href="index.php?page=showCategory" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
+                                <i class="fas fa-list mr-2 text-xs"></i>
+                                <span class="nav-text-small">Lista de Categoría</span>
+                            </a>
+                            <a href="index.php?page=searchCategory" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
+                                <i class="fas fa-search mr-2 text-xs"></i>
+                                <span class="nav-text-small">Buscar Categoría</span>
+                            </a>
+
+                            <div class="border-t border-white border-opacity-10 my-2"></div>
+
+                            <div class="px-4 py-1">
+                                <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Producto</span>
+                            </div>
+                            <a href="index.php?page=addProduct" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
+                                <i class="fas fa-plus mr-2 text-xs"></i>
+                                <span class="nav-text-small">Agregar Productos</span>
+                            </a>
+                            <a href="index.php?page=showProduct" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
+                                <i class="fas fa-boxes mr-2 text-xs"></i>
+                                <span class="nav-text-small">Lista de Productos</span>
+                            </a>
+                            <a href="index.php?page=productsByCategory" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
+                                <i class="fas fa-tags mr-2 text-xs"></i>
+                                <span class="nav-text-small">Productos por Categoría</span>
+                            </a>
+                            <a href="index.php?page=searchProduct" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
+                                <i class="fas fa-search mr-2 text-xs"></i>
+                                <span class="nav-text-small">Buscar Producto</span>
+                            </a>
+                            <a href="index.php?page=scanProducts" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
+                                <i class="fas fa-qrcode mr-2 text-xs"></i>
+                                <span class="nav-text-small">Actualizar Stock</span>
+                            </a>
+                        </div>
+                    </div>
+                <?php } ?>
 
                 <div class="mt-8 space-y-2">
                     <a href="index.php?page=requestProducts" class="nav-item nav-item-hover flex items-center px-4 py-2.5 text-white text-opacity-80 hover:text-white rounded-lg group relative">
@@ -315,6 +317,12 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['usuario'])) {
                     <a href="index.php?page=showRequest" class="nav-item nav-item-hover flex items-center px-4 py-2.5 text-white text-opacity-80 hover:text-white rounded-lg group relative">
                         <i class="fas fa-list-alt mr-3 text-base group-hover:text-accent-yellow transition-colors"></i>
                         <span class="nav-text">Mis Pedidos</span>
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-accent-yellow rounded-r-full transform scale-y-0 group-hover:scale-y-100 transition-transform"></div>
+                    </a>
+
+                    <a href="index.php?page=showAllRequest" class="nav-item nav-item-hover flex items-center px-4 py-2.5 text-white text-opacity-80 hover:text-white rounded-lg group relative">
+                        <i class="fas fa-list-alt mr-3 text-base group-hover:text-accent-yellow transition-colors"></i>
+                        <span class="nav-text">Todos los Pedidos</span>
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-accent-yellow rounded-r-full transform scale-y-0 group-hover:scale-y-100 transition-transform"></div>
                     </a>
                 </div>
