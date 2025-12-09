@@ -186,41 +186,20 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['usuario'])) {
 
                     <a href="index.php?page=sucursalManagement" class="nav-item nav-item-hover w-full flex items-center justify-between px-4 py-2.5 text-white text-opacity-80 hover:text-white rounded-lg group">
                         <i class="fas fa-home mr-3 text-lg group-hover:text-accent-yellow transition-colors"></i>
-                        <span class="nav-text-small">Gestión de Sucursales</span>
+                        <span class="nav-text">Gestión de Sucursales</span>
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-accent-yellow rounded-r-full transform scale-y-0 group-hover:scale-y-100 transition-transform"></div>
                     </a>
-
-                <?php } ?>
 
                 <div class="mb-2">
                     <button onclick="toggleDropdown('usuarios')" class="nav-item nav-item-hover w-full flex items-center justify-between px-4 py-2.5 text-white text-opacity-80 hover:text-white rounded-lg group">
                         <div class="flex items-center">
                             <i class="fas fa-user mr-3 text-base group-hover:text-accent-yellow transition-colors"></i>
-                            <span class="nav-text">Usuarios</span>
+                            <span class="nav-text">Gestión de Usuarios</span>
                         </div>
                         <i id="usuarios-icon" class="fas fa-chevron-right transition-transform group-hover:text-accent-yellow text-sm"></i>
                     </button>
                     <div id="usuarios-dropdown" class="hidden ml-4 mt-2 space-y-1">
-                        <a href="index.php?page=addUser" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
-                            <i class="fas fa-user-plus mr-2 text-xs"></i>
-                            <span class="nav-text-small">Agregar Usuario</span>
-                        </a>
-                        <a href="index.php?page=showUser" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
-                            <i class="fas fa-users mr-2 text-xs"></i>
-                            <span class="nav-text-small">Lista de Usuarios</span>
-                        </a>
-                        <a href="index.php?page=searchUser" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
-                            <i class="fas fa-search mr-2 text-xs"></i>
-                            <span class="nav-text-small">Buscar Usuarios</span>
-                        </a>
-
-                        <?php if ($_SESSION['id'] == '1') { ?>
-                            <div class="border-t border-white border-opacity-10 my-2"></div>
-
-                            <div class="px-4 py-1">
-                                <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Gestión Avanzada</span>
-                            </div>
-                            <a href="index.php?page=userManagement" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
+                        <a href="index.php?page=userManagement" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
                                 <i class="fas fa-users-cog mr-2 text-xs"></i>
                                 <span class="nav-text-small">Gestión de Usuarios</span>
                             </a>
@@ -228,9 +207,9 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['usuario'])) {
                                 <i class="fas fa-chart-line mr-2 text-xs"></i>
                                 <span class="nav-text-small">Actividad de Usuarios</span>
                             </a>
-                        <?php } ?>
                     </div>
                 </div>
+                <?php } ?>
 
                 <?php if ($_SESSION['id'] == '1' || $_SESSION['id'] == '16' || $_SESSION['id'] == '10') { ?>
                     <div class="mb-2">
