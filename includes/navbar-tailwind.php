@@ -320,11 +320,15 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['usuario'])) {
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-accent-yellow rounded-r-full transform scale-y-0 group-hover:scale-y-100 transition-transform"></div>
                     </a>
 
+                    <?php if ($_SESSION['id'] == '13') { ?>
+
                     <a href="index.php?page=showAllRequest" class="nav-item nav-item-hover flex items-center px-4 py-2.5 text-white text-opacity-80 hover:text-white rounded-lg group relative">
                         <i class="fas fa-list-alt mr-3 text-base group-hover:text-accent-yellow transition-colors"></i>
                         <span class="nav-text">Todos los Pedidos</span>
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-accent-yellow rounded-r-full transform scale-y-0 group-hover:scale-y-100 transition-transform"></div>
                     </a>
+
+                    <?php } ?>
                 </div>
             </nav>
         </aside>
