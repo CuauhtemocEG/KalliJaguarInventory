@@ -946,7 +946,7 @@ function generarCodigoConLogo($ean13, $nombreProducto, $logoPath, $fontPath, $sc
         
         // Generate barcode using PHP endpoint con timestamp para evitar cache
         const timestamp = new Date().getTime();
-        const barcodeUrl = `./api/generateBarcode.php?productoId=${productoId}&t=${timestamp}`;
+        const barcodeUrl = `./v2/generateBarcode.php?productoId=${productoId}&t=${timestamp}`;
         
         const container = document.getElementById('barcodeImageContainer');
         container.innerHTML = `<div class="flex items-center justify-center p-4"><i class="fas fa-spinner fa-spin text-indigo-600 text-3xl"></i></div>`;
