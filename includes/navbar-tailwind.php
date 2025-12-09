@@ -267,17 +267,14 @@ require_once __DIR__ . '/../config.php';
                             <div class="px-4 py-1">
                                 <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Categorías</span>
                             </div>
-                            <a href="index.php?page=addCategory" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
+                            <a href="index.php?page=gestionCategorias" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
                                 <i class="fas fa-plus mr-2 text-xs"></i>
-                                <span class="nav-text-small">Agregar Categoría</span>
+                                <span class="nav-text-small">Gestión Categoría</span>
                             </a>
-                            <a href="index.php?page=showCategory" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
-                                <i class="fas fa-list mr-2 text-xs"></i>
-                                <span class="nav-text-small">Lista de Categoría</span>
-                            </a>
-                            <a href="index.php?page=searchCategory" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
-                                <i class="fas fa-search mr-2 text-xs"></i>
-                                <span class="nav-text-small">Buscar Categoría</span>
+
+                            <a href="index.php?page=gestionTags" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
+                                <i class="fas fa-plus mr-2 text-xs"></i>
+                                <span class="nav-text-small">Gestión Etiquetas</span>
                             </a>
 
                             <div class="border-t border-white border-opacity-10 my-2"></div>
@@ -285,21 +282,9 @@ require_once __DIR__ . '/../config.php';
                             <div class="px-4 py-1">
                                 <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Producto</span>
                             </div>
-                            <a href="index.php?page=addProduct" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
+                            <a href="index.php?page=gestionProductos" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
                                 <i class="fas fa-plus mr-2 text-xs"></i>
-                                <span class="nav-text-small">Agregar Productos</span>
-                            </a>
-                            <a href="index.php?page=showProduct" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
-                                <i class="fas fa-boxes mr-2 text-xs"></i>
-                                <span class="nav-text-small">Lista de Productos</span>
-                            </a>
-                            <a href="index.php?page=productsByCategory" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
-                                <i class="fas fa-tags mr-2 text-xs"></i>
-                                <span class="nav-text-small">Productos por Categoría</span>
-                            </a>
-                            <a href="index.php?page=searchProduct" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
-                                <i class="fas fa-search mr-2 text-xs"></i>
-                                <span class="nav-text-small">Buscar Producto</span>
+                                <span class="nav-text-small">Gestión Productos</span>
                             </a>
                             <a href="index.php?page=scanProducts" class="dropdown-item flex items-center px-4 py-2 text-white text-opacity-70 hover:text-accent-yellow transition-all">
                                 <i class="fas fa-qrcode mr-2 text-xs"></i>
