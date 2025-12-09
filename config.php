@@ -5,7 +5,7 @@
 
 define('APP_NAME', 'Kalli Inventory System');
 define('APP_SHORT_NAME', 'Kalli Jaguar');
-define('APP_VERSION', '2.0.0');
+define('APP_VERSION', '2.1.1');
 define('APP_BUILD', '20250415'); // Formato: YYYYMMDD
 define('APP_RELEASE_DATE', '9 de diciembre de 2025');
 
@@ -13,9 +13,9 @@ define('APP_RELEASE_DATE', '9 de diciembre de 2025');
 // VERSIONES DE MÓDULOS
 // ============================================
 
-define('MODULE_PRODUCTS', '1.0');
-define('MODULE_CATEGORIES', '1.0');
-define('MODULE_TAGS', '1.0');
+define('MODULE_PRODUCTS', '2.0');
+define('MODULE_CATEGORIES', '2.0');
+define('MODULE_TAGS', '2.0');
 define('MODULE_ORDERS', '1.0');
 define('MODULE_USERS', '2.0');
 
