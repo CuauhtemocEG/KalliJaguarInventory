@@ -5,7 +5,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use Picqer\Barcode\BarcodeGeneratorPNG;
 
 // Solo admin puede acceder
-if ($_SESSION['id'] != 1) {
+if ($_SESSION['rol'] != 'Administrador') {
     header('Location: index.php?page=home');
     exit();
 }

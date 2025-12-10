@@ -2,7 +2,7 @@
 require_once "./controllers/mainController.php";
 
 // Solo admin puede acceder
-if ($_SESSION['id'] != 1) {
+if ($_SESSION['rol'] != 'Administrador') {
     header('Location: index.php?page=home');
     exit();
 }
