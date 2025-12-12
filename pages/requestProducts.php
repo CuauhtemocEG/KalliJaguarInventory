@@ -358,30 +358,48 @@ if (file_exists($helperPath)) {
             align-items: center;
             gap: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
         }
 
         .btn-go-home {
             background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
-            color: white;
+            color: white !important;
+        }
+
+        .btn-go-home i {
+            color: white !important;
         }
 
         .btn-go-home:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
             background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+            color: white !important;
+        }
+
+        .btn-go-home:hover i {
+            color: white !important;
         }
 
         .btn-retry {
             background: white;
-            color: #ff9800;
+            color: #ff9800 !important;
             border: 2px solid #ff9800;
+        }
+
+        .btn-retry i {
+            color: #ff9800 !important;
         }
 
         .btn-retry:hover {
             background: #ff9800;
-            color: white;
+            color: white !important;
             transform: translateY(-3px);
             box-shadow: 0 8px 25px rgba(255, 152, 0, 0.4);
+        }
+
+        .btn-retry:hover i {
+            color: white !important;
         }
 
         .maintenance-footer {
