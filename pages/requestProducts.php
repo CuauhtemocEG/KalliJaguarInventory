@@ -99,7 +99,7 @@ if (file_exists($helperPath)) {
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff9800 0%, #ff6f00 100%);
             z-index: 99999;
             display: flex;
             align-items: center;
@@ -284,7 +284,7 @@ if (file_exists($helperPath)) {
 
         .info-item i {
             font-size: 1.8rem;
-            color: #667eea;
+            color: #ff9800;
             min-width: 30px;
         }
 
@@ -361,26 +361,27 @@ if (file_exists($helperPath)) {
         }
 
         .btn-go-home {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
             color: white;
         }
 
         .btn-go-home:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
         }
 
         .btn-retry {
             background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
+            color: #ff9800;
+            border: 2px solid #ff9800;
         }
 
         .btn-retry:hover {
-            background: #667eea;
+            background: #ff9800;
             color: white;
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 8px 25px rgba(255, 152, 0, 0.4);
         }
 
         .maintenance-footer {
