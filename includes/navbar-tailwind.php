@@ -186,12 +186,6 @@ require_once __DIR__ . '/../config.php';
                         <h3 class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Administración</h3>
                     </div>
 
-                    <a href="index.php?page=sucursalManagement" class="nav-item nav-item-hover w-full flex items-center justify-between px-4 py-2.5 text-white text-opacity-80 hover:text-white rounded-lg group">
-                        <i class="fas fa-home mr-3 text-lg group-hover:text-accent-yellow transition-colors"></i>
-                        <span class="nav-text">Gestión de Sucursales</span>
-                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-accent-yellow rounded-r-full transform scale-y-0 group-hover:scale-y-100 transition-transform"></div>
-                    </a>
-
                     <div class="mb-2">
                         <button onclick="toggleDropdown('usuarios')" class="nav-item nav-item-hover w-full flex items-center justify-between px-4 py-2.5 text-white text-opacity-80 hover:text-white rounded-lg group">
                             <div class="flex items-center">
@@ -211,6 +205,19 @@ require_once __DIR__ . '/../config.php';
                             </a>
                         </div>
                     </div>
+
+                    <a href="index.php?page=sucursalManagement" class="nav-item nav-item-hover w-full flex items-center justify-between px-4 py-2.5 text-white text-opacity-80 hover:text-white rounded-lg group">
+                        <i class="fas fa-home mr-3 text-lg group-hover:text-accent-yellow transition-colors"></i>
+                        <span class="nav-text">Gestión de Sucursales</span>
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-accent-yellow rounded-r-full transform scale-y-0 group-hover:scale-y-100 transition-transform"></div>
+                    </a>
+
+                    <a href="index.php?page=configMantenimiento" class="nav-item nav-item-hover w-full flex items-center justify-between px-4 py-2.5 text-white text-opacity-80 hover:text-white rounded-lg group">
+                        <i class="fas fa-lock mr-3 text-lg group-hover:text-accent-yellow transition-colors"></i>
+                        <span class="nav-text">Activar Cortinas</span>
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-accent-yellow rounded-r-full transform scale-y-0 group-hover:scale-y-100 transition-transform"></div>
+                    </a>
+
                 <?php } ?>
 
                 <?php if ($_SESSION['id'] == '1' || $_SESSION['id'] == '16' || $_SESSION['id'] == '10') { ?>

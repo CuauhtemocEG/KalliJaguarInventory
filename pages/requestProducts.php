@@ -69,10 +69,10 @@ if (file_exists($helperPath)) {
                 <?php endif; ?>
 
                 <div class="maintenance-actions">
-                    <button onclick="window.location.href='<?php echo htmlspecialchars($maintenanceInfo['redirect_url']); ?>'" class="btn-go-home">
+                    <a href="index.php?page=home" class="btn-go-home">
                         <i class="fas fa-home"></i>
                         Volver al Inicio
-                    </button>
+                    </a>
                     <button onclick="location.reload()" class="btn-retry">
                         <i class="fas fa-sync-alt"></i>
                         Reintentar
