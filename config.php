@@ -39,10 +39,10 @@ define('APP_TIMEZONE', 'America/Mexico_City');
 // CONFIGURACIÓN DE BASE DE DATOS
 // ============================================
 
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'KalliinventoryStage');
-define('DB_USER', 'root');
-define('DB_PASS', 'root');
+define('DB_HOST', 'localhost:3306');
+define('DB_NAME', 'kallijag_inventory');
+define('DB_USER', 'kallijag_admin');
+define('DB_PASS', 'uNtiL.horSe@5');
 define('DB_CHARSET', 'utf8mb4');
 
 // ============================================
