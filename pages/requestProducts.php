@@ -405,47 +405,309 @@ if (file_exists($helperPath)) {
         }
 
         @media (max-width: 768px) {
+            .maintenance-overlay {
+                padding: 15px;
+                align-items: flex-start;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
             .maintenance-modal {
                 border-radius: 20px;
+                margin: auto 0;
+                max-height: none;
+                width: 100%;
             }
 
             .maintenance-logo-container {
-                padding: 30px;
+                padding: 25px 20px;
             }
 
             .maintenance-logo {
-                max-width: 150px;
+                max-width: 140px;
+            }
+
+            .maintenance-logo-glow {
+                width: 180px;
+                height: 180px;
             }
 
             .maintenance-content {
-                padding: 30px 20px;
+                padding: 25px 20px;
             }
 
             .maintenance-title {
-                font-size: 1.5rem;
+                font-size: 1.4rem;
+                line-height: 1.3;
             }
 
             .maintenance-subtitle {
-                font-size: 1rem;
+                font-size: 0.95rem;
+                line-height: 1.4;
             }
 
             .maintenance-icon {
                 width: 60px;
                 height: 60px;
+                margin-bottom: 20px;
             }
 
             .maintenance-icon i {
                 font-size: 2rem;
             }
 
+            .maintenance-info-box {
+                padding: 20px;
+                margin-bottom: 25px;
+            }
+
+            .info-item {
+                gap: 12px;
+                margin-bottom: 12px;
+            }
+
+            .info-item i {
+                font-size: 1.5rem;
+                min-width: 25px;
+            }
+
+            .info-label {
+                font-size: 0.8rem;
+            }
+
+            .info-value {
+                font-size: 1rem;
+            }
+
+            .maintenance-reasons {
+                padding: 15px;
+                margin-bottom: 25px;
+            }
+
+            .maintenance-reasons h3 {
+                font-size: 0.95rem;
+                margin-bottom: 12px;
+            }
+
+            .maintenance-reasons ul {
+                padding-left: 18px;
+            }
+
+            .maintenance-reasons li {
+                font-size: 0.9rem;
+                margin-bottom: 6px;
+            }
+
             .maintenance-actions {
                 flex-direction: column;
+                gap: 12px;
+                margin-bottom: 25px;
             }
 
             .btn-go-home,
             .btn-retry {
                 width: 100%;
                 justify-content: center;
+                padding: 13px 25px;
+                font-size: 0.95rem;
+            }
+
+            .maintenance-footer {
+                padding-top: 20px;
+            }
+
+            .footer-text {
+                font-size: 0.9rem;
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .footer-copyright {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .maintenance-overlay {
+                padding: 10px;
+            }
+
+            .maintenance-modal {
+                border-radius: 15px;
+            }
+
+            .maintenance-logo-container {
+                padding: 20px 15px;
+            }
+
+            .maintenance-logo {
+                max-width: 120px;
+            }
+
+            .maintenance-logo-glow {
+                width: 150px;
+                height: 150px;
+            }
+
+            .maintenance-content {
+                padding: 20px 15px;
+            }
+
+            .maintenance-title {
+                font-size: 1.2rem;
+            }
+
+            .maintenance-subtitle {
+                font-size: 0.9rem;
+            }
+
+            .maintenance-icon {
+                width: 50px;
+                height: 50px;
+                margin-bottom: 15px;
+            }
+
+            .maintenance-icon i {
+                font-size: 1.6rem;
+            }
+
+            .maintenance-info-box {
+                padding: 15px;
+                margin-bottom: 20px;
+                border-radius: 12px;
+            }
+
+            .info-item {
+                gap: 10px;
+                margin-bottom: 10px;
+            }
+
+            .info-item i {
+                font-size: 1.3rem;
+                min-width: 22px;
+            }
+
+            .info-label {
+                font-size: 0.75rem;
+            }
+
+            .info-value {
+                font-size: 0.95rem;
+            }
+
+            .maintenance-reasons {
+                padding: 12px;
+                margin-bottom: 20px;
+                border-radius: 8px;
+            }
+
+            .maintenance-reasons h3 {
+                font-size: 0.9rem;
+                margin-bottom: 10px;
+            }
+
+            .maintenance-reasons ul {
+                padding-left: 16px;
+            }
+
+            .maintenance-reasons li {
+                font-size: 0.85rem;
+                margin-bottom: 5px;
+            }
+
+            .maintenance-actions {
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+
+            .btn-go-home,
+            .btn-retry {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+                gap: 8px;
+                border-radius: 10px;
+            }
+
+            .btn-go-home i,
+            .btn-retry i {
+                font-size: 0.9rem;
+            }
+
+            .maintenance-footer {
+                padding-top: 15px;
+            }
+
+            .footer-text {
+                font-size: 0.85rem;
+                gap: 4px;
+            }
+
+            .footer-text i {
+                font-size: 0.85rem;
+            }
+
+            .footer-copyright {
+                font-size: 0.75rem;
+                margin-top: 5px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .maintenance-overlay {
+                padding: 8px;
+            }
+
+            .maintenance-modal {
+                border-radius: 12px;
+            }
+
+            .maintenance-logo-container {
+                padding: 15px 10px;
+            }
+
+            .maintenance-logo {
+                max-width: 100px;
+            }
+
+            .maintenance-content {
+                padding: 15px 12px;
+            }
+
+            .maintenance-title {
+                font-size: 1.1rem;
+            }
+
+            .maintenance-subtitle {
+                font-size: 0.85rem;
+            }
+
+            .maintenance-icon {
+                width: 45px;
+                height: 45px;
+            }
+
+            .maintenance-icon i {
+                font-size: 1.4rem;
+            }
+
+            .maintenance-info-box {
+                padding: 12px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .info-item i {
+                font-size: 1.2rem;
+            }
+
+            .btn-go-home,
+            .btn-retry {
+                padding: 10px 15px;
+                font-size: 0.85rem;
             }
         }
     </style>
