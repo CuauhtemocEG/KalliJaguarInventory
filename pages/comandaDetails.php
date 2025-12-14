@@ -310,7 +310,7 @@ function getStatusIcon($status) {
                                 <?php echo $producto['Tipo'] === 'Pesable' ? 'kg' : 'uds'; ?>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
-                                $<?php echo number_format($producto['PrecioUnitario'], 2); ?>
+                                $<?php echo number_format($producto['PrecioUnitario']*1.16, 2); ?>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold text-green-600">
                                 $<?php echo number_format($producto['PrecioFinal'], 2); ?>
