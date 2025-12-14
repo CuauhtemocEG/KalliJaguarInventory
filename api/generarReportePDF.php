@@ -204,13 +204,15 @@ if (!$fechaInicio || !$fechaFin) {
                 m.Cantidad,
                 p.PrecioUnitario,
                 m.PrecioFinal,
-                (m.Cantidad * (p.PrecioUnitario * 0.16 + p.PrecioUnitario)) AS Subtotal,
-                m.FechaMovimiento
+                m.PrecioFinal AS Subtotal,
+                m.FechaMovimiento,
+                m.Status
             FROM MovimientosInventario m
             JOIN Productos p ON m.ProductoID = p.ProductoID
             JOIN Sucursales s ON m.SucursalID = s.SucursalID
             WHERE m.TipoMovimiento = 'Salida'
               AND m.FechaMovimiento BETWEEN :fechaInicio AND :fechaFin
+              AND m.Status != 'Cancelado'
             ORDER BY s.nombre, m.ComandaID, p.Nombre
         ";
 
@@ -252,39 +254,34 @@ if (!$fechaInicio || !$fechaFin) {
             $totalGeneral = 0;
             $contadorSucursales = 0;
 
-            // Generar el reporte
             foreach ($datos as $sucursal => $comandas) {
                 $contadorSucursales++;
                 
-                // Header de la sucursal
                 $pdf->SucursalHeader($sucursal);
 
                 $contadorComandas = 0;
                 foreach ($comandas as $comandaID => $items) {
                     $contadorComandas++;
                     
-                    // Header de la comanda
                     $pdf->ComandaHeader($comandaID);
 
-                    // Items de la comanda
                     foreach ($items as $item) {
                         $pdf->SetFont('Arial', '', 8);
                         
-                        // Alternar color de fondo para mejor legibilidad
                         $fill = (count($items) % 2 == 0);
                         if ($fill) {
                             $pdf->SetFillColor(248, 249, 250);
                         }
                         
-                        // Cálculos exactos como el PDF anterior
                         $precioConIVA = $item['PrecioUnitario'] * 1.16;
                         $ivaCalculado = $item['PrecioUnitario'] * 0.16;
+                        $subtotalItem = $item['PrecioFinal']; // Usar el mismo valor que el dashboard
                         
                         $pdf->Cell(85, 6, utf8_decode($item['NombreProducto']), 1, 0, 'L', $fill);
                         $pdf->Cell(25, 6, utf8_decode(formatearCantidad($item['Cantidad'], $item['Tipo'])), 1, 0, 'C', $fill);
                         $pdf->Cell(25, 6, '$' . number_format($precioConIVA, 2), 1, 0, 'C', $fill);
                         $pdf->Cell(25, 6, '$' . number_format($ivaCalculado * $item['Cantidad'], 2), 1, 0, 'C', $fill);
-                        $pdf->Cell(30, 6, '$' . number_format($item['Subtotal'], 2), 1, 1, 'C', $fill);
+                        $pdf->Cell(30, 6, '$' . number_format($subtotalItem, 2), 1, 1, 'C', $fill);
                         
                         // Resetear fill
                         $pdf->SetFillColor(255, 255, 255);
