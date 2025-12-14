@@ -320,7 +320,7 @@ function generarCodigoConLogo($ean13, $nombreProducto, $logoPath, $fontPath, $sc
                     <!-- Cantidad -->
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">
-                            <i class="fas fa-boxes mr-1"></i>Cantidad Inicial *
+                            <i class="fas fa-boxes mr-1"></i>Cantidad *
                         </label>
                         <input type="number" step="0.01" id="productoCantidad" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 transition" placeholder="0">
                     </div>
