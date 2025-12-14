@@ -39,5 +39,4 @@ window.fetch = function(...args) {
         });
 };
 </script>
-<script src="./js/smart-pwa.js"></script>
 <script src="./js/pwa.js"></script>
