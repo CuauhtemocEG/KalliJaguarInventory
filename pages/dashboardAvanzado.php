@@ -1,13 +1,11 @@
 <?php
 require_once "./controllers/mainController.php";
 
-// Obtener rangos de fechas (por defecto últimos 30 días)
 $fechaInicio = isset($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : date('Y-m-d', strtotime('-30 days'));
 $fechaFin = isset($_GET['fecha_fin']) ? $_GET['fecha_fin'] : date('Y-m-d');
 
 $db = conexion();
 
-// 1. TOP 10 PRODUCTOS MÁS SOLICITADOS
 $topProductosQuery = $db->prepare("
     SELECT 
         p.Nombre,
@@ -28,7 +26,6 @@ $topProductosQuery = $db->prepare("
 $topProductosQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
 $topProductos = $topProductosQuery->fetchAll(PDO::FETCH_ASSOC);
 
-// 2. TENDENCIA DE COMANDAS EN EL TIEMPO
 $tendenciaComandasQuery = $db->prepare("
     SELECT 
         DATE(FechaMovimiento) as Fecha,
@@ -43,7 +40,6 @@ $tendenciaComandasQuery = $db->prepare("
 $tendenciaComandasQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
 $tendenciaComandas = $tendenciaComandasQuery->fetchAll(PDO::FETCH_ASSOC);
 
-// 3. ANÁLISIS POR SUCURSAL
 $sucursalesQuery = $db->prepare("
     SELECT 
         s.Nombre as Sucursal,
@@ -62,7 +58,6 @@ $sucursalesQuery = $db->prepare("
 $sucursalesQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
 $sucursales = $sucursalesQuery->fetchAll(PDO::FETCH_ASSOC);
 
-// 4. ESTADÍSTICAS POR ESTADO
 $estadosComandasQuery = $db->prepare("
     SELECT 
         Status,
@@ -77,7 +72,6 @@ $estadosComandasQuery = $db->prepare("
 $estadosComandasQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
 $estadosComandas = $estadosComandasQuery->fetchAll(PDO::FETCH_KEY_PAIR);
 
-// 5. PRODUCTOS CON MÁS VALOR GENERADO
 $topValorQuery = $db->prepare("
     SELECT 
         p.Nombre,
@@ -97,7 +91,6 @@ $topValorQuery = $db->prepare("
 $topValorQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
 $topValor = $topValorQuery->fetchAll(PDO::FETCH_ASSOC);
 
-// 6. TIEMPO PROMEDIO DE ENTREGA
 $tiempoEntregaQuery = $db->prepare("
     SELECT 
         AVG(DATEDIFF(
@@ -126,7 +119,6 @@ $tiempoEntregaQuery = $db->prepare("
 $tiempoEntregaQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
 $tiempoEntrega = $tiempoEntregaQuery->fetch(PDO::FETCH_ASSOC);
 
-// 7. CATEGORÍAS MÁS SOLICITADAS
 $categoriasQuery = $db->prepare("
     SELECT 
         c.Nombre as Categoria,
@@ -145,7 +137,6 @@ $categoriasQuery = $db->prepare("
 $categoriasQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
 $categorias = $categoriasQuery->fetchAll(PDO::FETCH_ASSOC);
 
-// 8. MÉTRICAS GENERALES
 $metricsQuery = $db->prepare("
     SELECT 
         COUNT(DISTINCT ComandaID) as TotalComandas,
@@ -160,7 +151,6 @@ $metricsQuery = $db->prepare("
 $metricsQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
 $metrics = $metricsQuery->fetch(PDO::FETCH_ASSOC);
 
-// 9. PRODUCTOS CANCELADOS/PROBLEMÁTICOS
 $productosCanceladosQuery = $db->prepare("
     SELECT 
         p.Nombre,
@@ -203,7 +193,6 @@ function formatNumber($value) {
 <div class="min-h-screen bg-gray-50 py-6">
     <div class="w-full mx-auto px-4 sm:px-6 lg:px-8">
         
-        <!-- Header con filtros -->
         <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
             <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                 <div>
@@ -211,7 +200,6 @@ function formatNumber($value) {
                     <p class="text-gray-600">Análisis detallado de inventario y solicitudes</p>
                 </div>
                 
-                <!-- Filtros de fecha -->
                 <form method="GET" action="" class="flex flex-wrap gap-3 items-end">
                     <input type="hidden" name="page" value="dashboardAvanzado">
                     <div>
@@ -234,7 +222,6 @@ function formatNumber($value) {
             </div>
         </div>
 
-        <!-- Métricas Principales -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
             <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg shadow-lg p-6">
                 <div class="flex items-center justify-between">
@@ -309,10 +296,8 @@ function formatNumber($value) {
             </div>
         </div>
 
-        <!-- Gráficos principales -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             
-            <!-- Top 10 Productos Más Solicitados -->
             <div class="bg-white rounded-lg shadow-lg p-6">
                 <h3 class="text-xl font-bold text-gray-900 mb-4">🏆 Top 10 Productos Más Solicitados</h3>
                 <div class="h-80">
@@ -320,7 +305,6 @@ function formatNumber($value) {
                 </div>
             </div>
 
-            <!-- Tendencia de Comandas -->
             <div class="bg-white rounded-lg shadow-lg p-6">
                 <h3 class="text-xl font-bold text-gray-900 mb-4">📈 Tendencia de Comandas en el Tiempo</h3>
                 <div class="h-80">
@@ -328,7 +312,6 @@ function formatNumber($value) {
                 </div>
             </div>
 
-            <!-- Top Productos por Valor -->
             <div class="bg-white rounded-lg shadow-lg p-6">
                 <h3 class="text-xl font-bold text-gray-900 mb-4">💰 Top 10 Productos por Valor Generado</h3>
                 <div class="h-80">
@@ -336,7 +319,6 @@ function formatNumber($value) {
                 </div>
             </div>
 
-            <!-- Análisis por Sucursales -->
             <div class="bg-white rounded-lg shadow-lg p-6">
                 <h3 class="text-xl font-bold text-gray-900 mb-4">🏢 Rendimiento por Sucursal</h3>
                 <div class="h-80">
@@ -344,7 +326,6 @@ function formatNumber($value) {
                 </div>
             </div>
 
-            <!-- Categorías Más Solicitadas -->
             <div class="bg-white rounded-lg shadow-lg p-6">
                 <h3 class="text-xl font-bold text-gray-900 mb-4">📦 Categorías Más Solicitadas</h3>
                 <div class="h-80">
@@ -352,7 +333,6 @@ function formatNumber($value) {
                 </div>
             </div>
 
-            <!-- Estados de Comandas -->
             <div class="bg-white rounded-lg shadow-lg p-6">
                 <h3 class="text-xl font-bold text-gray-900 mb-4">📊 Distribución por Estado</h3>
                 <div class="h-80">
@@ -361,10 +341,8 @@ function formatNumber($value) {
             </div>
         </div>
 
-        <!-- Tablas detalladas -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             
-            <!-- Tabla Top Productos -->
             <div class="bg-white rounded-lg shadow-lg p-6">
                 <h3 class="text-xl font-bold text-gray-900 mb-4">📋 Detalle Top Productos</h3>
                 <div class="overflow-x-auto">
@@ -398,7 +376,6 @@ function formatNumber($value) {
                 </div>
             </div>
 
-            <!-- Tabla Sucursales -->
             <div class="bg-white rounded-lg shadow-lg p-6">
                 <h3 class="text-xl font-bold text-gray-900 mb-4">🏪 Detalle por Sucursal</h3>
                 <div class="overflow-x-auto">
@@ -434,7 +411,6 @@ function formatNumber($value) {
             </div>
         </div>
 
-        <!-- Productos Cancelados -->
         <?php if (count($productosCancelados) > 0): ?>
         <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
             <h3 class="text-xl font-bold text-gray-900 mb-4">⚠️ Productos Más Cancelados (Requieren Atención)</h3>
@@ -479,11 +455,9 @@ function formatNumber($value) {
 </div>
 
 <script>
-// Configuración global de Chart.js
 Chart.defaults.font.family = "'Inter', 'system-ui', sans-serif";
 Chart.defaults.color = '#374151';
 
-// 1. TOP PRODUCTOS MÁS SOLICITADOS
 const topProductosCtx = document.getElementById('topProductosChart').getContext('2d');
 new Chart(topProductosCtx, {
     type: 'bar',
@@ -535,7 +509,6 @@ new Chart(topProductosCtx, {
     }
 });
 
-// 2. TENDENCIA DE COMANDAS
 const tendenciaCtx = document.getElementById('tendenciaChart').getContext('2d');
 new Chart(tendenciaCtx, {
     type: 'line',
@@ -582,7 +555,6 @@ new Chart(tendenciaCtx, {
     }
 });
 
-// 3. TOP PRODUCTOS POR VALOR
 const topValorCtx = document.getElementById('topValorChart').getContext('2d');
 new Chart(topValorCtx, {
     type: 'bar',
@@ -637,7 +609,6 @@ new Chart(topValorCtx, {
     }
 });
 
-// 4. ANÁLISIS POR SUCURSALES
 const sucursalesCtx = document.getElementById('sucursalesChart').getContext('2d');
 new Chart(sucursalesCtx, {
     type: 'doughnut',
@@ -683,7 +654,6 @@ new Chart(sucursalesCtx, {
     }
 });
 
-// 5. CATEGORÍAS
 const categoriasCtx = document.getElementById('categoriasChart').getContext('2d');
 new Chart(categoriasCtx, {
     type: 'polarArea',
@@ -724,7 +694,6 @@ new Chart(categoriasCtx, {
     }
 });
 
-// 6. ESTADOS
 const estadosCtx = document.getElementById('estadosChart').getContext('2d');
 new Chart(estadosCtx, {
     type: 'pie',
