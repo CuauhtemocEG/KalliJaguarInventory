@@ -29,6 +29,57 @@
       </button>
     </div>
 
+    <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl md:rounded-3xl shadow-xl border-2 border-purple-200 overflow-hidden mb-8 md:mb-10">
+      <div class="bg-gradient-to-r from-purple-600 to-pink-600 p-4 md:p-6">
+        <div class="flex items-center space-x-3 md:space-x-4">
+          <div class="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-full flex items-center justify-center">
+            <i class="fas fa-file-invoice text-white text-lg md:text-xl"></i>
+          </div>
+          <div>
+            <h3 class="text-lg md:text-xl font-bold text-white flex items-center gap-2">
+              Orden de Solicitud de Compra v2.0
+              <span class="px-2 py-1 bg-yellow-400 text-purple-900 text-xs font-bold rounded-full">PROFESIONAL</span>
+            </h3>
+            <p class="text-xs md:text-sm text-purple-100">Documento formal para solicitud de productos | Formato empresarial con firmas</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="p-4 md:p-8 bg-white">
+        <form id="formReporteStockTagV2" class="space-y-4 md:space-y-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+            <div class="space-y-2">
+              <label for="tag_v2_filter" class="block text-xs md:text-sm font-semibold text-gray-700">
+                <i class="fas fa-tag text-purple-500 mr-2"></i>Seleccionar Tag/Categoría
+              </label>
+              <select name="tag" id="tag_v2_filter"
+                class="w-full px-3 md:px-4 py-2 md:py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all duration-200 text-sm md:text-base">
+                <option value="">Todos los Tags</option>
+              </select>
+            </div>
+            
+            <div class="space-y-2">
+              <label for="tipo_v2_filter" class="block text-xs md:text-sm font-semibold text-gray-700">
+                <i class="fas fa-cube text-purple-500 mr-2"></i>Filtrar por Tipo
+              </label>
+              <select name="tipo" id="tipo_v2_filter"
+                class="w-full px-3 md:px-4 py-2 md:py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all duration-200 text-sm md:text-base">
+                <option value="">Todos los tipos</option>
+                <option value="Unidad">Unidad</option>
+                <option value="Pesable">Pesable</option>
+              </select>
+            </div>
+          </div>
+          
+          <button type="submit" id="btnGenerarStockV2"
+            class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 md:py-4 px-4 md:px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-3 group text-sm md:text-base">
+            <i class="fas fa-file-invoice group-hover:scale-110 transition-transform"></i>
+            <span>Generar Orden de Solicitud Profesional</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-8 md:mb-10">
       <div class="group bg-white rounded-2xl md:rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden border border-blue-100">
         <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-4 md:p-6">
@@ -208,14 +259,40 @@
 </div>
 
 <script>
+function getBasePath() {
+  const path = window.location.pathname;
+  const pathArray = path.split('/').filter(p => p);
+  
+  const pagesIndex = pathArray.indexOf('pages');
+  
+  if (pagesIndex > -1) {
+    const basePath = pathArray.slice(0, pagesIndex).join('/');
+    return '/' + basePath;
+  }
+  
+  pathArray.pop();
+  return '/' + pathArray.join('/');
+}
+
+const BASE_PATH = getBasePath();
+
+console.log('BASE_PATH configurado como:', BASE_PATH);
+
 document.addEventListener('DOMContentLoaded', function() {
   cargarTags();
+  cargarTagsV2();
 });
 
 function cargarTags() {
-  const tagsUrl = window.location.origin + '/api/getTags.php';
+  const tagsUrl = BASE_PATH + '/api/getTags.php';
+  console.log('Cargando tags desde:', tagsUrl);
   fetch(tagsUrl)
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
     .then(data => {
       const select = document.getElementById('tag_filter');
       if (data.success && data.tags) {
@@ -229,6 +306,34 @@ function cargarTags() {
     })
     .catch(error => {
       console.error('Error al cargar tags:', error);
+      console.error('URL intentada:', tagsUrl);
+    });
+}
+
+function cargarTagsV2() {
+  const tagsUrl = BASE_PATH + '/api/getTags.php';
+  console.log('Cargando tags v2 desde:', tagsUrl);
+  fetch(tagsUrl)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      const select = document.getElementById('tag_v2_filter');
+      if (data.success && data.tags) {
+        data.tags.forEach(tag => {
+          const option = document.createElement('option');
+          option.value = tag;
+          option.textContent = tag;
+          select.appendChild(option);
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Error al cargar tags v2:', error);
+      console.error('URL intentada:', tagsUrl);
     });
 }
 
@@ -334,7 +439,7 @@ document.getElementById("btnStockBajoPDF").addEventListener("click", function ()
     allowOutsideClick: false,
   });
 
-  fetch("api/generarStockBajoPDF.php", {
+  fetch(BASE_PATH + "/api/generarStockBajoPDF.php", {
     method: "POST",
   })
     .then((res) => {
@@ -385,7 +490,7 @@ document.getElementById("btnStockBajoTagPDF").addEventListener("click", function
     allowOutsideClick: false,
   });
 
-  const stockUrl = window.location.origin + "/api/generarStockBajoTagPDF.php";
+  const stockUrl = BASE_PATH + "/api/generarStockBajoTagPDF.php";
   fetch(stockUrl, {
     method: "POST",
   })
@@ -429,13 +534,13 @@ document.getElementById("btnStockBajoTagPDF").addEventListener("click", function
 generarPDF(
   "formReporteComandas",
   "btnGenerarComandas",
-  window.location.origin + "/api/generarReportePDF.php",
+  BASE_PATH + "/api/generarReportePDF.php",
   "reporteComandas"
 );
 generarPDF(
   "formReporteProductos",
   "btnGenerarProductos",
-  window.location.origin + "/api/generarReporteProductosPDF.php",
+  BASE_PATH + "/api/generarReporteProductosPDF.php",
   "reporteProductos"
 );
 
@@ -488,7 +593,7 @@ document.getElementById("formReporteProductosSolicitados").addEventListener("sub
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin group-hover:scale-110 transition-transform"></i><span>Generando...</span>';
 
-    const reportUrl = window.location.origin + "/api/generarReporteProductosSolicitadosPDF.php";
+    const reportUrl = BASE_PATH + "/api/generarReporteProductosSolicitadosPDF.php";
     fetch(reportUrl, {
             method: "POST",
             body: formData
@@ -535,6 +640,93 @@ document.getElementById("formReporteProductosSolicitados").addEventListener("sub
         .finally(() => {
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-chart-line group-hover:scale-110 transition-transform"></i><span>Generar Reporte Avanzado</span>';
+        });
+});
+
+// Nuevo manejador para Reporte Stock v2.0
+document.getElementById("formReporteStockTagV2").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const tag = formData.get("tag");
+    const tipo = formData.get("tipo");
+
+    let confirmText = "Se generará una orden de solicitud profesional";
+    if (tag) confirmText += ` para el tag: ${tag}`;
+    if (tipo) confirmText += ` (Tipo: ${tipo})`;
+    confirmText += ". El documento incluirá logo, folio único, resumen ejecutivo y sección de firmas.";
+
+    const result = await Swal.fire({
+        title: "¿Generar Orden de Solicitud?",
+        text: confirmText,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Sí, generar documento",
+        cancelButtonText: "Cancelar",
+        confirmButtonColor: '#9333ea',
+    });
+
+    if (!result.isConfirmed) return;
+
+    const fileName = `orden_solicitud_${tag || 'todos'}_${new Date().toISOString().slice(0,10)}.pdf`;
+    const btn = document.getElementById("btnGenerarStockV2");
+
+    Swal.fire({
+        title: "Generando Orden de Solicitud Profesional...",
+        html: "Por favor espera. Se está creando el documento con formato empresarial.",
+        didOpen: () => Swal.showLoading(),
+        allowOutsideClick: false,
+    });
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin group-hover:scale-110 transition-transform"></i><span>Generando documento...</span>';
+
+    const reportUrl = BASE_PATH + "/api/generarStockPorTagV2PDF.php";
+    fetch(reportUrl, {
+            method: "POST",
+            body: formData
+        })
+        .then((res) => {
+            console.log('Response status:', res.status);
+            if (!res.ok) {
+                return res.text().then(text => {
+                    console.error('Error response text:', text);
+                    throw new Error(`Error ${res.status}: ${text}`);
+                });
+            }
+            return res.blob();
+        })
+        .then((blob) => {
+            Swal.close();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+
+            Swal.fire({
+                icon: "success",
+                title: "¡Orden de Solicitud Generada!",
+                html: "Tu documento profesional se ha descargado correctamente.<br><small>El documento incluye logo, folio y sección de firmas.</small>",
+                timer: 4000,
+                showConfirmButton: true,
+                confirmButtonColor: '#9333ea',
+            });
+        })
+        .catch((err) => {
+            console.error("Error al generar Orden de Solicitud:", err);
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Ocurrió un error al generar la orden de solicitud.",
+                confirmButtonColor: '#dc2626',
+            });
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-file-invoice group-hover:scale-110 transition-transform"></i><span>Generar Orden de Solicitud Profesional</span>';
         });
 });
 </script>

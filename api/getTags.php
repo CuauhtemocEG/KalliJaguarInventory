@@ -4,7 +4,6 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
-// Manejar OPTIONS request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
@@ -14,8 +13,7 @@ require_once '../controllers/mainController.php';
 try {
     $conexion = conexion();
     
-    // Consulta para obtener todos los tags únicos de los productos
-    $query = "SELECT DISTINCT Tag FROM Productos WHERE Tag IS NOT NULL AND Tag != '' ORDER BY Tag";
+    $query = "SELECT Nombre FROM Tags WHERE Activo = 1 ORDER BY Nombre";
     $stmt = $conexion->prepare($query);
     $stmt->execute();
     $tags = $stmt->fetchAll(PDO::FETCH_COLUMN);
