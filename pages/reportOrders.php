@@ -260,23 +260,29 @@
 
 <script>
 function getBasePath() {
+  const origin = window.location.origin;
   const path = window.location.pathname;
+  
   const pathArray = path.split('/').filter(p => p);
   
   const pagesIndex = pathArray.indexOf('pages');
   
   if (pagesIndex > -1) {
     const basePath = pathArray.slice(0, pagesIndex).join('/');
-    return '/' + basePath;
+    return basePath ? '/' + basePath : '';
   }
   
   pathArray.pop();
-  return '/' + pathArray.join('/');
+  return pathArray.length > 0 ? '/' + pathArray.join('/') : '';
 }
 
 const BASE_PATH = getBasePath();
 
-console.log('BASE_PATH configurado como:', BASE_PATH);
+console.log('🔍 Información de debug:');
+console.log('  - Origin:', window.location.origin);
+console.log('  - Pathname:', window.location.pathname);
+console.log('  - BASE_PATH:', BASE_PATH);
+console.log('  - URL completa API:', window.location.origin + BASE_PATH + '/api/getTags.php');
 
 document.addEventListener('DOMContentLoaded', function() {
   cargarTags();
