@@ -36,7 +36,6 @@ class SmartPWAController {
             await this.enablePWA();
         } else {
             await this.disablePWA();
-            this.showPWAControls();
         }
         
         this.setupEventListeners();
