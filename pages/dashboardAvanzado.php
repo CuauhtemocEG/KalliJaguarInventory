@@ -1,187 +1,203 @@
 <?php
-require_once "./controllers/mainController.php";
+// Manejo de errores para debugging en producción
+error_reporting(E_ALL);
+ini_set('display_errors', 0); // Cambia a 1 temporalmente para ver errores
+ini_set('log_errors', 1);
 
-$fechaInicio = isset($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : date('Y-m-d', strtotime('-30 days'));
-$fechaFin = isset($_GET['fecha_fin']) ? $_GET['fecha_fin'] : date('Y-m-d');
+try {
+    require_once "./controllers/mainController.php";
 
-$db = conexion();
+    $fechaInicio = isset($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : date('Y-m-d', strtotime('-30 days'));
+    $fechaFin = isset($_GET['fecha_fin']) ? $_GET['fecha_fin'] : date('Y-m-d');
 
-$topProductosQuery = $db->prepare("
-    SELECT 
-        p.Nombre,
-        p.UPC,
-        SUM(mi.Cantidad) as TotalSolicitado,
-        COUNT(DISTINCT mi.ComandaID) as NumeroComandas,
-        SUM(mi.PrecioFinal) as ValorTotal,
-        p.image
-    FROM MovimientosInventario mi
-    INNER JOIN Productos p ON mi.ProductoID = p.ProductoID
-    WHERE mi.TipoMovimiento = 'Salida' 
-        AND mi.FechaMovimiento BETWEEN :inicio AND :fin
-        AND mi.Status != 'Cancelado'
-    GROUP BY p.ProductoID
-    ORDER BY TotalSolicitado DESC
-    LIMIT 10
-");
-$topProductosQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
-$topProductos = $topProductosQuery->fetchAll(PDO::FETCH_ASSOC);
-
-$tendenciaComandasQuery = $db->prepare("
-    SELECT 
-        DATE(FechaMovimiento) as Fecha,
-        COUNT(DISTINCT ComandaID) as TotalComandas,
-        SUM(PrecioFinal) as ValorTotal
-    FROM MovimientosInventario
-    WHERE TipoMovimiento = 'Salida' 
-        AND FechaMovimiento BETWEEN :inicio AND :fin
-    GROUP BY DATE(FechaMovimiento)
-    ORDER BY Fecha ASC
-");
-$tendenciaComandasQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
-$tendenciaComandas = $tendenciaComandasQuery->fetchAll(PDO::FETCH_ASSOC);
-
-$sucursalesQuery = $db->prepare("
-    SELECT 
-        s.Nombre as Sucursal,
-        COUNT(DISTINCT mi.ComandaID) as TotalComandas,
-        SUM(mi.Cantidad) as TotalProductos,
-        SUM(mi.PrecioFinal) as ValorTotal,
-        AVG(mi.PrecioFinal) as PromedioComanda
-    FROM MovimientosInventario mi
-    INNER JOIN Sucursales s ON mi.SucursalID = s.SucursalID
-    WHERE mi.TipoMovimiento = 'Salida' 
-        AND mi.FechaMovimiento BETWEEN :inicio AND :fin
-        AND mi.Status != 'Cancelado'
-    GROUP BY s.SucursalID
-    ORDER BY TotalComandas DESC
-");
-$sucursalesQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
-$sucursales = $sucursalesQuery->fetchAll(PDO::FETCH_ASSOC);
-
-$estadosComandasQuery = $db->prepare("
-    SELECT 
-        Status,
-        COUNT(DISTINCT ComandaID) as Total,
-        SUM(PrecioFinal) as ValorTotal,
-        AVG(PrecioFinal) as Promedio
-    FROM MovimientosInventario
-    WHERE TipoMovimiento = 'Salida' 
-        AND FechaMovimiento BETWEEN :inicio AND :fin
-    GROUP BY Status
-");
-$estadosComandasQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
-$estadosComandas = $estadosComandasQuery->fetchAll(PDO::FETCH_KEY_PAIR);
-
-$topValorQuery = $db->prepare("
-    SELECT 
-        p.Nombre,
-        p.UPC,
-        SUM(mi.PrecioFinal) as ValorTotal,
-        SUM(mi.Cantidad) as CantidadTotal,
-        AVG(mi.PrecioFinal/mi.Cantidad) as PrecioPromedio
-    FROM MovimientosInventario mi
-    INNER JOIN Productos p ON mi.ProductoID = p.ProductoID
-    WHERE mi.TipoMovimiento = 'Salida' 
-        AND mi.FechaMovimiento BETWEEN :inicio AND :fin
-        AND mi.Status != 'Cancelado'
-    GROUP BY p.ProductoID
-    ORDER BY ValorTotal DESC
-    LIMIT 10
-");
-$topValorQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
-$topValor = $topValorQuery->fetchAll(PDO::FETCH_ASSOC);
-
-$tiempoEntregaQuery = $db->prepare("
-    SELECT 
-        AVG(DATEDIFF(
-            (SELECT MAX(FechaMovimiento) 
-             FROM MovimientosInventario mi2 
-             WHERE mi2.ComandaID = mi.ComandaID AND mi2.Status = 'Cerrado'),
-            mi.FechaMovimiento
-        )) as PromedioEntrega,
-        MIN(DATEDIFF(
-            (SELECT MAX(FechaMovimiento) 
-             FROM MovimientosInventario mi2 
-             WHERE mi2.ComandaID = mi.ComandaID AND mi2.Status = 'Cerrado'),
-            mi.FechaMovimiento
-        )) as MinimoEntrega,
-        MAX(DATEDIFF(
-            (SELECT MAX(FechaMovimiento) 
-             FROM MovimientosInventario mi2 
-             WHERE mi2.ComandaID = mi.ComandaID AND mi2.Status = 'Cerrado'),
-            mi.FechaMovimiento
-        )) as MaximoEntrega
-    FROM MovimientosInventario mi
-    WHERE mi.TipoMovimiento = 'Salida' 
-        AND mi.Status = 'Abierto'
-        AND mi.FechaMovimiento BETWEEN :inicio AND :fin
-");
-$tiempoEntregaQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
-$tiempoEntrega = $tiempoEntregaQuery->fetch(PDO::FETCH_ASSOC);
-
-$categoriasQuery = $db->prepare("
-    SELECT 
-        c.Nombre as Categoria,
-        COUNT(DISTINCT mi.ComandaID) as NumeroComandas,
-        SUM(mi.Cantidad) as TotalProductos,
-        SUM(mi.PrecioFinal) as ValorTotal
-    FROM MovimientosInventario mi
-    INNER JOIN Productos p ON mi.ProductoID = p.ProductoID
-    INNER JOIN Categorias c ON p.CategoriaID = c.CategoriaID
-    WHERE mi.TipoMovimiento = 'Salida' 
-        AND mi.FechaMovimiento BETWEEN :inicio AND :fin
-        AND mi.Status != 'Cancelado'
-    GROUP BY c.CategoriaID
-    ORDER BY TotalProductos DESC
-");
-$categoriasQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
-$categorias = $categoriasQuery->fetchAll(PDO::FETCH_ASSOC);
-
-$metricsQuery = $db->prepare("
-    SELECT 
-        COUNT(DISTINCT ComandaID) as TotalComandas,
-        SUM(Cantidad) as TotalProductosSolicitados,
-        SUM(PrecioFinal) as ValorTotalVentas,
-        COUNT(DISTINCT ProductoID) as ProductosDiferentes,
-        AVG(PrecioFinal) as PromedioComanda
-    FROM MovimientosInventario
-    WHERE TipoMovimiento = 'Salida' 
-        AND FechaMovimiento BETWEEN :inicio AND :fin
-");
-$metricsQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
-$metrics = $metricsQuery->fetch(PDO::FETCH_ASSOC);
-
-$productosCanceladosQuery = $db->prepare("
-    SELECT 
-        p.Nombre,
-        p.UPC,
-        COUNT(DISTINCT mi.ComandaID) as VecesCancelado,
-        SUM(mi.Cantidad) as CantidadCancelada,
-        SUM(mi.PrecioFinal) as ValorPerdido
-    FROM MovimientosInventario mi
-    INNER JOIN Productos p ON mi.ProductoID = p.ProductoID
-    WHERE mi.TipoMovimiento = 'Salida' 
-        AND mi.Status = 'Cancelado'
-        AND mi.FechaMovimiento BETWEEN :inicio AND :fin
-    GROUP BY p.ProductoID
-    ORDER BY VecesCancelado DESC
-    LIMIT 10
-");
-$productosCanceladosQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
-$productosCancelados = $productosCanceladosQuery->fetchAll(PDO::FETCH_ASSOC);
-
-function formatMoney($value) {
-    return '$' . number_format($value, 2);
+    $db = conexion();
+    
+    if (!$db) {
+        throw new Exception("Error al conectar con la base de datos");
+    }
+} catch (Exception $e) {
+    error_log("Error en dashboardAvanzado: " . $e->getMessage());
+    echo '<div class="container mt-5"><div class="alert alert-danger"><h4>Error al cargar el dashboard</h4><p>' . htmlspecialchars($e->getMessage()) . '</p></div></div>';
+    exit;
 }
 
-function formatNumber($value) {
-    return number_format($value, 0);
-}
-?>
+try {
+    $topProductosQuery = $db->prepare("
+        SELECT 
+            p.Nombre,
+            p.UPC,
+            SUM(mi.Cantidad) as TotalSolicitado,
+            COUNT(DISTINCT mi.ComandaID) as NumeroComandas,
+            SUM(mi.PrecioFinal) as ValorTotal,
+            p.image
+        FROM MovimientosInventario mi
+        INNER JOIN Productos p ON mi.ProductoID = p.ProductoID
+        WHERE mi.TipoMovimiento = 'Salida' 
+            AND mi.FechaMovimiento BETWEEN :inicio AND :fin
+            AND mi.Status != 'Cancelado'
+        GROUP BY p.ProductoID
+        ORDER BY TotalSolicitado DESC
+        LIMIT 10
+    ");
+    $topProductosQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
+    $topProductos = $topProductosQuery->fetchAll(PDO::FETCH_ASSOC);
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
+    $tendenciaComandasQuery = $db->prepare("
+        SELECT 
+            DATE(FechaMovimiento) as Fecha,
+            COUNT(DISTINCT ComandaID) as TotalComandas,
+            SUM(PrecioFinal) as ValorTotal
+        FROM MovimientosInventario
+        WHERE TipoMovimiento = 'Salida' 
+            AND FechaMovimiento BETWEEN :inicio AND :fin
+        GROUP BY DATE(FechaMovimiento)
+        ORDER BY Fecha ASC
+    ");
+    $tendenciaComandasQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
+    $tendenciaComandas = $tendenciaComandasQuery->fetchAll(PDO::FETCH_ASSOC);
+
+    $sucursalesQuery = $db->prepare("
+        SELECT 
+            s.Nombre as Sucursal,
+            COUNT(DISTINCT mi.ComandaID) as TotalComandas,
+            SUM(mi.Cantidad) as TotalProductos,
+            SUM(mi.PrecioFinal) as ValorTotal,
+            AVG(mi.PrecioFinal) as PromedioComanda
+        FROM MovimientosInventario mi
+        INNER JOIN Sucursales s ON mi.SucursalID = s.SucursalID
+        WHERE mi.TipoMovimiento = 'Salida' 
+            AND mi.FechaMovimiento BETWEEN :inicio AND :fin
+            AND mi.Status != 'Cancelado'
+        GROUP BY s.SucursalID
+        ORDER BY TotalComandas DESC
+    ");
+    $sucursalesQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
+    $sucursales = $sucursalesQuery->fetchAll(PDO::FETCH_ASSOC);
+
+    $estadosComandasQuery = $db->prepare("
+        SELECT 
+            Status,
+            COUNT(DISTINCT ComandaID) as Total,
+            SUM(PrecioFinal) as ValorTotal,
+            AVG(PrecioFinal) as Promedio
+        FROM MovimientosInventario
+        WHERE TipoMovimiento = 'Salida' 
+            AND FechaMovimiento BETWEEN :inicio AND :fin
+        GROUP BY Status
+    ");
+    $estadosComandasQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
+    $estadosComandas = $estadosComandasQuery->fetchAll(PDO::FETCH_KEY_PAIR);
+
+    $topValorQuery = $db->prepare("
+        SELECT 
+            p.Nombre,
+            p.UPC,
+            SUM(mi.PrecioFinal) as ValorTotal,
+            SUM(mi.Cantidad) as CantidadTotal,
+            AVG(mi.PrecioFinal/mi.Cantidad) as PrecioPromedio
+        FROM MovimientosInventario mi
+        INNER JOIN Productos p ON mi.ProductoID = p.ProductoID
+        WHERE mi.TipoMovimiento = 'Salida' 
+            AND mi.FechaMovimiento BETWEEN :inicio AND :fin
+            AND mi.Status != 'Cancelado'
+        GROUP BY p.ProductoID
+        ORDER BY ValorTotal DESC
+        LIMIT 10
+    ");
+    $topValorQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
+    $topValor = $topValorQuery->fetchAll(PDO::FETCH_ASSOC);
+
+    $tiempoEntregaQuery = $db->prepare("
+        SELECT 
+            AVG(DATEDIFF(
+                (SELECT MAX(FechaMovimiento) 
+                 FROM MovimientosInventario mi2 
+                 WHERE mi2.ComandaID = mi.ComandaID AND mi2.Status = 'Cerrado'),
+                mi.FechaMovimiento
+            )) as PromedioEntrega,
+            MIN(DATEDIFF(
+                (SELECT MAX(FechaMovimiento) 
+                 FROM MovimientosInventario mi2 
+                 WHERE mi2.ComandaID = mi.ComandaID AND mi2.Status = 'Cerrado'),
+                mi.FechaMovimiento
+            )) as MinimoEntrega,
+            MAX(DATEDIFF(
+                (SELECT MAX(FechaMovimiento) 
+                 FROM MovimientosInventario mi2 
+                 WHERE mi2.ComandaID = mi.ComandaID AND mi2.Status = 'Cerrado'),
+                mi.FechaMovimiento
+            )) as MaximoEntrega
+        FROM MovimientosInventario mi
+        WHERE mi.TipoMovimiento = 'Salida' 
+            AND mi.Status = 'Abierto'
+            AND mi.FechaMovimiento BETWEEN :inicio AND :fin
+    ");
+    $tiempoEntregaQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
+    $tiempoEntrega = $tiempoEntregaQuery->fetch(PDO::FETCH_ASSOC);
+
+    $categoriasQuery = $db->prepare("
+        SELECT 
+            c.Nombre as Categoria,
+            COUNT(DISTINCT mi.ComandaID) as NumeroComandas,
+            SUM(mi.Cantidad) as TotalProductos,
+            SUM(mi.PrecioFinal) as ValorTotal
+        FROM MovimientosInventario mi
+        INNER JOIN Productos p ON mi.ProductoID = p.ProductoID
+        INNER JOIN Categorias c ON p.CategoriaID = c.CategoriaID
+        WHERE mi.TipoMovimiento = 'Salida' 
+            AND mi.FechaMovimiento BETWEEN :inicio AND :fin
+            AND mi.Status != 'Cancelado'
+        GROUP BY c.CategoriaID
+        ORDER BY TotalProductos DESC
+    ");
+    $categoriasQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
+    $categorias = $categoriasQuery->fetchAll(PDO::FETCH_ASSOC);
+
+    $metricsQuery = $db->prepare("
+        SELECT 
+            COUNT(DISTINCT ComandaID) as TotalComandas,
+            SUM(Cantidad) as TotalProductosSolicitados,
+            SUM(PrecioFinal) as ValorTotalVentas,
+            COUNT(DISTINCT ProductoID) as ProductosDiferentes,
+            AVG(PrecioFinal) as PromedioComanda
+        FROM MovimientosInventario
+        WHERE TipoMovimiento = 'Salida' 
+            AND FechaMovimiento BETWEEN :inicio AND :fin
+    ");
+    $metricsQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
+    $metrics = $metricsQuery->fetch(PDO::FETCH_ASSOC);
+
+    $productosCanceladosQuery = $db->prepare("
+        SELECT 
+            p.Nombre,
+            p.UPC,
+            COUNT(DISTINCT mi.ComandaID) as VecesCancelado,
+            SUM(mi.Cantidad) as CantidadCancelada,
+            SUM(mi.PrecioFinal) as ValorPerdido
+        FROM MovimientosInventario mi
+        INNER JOIN Productos p ON mi.ProductoID = p.ProductoID
+        WHERE mi.TipoMovimiento = 'Salida' 
+            AND mi.Status = 'Cancelado'
+            AND mi.FechaMovimiento BETWEEN :inicio AND :fin
+        GROUP BY p.ProductoID
+        ORDER BY VecesCancelado DESC
+        LIMIT 10
+    ");
+    $productosCanceladosQuery->execute([':inicio' => $fechaInicio, ':fin' => $fechaFin]);
+    $productosCancelados = $productosCanceladosQuery->fetchAll(PDO::FETCH_ASSOC);
+
+    function formatMoney($value) {
+        return '$' . number_format($value, 2);
+    }
+
+    function formatNumber($value) {
+        return number_format($value, 0);
+    }
+    ?>
+
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Avanzado - Análisis de Inventario</title>
@@ -743,6 +759,22 @@ new Chart(estadosCtx, {
     }
 });
 </script>
+
+<?php
+} catch (Exception $e) {
+    error_log("Error en consultas de dashboardAvanzado: " . $e->getMessage() . " en línea " . $e->getLine());
+    echo '<div class="container mt-5">';
+    echo '<div class="alert alert-danger">';
+    echo '<h4><i class="fas fa-exclamation-triangle"></i> Error al cargar los datos del dashboard</h4>';
+    echo '<p><strong>Detalles:</strong> ' . htmlspecialchars($e->getMessage()) . '</p>';
+    echo '<p><strong>Archivo:</strong> ' . htmlspecialchars($e->getFile()) . '</p>';
+    echo '<p><strong>Línea:</strong> ' . $e->getLine() . '</p>';
+    echo '<hr>';
+    echo '<p class="mb-0"><small>Por favor, contacte al administrador del sistema si el problema persiste.</small></p>';
+    echo '</div>';
+    echo '</div>';
+}
+?>
 
 </body>
 </html>
