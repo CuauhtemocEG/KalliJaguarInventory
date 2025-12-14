@@ -2,6 +2,9 @@
 ob_start();
 require_once('../fpdf/fpdf.php');
 require_once('../controllers/mainController.php');
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Picqer\Barcode\BarcodeGeneratorPNG;
 
 function convertirTexto($texto) {
     if (function_exists('iconv')) {
@@ -11,6 +14,82 @@ function convertirTexto($texto) {
     } else {
         return $texto;
     }
+}
+
+function generateValidEan13($code12) {
+    $sum = 0;
+    for ($i = 0; $i < 12; $i++) {
+        $digit = (int) $code12[$i];
+        $sum += ($i % 2 === 0) ? $digit : $digit * 3;
+    }
+    $checkDigit = (10 - ($sum % 10)) % 10;
+    return $code12 . $checkDigit;
+}
+
+function generarCodigoConLogo($ean13, $nombreProducto, $logoPath, $fontPath, $scale = 1.5) {
+    $generator = new BarcodeGeneratorPNG();
+    $barcodeData = $generator->getBarcode($ean13, $generator::TYPE_EAN_13, 2 * $scale, 45 * $scale);
+    
+    $barcodeImage = imagecreatefromstring($barcodeData);
+    $barcodeWidth = imagesx($barcodeImage);
+    $barcodeHeight = imagesy($barcodeImage);
+    
+    $logo = imagecreatefrompng($logoPath);
+    $logoWidth = imagesx($logo);
+    $logoHeight = imagesy($logo);
+    
+    $padding = 16;
+    $maxLogoHeight = $barcodeHeight * 1.5;
+    
+    if ($logoHeight > $maxLogoHeight) {
+        $ratio = $maxLogoHeight / $logoHeight;
+        $newLogoWidth = (int)($logoWidth * $ratio);
+        $newLogoHeight = (int)$maxLogoHeight;
+        
+        $resizedLogo = imagecreatetruecolor($newLogoWidth, $newLogoHeight);
+        imagesavealpha($resizedLogo, true);
+        $transColor = imagecolorallocatealpha($resizedLogo, 0, 0, 0, 127);
+        imagefill($resizedLogo, 0, 0, $transColor);
+        
+        imagecopyresampled($resizedLogo, $logo, 0, 0, 0, 0, $newLogoWidth, $newLogoHeight, $logoWidth, $logoHeight);
+        imagedestroy($logo);
+        $logo = $resizedLogo;
+        $logoWidth = $newLogoWidth;
+        $logoHeight = $newLogoHeight;
+    }
+    
+    $finalWidth = $barcodeWidth + $logoWidth + ($padding * 3);
+    $textHeight = 30;
+    $finalHeight = max($barcodeHeight, $logoHeight) + $textHeight + ($padding * 2) + 20;
+    
+    $finalImage = imagecreatetruecolor($finalWidth, $finalHeight);
+    $white = imagecolorallocate($finalImage, 255, 255, 255);
+    $black = imagecolorallocate($finalImage, 0, 0, 0);
+    imagefilledrectangle($finalImage, 0, 0, $finalWidth, $finalHeight, $white);
+    
+    imagecopy($finalImage, $barcodeImage, $padding, $padding, 0, 0, $barcodeWidth, $barcodeHeight);
+    
+    $logoY = $padding + (int)(($barcodeHeight - $logoHeight) / 2);
+    imagecopy($finalImage, $logo, $barcodeWidth + 2 * $padding, $logoY, 0, 0, $logoWidth, $logoHeight);
+    
+    $fontSize = 19;
+    $textBox = imagettfbbox($fontSize, 0, $fontPath, $nombreProducto);
+    $textWidth = $textBox[2] - $textBox[0];
+    $textX = (int)(($finalWidth - $textWidth) / 2);
+    $textY = max($barcodeHeight, $logoHeight) + $padding + 18;
+    imagettftext($finalImage, $fontSize, 0, $textX, $textY, $black, $fontPath, $nombreProducto);
+    
+    $eanFontSize = 16;
+    $textBox2 = imagettfbbox($eanFontSize, 0, $fontPath, $ean13);
+    $textWidth2 = $textBox2[2] - $textBox2[0];
+    $textX2 = (int)(($finalWidth - $textWidth2) / 2);
+    $textY2 = $textY + 30;
+    imagettftext($finalImage, $eanFontSize, 0, $textX2, $textY2, $black, $fontPath, $ean13);
+    
+    imagedestroy($barcodeImage);
+    imagedestroy($logo);
+    
+    return $finalImage;
 }
 
 class CatalogoPDF extends FPDF {
@@ -68,26 +147,29 @@ class CatalogoPDF extends FPDF {
     }
 }
 
-function obtenerBarcodeImage($productoId) {
-    $url = 'https://kallijaguar-inventory.com/v2/productos/generateBarcode.php?productoId=' . $productoId;
-
-    $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+function obtenerBarcodeImage($producto) {
+    $logoPath = __DIR__ . '/../img/Logo-Negro.png';
+    $fontPath = __DIR__ . '/../fonts/arial.ttf';
     
-    $imageData = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $error = curl_error($ch);
-    curl_close($ch);
+    // Procesar UPC
+    $rawUpc = preg_replace('/\D/', '', $producto['UPC']);
     
-    if ($httpCode !== 200 || empty($imageData)) {
-        throw new Exception("Error al obtener barcode: HTTP $httpCode - $error");
+    if (strlen($rawUpc) === 13) {
+        $validUpc = $rawUpc;
+    } elseif (strlen($rawUpc) >= 12) {
+        $validUpc = generateValidEan13(substr($rawUpc, 0, 12));
+    } else {
+        $validUpc = str_pad($rawUpc, 12, '0', STR_PAD_LEFT);
+        $validUpc = generateValidEan13($validUpc);
     }
     
+    // Generar imagen del código de barras
+    $barcodeImage = generarCodigoConLogo($validUpc, $producto['Nombre'], $logoPath, $fontPath);
+    
+    // Guardar temporalmente
     $tempFile = tempnam(sys_get_temp_dir(), 'bc_') . '.png';
-    file_put_contents($tempFile, $imageData);
+    imagepng($barcodeImage, $tempFile);
+    imagedestroy($barcodeImage);
     
     return $tempFile;
 }
@@ -162,8 +244,8 @@ try {
         
         foreach ($productosTag as $index => $producto) {
             try {
-                // Obtener imagen del barcode
-                $tempFile = obtenerBarcodeImage($producto['ProductoID']);
+                // Obtener imagen del barcode (ahora genera directamente sin HTTP)
+                $tempFile = obtenerBarcodeImage($producto);
                 $tempFiles[] = $tempFile;
                 
                 // Calcular posición X según la columna
