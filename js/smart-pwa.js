@@ -91,8 +91,8 @@ class SmartPWAController {
     }
     
     showPWAControls() {
-        // Solo mostrar controles en páginas críticas
-        const criticalPages = ['requestProducts', 'showRequest', 'editarComanda'];
+        // Solo mostrar controles en páginas críticas 'requestProducts', 'showRequest', 'editarComanda'
+        const criticalPages = [];
         if (!criticalPages.includes(this.currentPage)) return;
         
         const existingControls = document.getElementById('pwa-smart-controls');
