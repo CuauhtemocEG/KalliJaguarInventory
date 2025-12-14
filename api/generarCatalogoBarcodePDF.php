@@ -69,8 +69,8 @@ class CatalogoPDF extends FPDF {
 }
 
 function obtenerBarcodeImage($productoId) {
-    $url = 'http://localhost:8888/KalliLocal/api/generateBarcode.php?productoId=' . $productoId;
-    
+    $url = 'https://kallijaguar-inventory.com/v2/productos/generateBarcode.php?productoId=' . $productoId;
+
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);

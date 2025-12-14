@@ -744,7 +744,6 @@ document.getElementById("formReporteProductosSolicitados").addEventListener("sub
         });
 });
 
-// Nuevo manejador para Reporte Stock v2.0
 document.getElementById("formReporteStockTagV2").addEventListener("submit", async function (e) {
     e.preventDefault();
     const formData = new FormData(this);
