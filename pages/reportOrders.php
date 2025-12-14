@@ -80,6 +80,73 @@
       </div>
     </div>
 
+    <div class="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-2xl md:rounded-3xl shadow-xl border-2 border-cyan-200 overflow-hidden mb-8 md:mb-10">
+      <div class="bg-gradient-to-r from-cyan-600 to-blue-600 p-4 md:p-6">
+        <div class="flex items-center space-x-3 md:space-x-4">
+          <div class="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-full flex items-center justify-center">
+            <i class="fas fa-barcode text-white text-lg md:text-xl"></i>
+          </div>
+          <div>
+            <h3 class="text-lg md:text-xl font-bold text-white flex items-center gap-2">
+              Catálogo de Códigos de Barra
+              <span class="px-2 py-1 bg-green-400 text-cyan-900 text-xs font-bold rounded-full">NUEVO</span>
+            </h3>
+            <p class="text-xs md:text-sm text-cyan-100">Genera un catálogo PDF con códigos EAN-13 de todos tus productos organizados por tags</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="p-4 md:p-8 bg-white">
+        <form id="formCatalogoBarcode" class="space-y-4 md:space-y-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+            <div class="space-y-2">
+              <label for="tag_barcode_filter" class="block text-xs md:text-sm font-semibold text-gray-700">
+                <i class="fas fa-tag text-cyan-500 mr-2"></i>Seleccionar Tag/Categoría
+              </label>
+              <select name="tag" id="tag_barcode_filter"
+                class="w-full px-3 md:px-4 py-2 md:py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all duration-200 text-sm md:text-base">
+                <option value="">Todos los Tags</option>
+              </select>
+            </div>
+            
+            <div class="space-y-2">
+              <label for="tipo_barcode_filter" class="block text-xs md:text-sm font-semibold text-gray-700">
+                <i class="fas fa-cube text-cyan-500 mr-2"></i>Filtrar por Tipo
+              </label>
+              <select name="tipo" id="tipo_barcode_filter"
+                class="w-full px-3 md:px-4 py-2 md:py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all duration-200 text-sm md:text-base">
+                <option value="">Todos los tipos</option>
+                <option value="Unidad">Unidad</option>
+                <option value="Pesable">Pesable</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="bg-cyan-50 border border-cyan-200 rounded-lg p-3 md:p-4">
+            <div class="flex items-start space-x-2">
+              <i class="fas fa-info-circle text-cyan-600 mt-1"></i>
+              <div class="text-xs md:text-sm text-cyan-800">
+                <p class="font-semibold mb-1">¿Qué incluye este catálogo?</p>
+                <ul class="list-disc list-inside space-y-1 text-cyan-700">
+                  <li>Códigos de barra EAN-13 de todos los productos</li>
+                  <li>Logo de la empresa integrado en cada código</li>
+                  <li>Productos organizados por tags/categorías</li>
+                  <li>Información de tipo y precio de cada producto</li>
+                  <li>Formato profesional listo para imprimir</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <button type="submit" id="btnGenerarCatalogoBarcode"
+            class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-bold py-3 md:py-4 px-4 md:px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-3 group text-sm md:text-base">
+            <i class="fas fa-barcode group-hover:scale-110 transition-transform"></i>
+            <span>Generar Catálogo de Códigos de Barra</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-8 md:mb-10">
       <div class="group bg-white rounded-2xl md:rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden border border-blue-100">
         <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-4 md:p-6">
@@ -287,6 +354,7 @@ console.log('  - URL completa API:', window.location.origin + BASE_PATH + '/api/
 document.addEventListener('DOMContentLoaded', function() {
   cargarTags();
   cargarTagsV2();
+  cargarTagsBarcode();
 });
 
 function cargarTags() {
@@ -339,6 +407,33 @@ function cargarTagsV2() {
     })
     .catch(error => {
       console.error('Error al cargar tags v2:', error);
+      console.error('URL intentada:', tagsUrl);
+    });
+}
+
+function cargarTagsBarcode() {
+  const tagsUrl = BASE_PATH + '/api/getTags.php';
+  console.log('Cargando tags barcode desde:', tagsUrl);
+  fetch(tagsUrl)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      const select = document.getElementById('tag_barcode_filter');
+      if (data.success && data.tags) {
+        data.tags.forEach(tag => {
+          const option = document.createElement('option');
+          option.value = tag;
+          option.textContent = tag;
+          select.appendChild(option);
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Error al cargar tags barcode:', error);
       console.error('URL intentada:', tagsUrl);
     });
 }
@@ -733,6 +828,92 @@ document.getElementById("formReporteStockTagV2").addEventListener("submit", asyn
         .finally(() => {
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-file-invoice group-hover:scale-110 transition-transform"></i><span>Generar Orden de Solicitud Profesional</span>';
+        });
+});
+
+document.getElementById("formCatalogoBarcode").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const tag = formData.get("tag");
+    const tipo = formData.get("tipo");
+
+    let confirmText = "Se generará un catálogo PDF con códigos de barra EAN-13";
+    if (tag) confirmText += ` para el tag: ${tag}`;
+    if (tipo) confirmText += ` (Tipo: ${tipo})`;
+    confirmText += ". El documento incluirá logo, códigos de barra profesionales y detalles de cada producto.";
+
+    const result = await Swal.fire({
+        title: "¿Generar Catálogo de Códigos de Barra?",
+        text: confirmText,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Sí, generar catálogo",
+        cancelButtonText: "Cancelar",
+        confirmButtonColor: '#0891b2',
+    });
+
+    if (!result.isConfirmed) return;
+
+    const fileName = `catalogo_barcodes_${tag || 'todos'}_${new Date().toISOString().slice(0,10)}.pdf`;
+    const btn = document.getElementById("btnGenerarCatalogoBarcode");
+
+    Swal.fire({
+        title: "Generando Catálogo de Códigos de Barra...",
+        html: "Por favor espera. Se están generando los códigos EAN-13 para cada producto.",
+        didOpen: () => Swal.showLoading(),
+        allowOutsideClick: false,
+    });
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin group-hover:scale-110 transition-transform"></i><span>Generando catálogo...</span>';
+
+    const catalogoUrl = BASE_PATH + "/api/generarCatalogoBarcodePDF.php";
+    fetch(catalogoUrl, {
+            method: "POST",
+            body: formData
+        })
+        .then((res) => {
+            console.log('Response status:', res.status);
+            if (!res.ok) {
+                return res.text().then(text => {
+                    console.error('Error response text:', text);
+                    throw new Error(`Error ${res.status}: ${text}`);
+                });
+            }
+            return res.blob();
+        })
+        .then((blob) => {
+            Swal.close();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+
+            Swal.fire({
+                icon: "success",
+                title: "¡Catálogo Generado!",
+                html: "Tu catálogo de códigos de barra se ha descargado correctamente.<br><small>El documento incluye códigos EAN-13 listos para imprimir.</small>",
+                timer: 4000,
+                showConfirmButton: true,
+                confirmButtonColor: '#0891b2',
+            });
+        })
+        .catch((err) => {
+            console.error("Error al generar catálogo:", err);
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Ocurrió un error al generar el catálogo de códigos de barra.",
+                confirmButtonColor: '#dc2626',
+            });
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-barcode group-hover:scale-110 transition-transform"></i><span>Generar Catálogo de Códigos de Barra</span>';
         });
 });
 </script>
