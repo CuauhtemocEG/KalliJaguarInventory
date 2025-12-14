@@ -77,9 +77,7 @@ try {
     $estadosComandasQuery = $db->prepare("
         SELECT 
             Status,
-            COUNT(DISTINCT ComandaID) as Total,
-            SUM(PrecioFinal) as ValorTotal,
-            AVG(PrecioFinal) as Promedio
+            COUNT(DISTINCT ComandaID) as Total
         FROM MovimientosInventario
         WHERE TipoMovimiento = 'Salida' 
             AND FechaMovimiento BETWEEN :inicio AND :fin
