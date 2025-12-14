@@ -5,7 +5,7 @@
 
 define('APP_NAME', 'Kalli Inventory System');
 define('APP_SHORT_NAME', 'Kalli Jaguar');
-define('APP_VERSION', '2.1.2');
+define('APP_VERSION', '2.1.8');
 define('APP_BUILD', '20250415'); // Formato: YYYYMMDD
 define('APP_RELEASE_DATE', '9 de diciembre de 2025');
 
