@@ -7,8 +7,22 @@ ini_set('log_errors', 1);
 try {
     require_once "./controllers/mainController.php";
 
-    $fechaInicio = isset($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : date('Y-m-d', strtotime('-30 days'));
-    $fechaFin = isset($_GET['fecha_fin']) ? $_GET['fecha_fin'] : date('Y-m-d');
+    date_default_timezone_set('America/Mexico_City');
+
+    $fechaInicio = isset($_GET['fecha_inicio']) && $_GET['fecha_inicio'] != '' 
+        ? $_GET['fecha_inicio'] 
+        : date('Y-m-d', strtotime('-30 days')) . ' 00:00:00';
+    
+    $fechaFin = isset($_GET['fecha_fin']) && $_GET['fecha_fin'] != '' 
+        ? $_GET['fecha_fin'] 
+        : date('Y-m-d') . ' 23:59:59';
+
+    if (strlen($fechaInicio) <= 10) {
+        $fechaInicio .= ' 00:00:00';
+    }
+    if (strlen($fechaFin) <= 10) {
+        $fechaFin .= ' 23:59:59';
+    }
 
     $db = conexion();
     
@@ -212,18 +226,23 @@ try {
                 <div>
                     <h1 class="text-3xl font-bold text-gray-900 mb-2">📊 Dashboard Analítico Avanzado</h1>
                     <p class="text-gray-600">Análisis detallado de inventario y solicitudes</p>
+                    <p class="text-sm text-gray-500 mt-1">
+                        🕐 Período: <?php echo date('d/m/Y H:i', strtotime($fechaInicio)); ?> - <?php echo date('d/m/Y H:i', strtotime($fechaFin)); ?> (Hora México)
+                    </p>
                 </div>
                 
                 <form method="GET" action="" class="flex flex-wrap gap-3 items-end">
                     <input type="hidden" name="page" value="dashboardAvanzado">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Inicio</label>
-                        <input type="date" name="fecha_inicio" value="<?php echo $fechaInicio; ?>" 
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha/Hora Inicio</label>
+                        <input type="datetime-local" name="fecha_inicio" 
+                               value="<?php echo str_replace(' ', 'T', substr($fechaInicio, 0, 16)); ?>" 
                                class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Fin</label>
-                        <input type="date" name="fecha_fin" value="<?php echo $fechaFin; ?>" 
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha/Hora Fin</label>
+                        <input type="datetime-local" name="fecha_fin" 
+                               value="<?php echo str_replace(' ', 'T', substr($fechaFin, 0, 16)); ?>" 
                                class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium">
