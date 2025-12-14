@@ -35,7 +35,6 @@ $misEstados = [
     'Cancelado' => (int) $stats['canceladas']
 ];
 
-// Actividad reciente (últimas 5 comandas)
 $actividadRecienteStmt = $db->prepare("
     SELECT 
         ComandaID,
@@ -54,7 +53,6 @@ $actividadRecienteStmt = $db->prepare("
 $actividadRecienteStmt->execute([':userID' => $userID]);
 $actividadReciente = $actividadRecienteStmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Top 5 productos más solicitados por el usuario
 $topProductosStmt = $db->prepare("
     SELECT 
         p.Nombre,
@@ -89,6 +87,7 @@ $topProductos = $topProductosStmt->fetchAll(PDO::FETCH_ASSOC);
 						<span class="text-gray-400">@<?php echo htmlspecialchars($userUsername); ?></span>
 					</p>
 				</div>
+				<?php if ($_SESSION['id'] == '1') { ?>
 				<div class="flex flex-wrap gap-3">
 					<a href="index.php?page=dashboardAvanzado" class="inline-flex items-center px-4 py-2 bg-white text-gray-900 text-sm font-medium rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-all duration-200 shadow-md">
 						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -98,6 +97,7 @@ $topProductos = $topProductosStmt->fetchAll(PDO::FETCH_ASSOC);
 						Dashboard Analítico
 					</a>
 				</div>
+				<?php } ?>
 			</div>
 		</div>
 
