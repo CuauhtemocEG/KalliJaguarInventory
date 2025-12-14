@@ -1,165 +1,190 @@
 <?php
 require_once "./controllers/mainController.php";
 
-$showAdvancedDashboard = isset($_GET['advanced']) && $_GET['advanced'] == '1';
-
-if ($showAdvancedDashboard) {
-    include './pages/dashboardReportes.php';
-    return;
-}
-
-$campos = "Productos.ProductoID,Productos.UPC,Productos.Nombre as productName,Productos.Descripcion,Productos.PrecioUnitario,Productos.Cantidad,Productos.image,Productos.CategoriaID,Productos.UsuarioID,Productos.Tipo,Categorias.CategoriaID,Categorias.Nombre as CatName,Usuarios.UsuarioID,Usuarios.Nombre,Usuarios.Username";
-
-$checkInventory = conexion();
-$checkInventory = $checkInventory->query("SELECT $campos FROM Productos INNER JOIN Categorias ON Productos.CategoriaID=Categorias.CategoriaID INNER JOIN Usuarios ON Productos.UsuarioID=Usuarios.UsuarioID");
-$datos = $checkInventory->fetchAll();
-
-$total = conexion();
-$total = $total->query("SELECT COUNT(*) FROM Productos WHERE Cantidad < 5");
-$totalCount = (int) $total->fetchColumn();
-
-$productsDown = conexion();
-$productsDown = $productsDown->query("SELECT * FROM Productos WHERE Cantidad < 5");
-$products = $productsDown->fetchAll();
-
-$totalProd = conexion();
-$totalProd = $totalProd->query("SELECT COUNT(*) FROM Productos");
-$totalCountProd = (int) $totalProd->fetchColumn();
-
-$totalPesables = conexion();
-$totalPesables = $totalPesables->query("SELECT Nombre, Cantidad, Tipo FROM Productos WHERE Tipo='Pesable' AND Cantidad < 5");
-
-$totalUnidades = conexion();
-$totalUnidades = $totalUnidades->query("SELECT Nombre, Cantidad, Tipo FROM Productos WHERE Tipo='Unidad' AND Cantidad < 5");
+$userID = $_SESSION['id'];
+$userName = $_SESSION['nombre'];
+$userRole = $_SESSION['rol'];
+$userUsername = $_SESSION['usuario'];
 
 $db = conexion();
-$statusCountsStmt = $db->query("
-    SELECT Status, COUNT(DISTINCT ComandaID) AS total
-    FROM MovimientosInventario
-    WHERE TipoMovimiento = 'Salida'
-    GROUP BY Status
+
+$statsStmt = $db->prepare("
+    SELECT 
+        COUNT(DISTINCT ComandaID) as totalComandas,
+        SUM(CASE WHEN Status = 'Abierto' THEN 1 ELSE 0 END) as abiertas,
+        SUM(CASE WHEN Status = 'En transito' THEN 1 ELSE 0 END) as enTransito,
+        SUM(CASE WHEN Status = 'Cerrado' THEN 1 ELSE 0 END) as cerradas,
+        SUM(CASE WHEN Status = 'Cancelado' THEN 1 ELSE 0 END) as canceladas,
+        SUM(CASE WHEN MONTH(FechaMovimiento) = MONTH(CURRENT_DATE()) 
+            AND YEAR(FechaMovimiento) = YEAR(CURRENT_DATE()) THEN 1 ELSE 0 END) as comandasMes
+    FROM (
+        SELECT DISTINCT ComandaID, Status, FechaMovimiento
+        FROM MovimientosInventario
+        WHERE UsuarioID = :userID AND TipoMovimiento = 'Salida'
+    ) as subquery
 ");
+$statsStmt->execute([':userID' => $userID]);
+$stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
 
-$statusCounts = $statusCountsStmt->fetchAll(PDO::FETCH_KEY_PAIR);
+$totalMisComandas = (int) $stats['totalComandas'];
+$comandasMes = (int) $stats['comandasMes'];
+$misEstados = [
+    'Abierto' => (int) $stats['abiertas'],
+    'En transito' => (int) $stats['enTransito'],
+    'Cerrado' => (int) $stats['cerradas'],
+    'Cancelado' => (int) $stats['canceladas']
+];
 
-$totalSolicitudes = array_sum($statusCounts);
-function porcentaje($valor, $total)
-{
-	return $total > 0 ? number_format(($valor / $total) * 100, 1) : '0.0';
-}
+// Actividad reciente (últimas 5 comandas)
+$actividadRecienteStmt = $db->prepare("
+    SELECT 
+        ComandaID,
+        Status,
+        MAX(FechaMovimiento) as Fecha,
+        COUNT(DISTINCT ProductoID) as TotalProductos,
+        SUM(Cantidad) as CantidadTotal,
+        MAX(s.nombre) as Sucursal
+    FROM MovimientosInventario mi
+    LEFT JOIN Sucursales s ON mi.SucursalID = s.SucursalID
+    WHERE mi.UsuarioID = :userID AND mi.TipoMovimiento = 'Salida'
+    GROUP BY ComandaID, Status
+    ORDER BY MAX(FechaMovimiento) DESC
+    LIMIT 5
+");
+$actividadRecienteStmt->execute([':userID' => $userID]);
+$actividadReciente = $actividadRecienteStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Top 5 productos más solicitados por el usuario
+$topProductosStmt = $db->prepare("
+    SELECT 
+        p.Nombre,
+        SUM(mi.Cantidad) as TotalSolicitado,
+        COUNT(DISTINCT mi.ComandaID) as NumeroComandas
+    FROM MovimientosInventario mi
+    INNER JOIN Productos p ON mi.ProductoID = p.ProductoID
+    WHERE mi.UsuarioID = :userID AND mi.TipoMovimiento = 'Salida'
+    GROUP BY p.ProductoID, p.Nombre
+    ORDER BY TotalSolicitado DESC
+    LIMIT 5
+");
+$topProductosStmt->execute([':userID' => $userID]);
+$topProductos = $topProductosStmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <div class="min-h-screen bg-gray-50 py-4">
 	<div class="w-full mx-auto px-4 sm:px-6 lg:px-8">
 		
-		<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 space-y-4 md:space-y-0">
-			<div>
-				<h1 class="text-3xl font-bold text-gray-900">Dashboard Principal</h1>
-				<p class="text-gray-600 mt-1">Resumen general del inventario y solicitudes</p>
-			</div>
-			<?php if ($_SESSION['id']=== 1): ?>
-			<a href="index.php?page=dashboardAvanzado" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
-				<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-				</svg>
-				Dashboard Avanzado
-			</a>
-			<?php endif; ?>
-		</div>
-
-		<?php if ($totalCount > 0): ?>
-		<div class="bg-red-50 border-l-4 border-red-400 p-4 mb-8 rounded-r-lg">
-			<div class="flex items-center">
-				<div class="flex-shrink-0">
-					<svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-						<path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-					</svg>
-				</div>
-				<div class="ml-3">
-					<p class="text-sm text-red-700">
-						<span class="font-medium">Atención:</span> Hay <strong><?php echo $totalCount; ?></strong> productos con inventario bajo (< 5 unidades).
+		<div class="bg-gradient-to-r from-gray-900 via-gray-800 to-black rounded-xl shadow-2xl p-6 mb-8 text-white border border-gray-700">
+			<div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+				<div class="mb-4 md:mb-0">
+					<h1 class="text-3xl font-bold mb-2 text-white">
+						¡Hola, <?php echo htmlspecialchars($userName); ?>! 👋
+					</h1>
+					<p class="text-gray-300 text-lg flex items-center">
+						<svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+							<path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+						</svg>
+						<span class="font-medium text-white"><?php echo htmlspecialchars($userRole); ?></span>
+						<span class="mx-2 text-gray-500">•</span>
+						<span class="text-gray-400">@<?php echo htmlspecialchars($userUsername); ?></span>
 					</p>
 				</div>
+				<div class="flex flex-wrap gap-3">
+					<a href="index.php?page=dashboardAvanzado" class="inline-flex items-center px-4 py-2 bg-white text-gray-900 text-sm font-medium rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-all duration-200 shadow-md">
+						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path>
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path>
+						</svg>
+						Dashboard Analítico
+					</a>
+				</div>
 			</div>
 		</div>
-		<?php endif; ?>
 
-		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-			<div class="bg-white overflow-hidden shadow-lg rounded-lg border-l-4 border-green-500">
-				<div class="p-6">
-					<div class="flex items-center">
-						<div class="flex-shrink-0">
-							<div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-								<svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-								</svg>
+		<div class="mb-8">
+			<h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+				<svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+				</svg>
+				Mi Actividad
+			</h2>
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+				<div class="bg-white overflow-hidden shadow-lg rounded-lg border-l-4 border-blue-500 hover:shadow-xl transition-shadow duration-300">
+					<div class="p-6">
+						<div class="flex items-center">
+							<div class="flex-shrink-0">
+								<div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+									<svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+									</svg>
+								</div>
 							</div>
-						</div>
-						<div class="ml-5 w-0 flex-1">
-							<dl>
-								<dt class="text-sm font-medium text-gray-500 truncate">Total de productos</dt>
-								<dd class="text-2xl font-bold text-gray-900"><?php echo $totalCountProd; ?></dd>
-							</dl>
+							<div class="ml-5 w-0 flex-1">
+								<dl>
+									<dt class="text-sm font-medium text-gray-500 truncate">Mis Comandas</dt>
+									<dd class="text-3xl font-bold text-gray-900"><?php echo $totalMisComandas; ?></dd>
+								</dl>
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
 
-			<div class="bg-white overflow-hidden shadow-lg rounded-lg border-l-4 border-blue-500">
-				<div class="p-6">
-					<div class="flex items-center">
-						<div class="flex-shrink-0">
-							<div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-								<svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-								</svg>
+				<div class="bg-white overflow-hidden shadow-lg rounded-lg border-l-4 border-green-500 hover:shadow-xl transition-shadow duration-300">
+					<div class="p-6">
+						<div class="flex items-center">
+							<div class="flex-shrink-0">
+								<div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+									<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+									</svg>
+								</div>
 							</div>
-						</div>
-						<div class="ml-5 w-0 flex-1">
-							<dl>
-								<dt class="text-sm font-medium text-gray-500 truncate">Abiertas</dt>
-								<dd class="text-2xl font-bold text-gray-900"><?= $statusCounts['Abierto'] ?? 0 ?></dd>
-							</dl>
+							<div class="ml-5 w-0 flex-1">
+								<dl>
+									<dt class="text-sm font-medium text-gray-500 truncate">Abiertas</dt>
+									<dd class="text-3xl font-bold text-gray-900"><?php echo $misEstados['Abierto'] ?? 0; ?></dd>
+								</dl>
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
 
-			<div class="bg-white overflow-hidden shadow-lg rounded-lg border-l-4 border-yellow-500">
-				<div class="p-6">
-					<div class="flex items-center">
-						<div class="flex-shrink-0">
-							<div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
-								<svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-								</svg>
+				<div class="bg-white overflow-hidden shadow-lg rounded-lg border-l-4 border-yellow-500 hover:shadow-xl transition-shadow duration-300">
+					<div class="p-6">
+						<div class="flex items-center">
+							<div class="flex-shrink-0">
+								<div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+									<svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+									</svg>
+								</div>
 							</div>
-						</div>
-						<div class="ml-5 w-0 flex-1">
-							<dl>
-								<dt class="text-sm font-medium text-gray-500 truncate">En tránsito</dt>
-								<dd class="text-2xl font-bold text-gray-900"><?= $statusCounts['En transito'] ?? 0 ?></dd>
-							</dl>
+							<div class="ml-5 w-0 flex-1">
+								<dl>
+									<dt class="text-sm font-medium text-gray-500 truncate">En Tránsito</dt>
+									<dd class="text-3xl font-bold text-gray-900"><?php echo $misEstados['En transito'] ?? 0; ?></dd>
+								</dl>
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
 
-			<div class="bg-white overflow-hidden shadow-lg rounded-lg border-l-4 border-red-500">
-				<div class="p-6">
-					<div class="flex items-center">
-						<div class="flex-shrink-0">
-							<div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-								<svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-								</svg>
+				<div class="bg-white overflow-hidden shadow-lg rounded-lg border-l-4 border-purple-500 hover:shadow-xl transition-shadow duration-300">
+					<div class="p-6">
+						<div class="flex items-center">
+							<div class="flex-shrink-0">
+								<div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+									<svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+									</svg>
+								</div>
 							</div>
-						</div>
-						<div class="ml-5 w-0 flex-1">
-							<dl>
-								<dt class="text-sm font-medium text-gray-500 truncate">Stock bajo</dt>
-								<dd class="text-2xl font-bold text-gray-900"><?php echo $totalCount; ?></dd>
-							</dl>
+							<div class="ml-5 w-0 flex-1">
+								<dl>
+									<dt class="text-sm font-medium text-gray-500 truncate">Este Mes</dt>
+									<dd class="text-3xl font-bold text-gray-900"><?php echo $comandasMes; ?></dd>
+								</dl>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -168,211 +193,113 @@ function porcentaje($valor, $total)
 
 		<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
 			<div class="bg-white shadow-lg rounded-lg overflow-hidden">
+				<div class="p-6 border-b border-gray-200">
+					<h3 class="text-lg font-semibold text-gray-900 flex items-center">
+						<svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+						</svg>
+						Mis Últimas Comandas
+					</h3>
+				</div>
 				<div class="p-6">
-					<h3 class="text-lg font-semibold text-gray-900 mb-6">Resumen de Solicitudes por Estado</h3>
-					<div class="flex justify-center">
-						<canvas id="solicitudesChart" class="max-w-sm"></canvas>
-					</div>
+					<?php if (count($actividadReciente) > 0): ?>
+						<div class="space-y-3">
+							<?php foreach ($actividadReciente as $actividad): ?>
+								<a href="index.php?page=comandaDetails&comandaID=<?php echo urlencode($actividad['ComandaID']); ?>" 
+								   class="flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors duration-200 border border-gray-200">
+									<div class="flex-1">
+										<div class="flex items-center mb-1">
+											<span class="font-medium text-gray-900"><?php echo htmlspecialchars($actividad['ComandaID']); ?></span>
+											<span class="ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+												<?php 
+													echo $actividad['Status'] === 'Abierto' ? 'bg-blue-100 text-blue-800' : 
+														($actividad['Status'] === 'En transito' ? 'bg-yellow-100 text-yellow-800' : 
+														($actividad['Status'] === 'Cerrado' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'));
+												?>">
+												<?php echo htmlspecialchars($actividad['Status']); ?>
+											</span>
+										</div>
+										<div class="text-sm text-gray-600">
+											<span class="font-medium"><?php echo $actividad['TotalProductos']; ?></span> productos •
+											<span class="font-medium"><?php echo $actividad['CantidadTotal']; ?></span> unidades
+											<?php if ($actividad['Sucursal']): ?>
+												• <?php echo htmlspecialchars($actividad['Sucursal']); ?>
+											<?php endif; ?>
+										</div>
+										<div class="text-xs text-gray-500 mt-1">
+											<?php echo date('d/m/Y H:i', strtotime($actividad['Fecha'])); ?>
+										</div>
+									</div>
+									<svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+									</svg>
+								</a>
+							<?php endforeach; ?>
+						</div>
+					<?php else: ?>
+						<div class="text-center py-8">
+							<svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+							</svg>
+							<p class="text-gray-500">No tienes comandas aún</p>
+							<a href="?page=requestInsumos" class="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+								Crear mi primera comanda
+							</a>
+						</div>
+					<?php endif; ?>
 				</div>
 			</div>
 
 			<div class="bg-white shadow-lg rounded-lg overflow-hidden">
-				<div class="p-6">
-					<h3 class="text-lg font-semibold text-gray-900 mb-6">Detalles por Estado</h3>
-					<div class="space-y-4">
-						<div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
-							<div class="flex items-center">
-								<div class="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
-								<span class="text-sm font-medium text-gray-700">Abierto</span>
-							</div>
-							<div class="text-right">
-								<span class="text-lg font-bold text-blue-600"><?= $statusCounts['Abierto'] ?? 0 ?></span>
-								<span class="text-sm text-gray-500 ml-2"><?= porcentaje($statusCounts['Abierto'] ?? 0, $totalSolicitudes) ?>%</span>
-							</div>
-						</div>
-
-						<div class="flex items-center justify-between p-4 bg-yellow-50 rounded-lg">
-							<div class="flex items-center">
-								<div class="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
-								<span class="text-sm font-medium text-gray-700">En tránsito</span>
-							</div>
-							<div class="text-right">
-								<span class="text-lg font-bold text-yellow-600"><?= $statusCounts['En transito'] ?? 0 ?></span>
-								<span class="text-sm text-gray-500 ml-2"><?= porcentaje($statusCounts['En transito'] ?? 0, $totalSolicitudes) ?>%</span>
-							</div>
-						</div>
-
-						<div class="flex items-center justify-between p-4 bg-green-50 rounded-lg">
-							<div class="flex items-center">
-								<div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
-								<span class="text-sm font-medium text-gray-700">Cerrado</span>
-							</div>
-							<div class="text-right">
-								<span class="text-lg font-bold text-green-600"><?= $statusCounts['Cerrado'] ?? 0 ?></span>
-								<span class="text-sm text-gray-500 ml-2"><?= porcentaje($statusCounts['Cerrado'] ?? 0, $totalSolicitudes) ?>%</span>
-							</div>
-						</div>
-
-						<div class="flex items-center justify-between p-4 bg-red-50 rounded-lg">
-							<div class="flex items-center">
-								<div class="w-3 h-3 bg-red-500 rounded-full mr-3"></div>
-								<span class="text-sm font-medium text-gray-700">Cancelado</span>
-							</div>
-							<div class="text-right">
-								<span class="text-lg font-bold text-red-600"><?= $statusCounts['Cancelado'] ?? 0 ?></span>
-								<span class="text-sm text-gray-500 ml-2"><?= porcentaje($statusCounts['Cancelado'] ?? 0, $totalSolicitudes) ?>%</span>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<div class="bg-white shadow-lg rounded-lg overflow-hidden">
-			<div class="p-6">
-				<div class="flex items-center justify-between mb-6">
-					<div>
-						<h3 class="text-lg font-semibold text-gray-900">Productos con Stock Bajo</h3>
-						<p class="text-sm text-gray-600">Productos con menos de 5 unidades en inventario</p>
-					</div>
-					<div class="bg-red-100 rounded-lg p-3">
-						<svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+				<div class="p-6 border-b border-gray-200">
+					<h3 class="text-lg font-semibold text-gray-900 flex items-center">
+						<svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
 						</svg>
-					</div>
+						Mis Productos Más Solicitados
+					</h3>
 				</div>
-
-				<div class="space-y-4">
-					<div class="border border-gray-200 rounded-lg">
-						<button class="w-full px-4 py-3 text-left flex items-center justify-between focus:outline-none focus:bg-gray-50 hover:bg-gray-50 transition-colors duration-200" 
-								onclick="toggleAccordion('pesables')">
-							<div class="flex items-center">
-								<svg class="w-5 h-5 text-yellow-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16l3-1m-3 1l-3-1"></path>
-								</svg>
-								<span class="font-medium text-gray-900">Productos Pesables</span>
-							</div>
-							<svg id="chevron-pesables" class="w-5 h-5 text-gray-400 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-							</svg>
-						</button>
-						<div id="accordion-pesables" class="hidden border-t border-gray-200">
-							<div class="p-4">
-								<div class="space-y-2">
-									<?php
-									if ($totalPesables->rowCount() > 0) {
-										foreach ($totalPesables as $row) {
-											echo '<div class="flex items-center justify-between py-2 px-3 bg-yellow-50 rounded-lg">
-													<span class="text-sm font-medium text-gray-900">' . htmlspecialchars($row['Nombre']) . '</span>
-													<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-														' . number_format($row['Cantidad'], 3) . ' Kg/grms
-													</span>
-												</div>';
-										}
-									} else {
-										echo '<div class="text-center py-4 text-gray-500 text-sm">Sin productos pesables bajo stock.</div>';
-									}
-									?>
+				<div class="p-6">
+					<?php if (count($topProductos) > 0): ?>
+						<div class="space-y-3">
+							<?php foreach ($topProductos as $index => $producto): ?>
+								<div class="flex items-center p-3 bg-gray-50 rounded-lg border border-gray-200">
+									<div class="flex-shrink-0 mr-4">
+										<div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+											<?php echo $index + 1; ?>
+										</div>
+									</div>
+									<div class="flex-1 min-w-0">
+										<p class="text-sm font-medium text-gray-900 truncate">
+											<?php echo htmlspecialchars($producto['Nombre']); ?>
+										</p>
+										<div class="flex items-center text-xs text-gray-600">
+											<span class="font-semibold text-blue-600"><?php echo number_format($producto['TotalSolicitado']); ?></span>
+											<span class="mx-1">unidades en</span>
+											<span class="font-semibold text-green-600"><?php echo $producto['NumeroComandas']; ?></span>
+											<span class="ml-1">comandas</span>
+										</div>
+									</div>
 								</div>
-							</div>
+							<?php endforeach; ?>
 						</div>
-					</div>
-
-					<div class="border border-gray-200 rounded-lg">
-						<button class="w-full px-4 py-3 text-left flex items-center justify-between focus:outline-none focus:bg-gray-50 hover:bg-gray-50 transition-colors duration-200" 
-								onclick="toggleAccordion('unidades')">
-							<div class="flex items-center">
-								<svg class="w-5 h-5 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-								</svg>
-								<span class="font-medium text-gray-900">Productos por Unidad</span>
-							</div>
-							<svg id="chevron-unidades" class="w-5 h-5 text-gray-400 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+					<?php else: ?>
+						<div class="text-center py-8">
+							<svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
 							</svg>
-						</button>
-						<div id="accordion-unidades" class="hidden border-t border-gray-200">
-							<div class="p-4">
-								<div class="space-y-2">
-									<?php
-									if ($totalUnidades->rowCount() > 0) {
-										foreach ($totalUnidades as $row) {
-											echo '<div class="flex items-center justify-between py-2 px-3 bg-blue-50 rounded-lg">
-													<span class="text-sm font-medium text-gray-900">' . htmlspecialchars($row['Nombre']) . '</span>
-													<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-														' . number_format($row['Cantidad'], 0) . ' uds
-													</span>
-												</div>';
-										}
-									} else {
-										echo '<div class="text-center py-4 text-gray-500 text-sm">Sin productos por unidad bajo stock.</div>';
-									}
-									?>
-								</div>
-							</div>
+							<p class="text-gray-500">No has solicitado productos aún</p>
 						</div>
-					</div>
+					<?php endif; ?>
 				</div>
 			</div>
 		</div>
+
 
 	</div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-	document.addEventListener('DOMContentLoaded', function() {
-		const ctx = document.getElementById('solicitudesChart').getContext('2d');
-		const data = {
-			labels: ['Abierto', 'En tránsito', 'Cerrado', 'Cancelado'],
-			datasets: [{
-				data: [
-					<?= $statusCounts['Abierto'] ?? 0 ?>,
-					<?= $statusCounts['En transito'] ?? 0 ?>,
-					<?= $statusCounts['Cerrado'] ?? 0 ?>,
-					<?= $statusCounts['Cancelado'] ?? 0 ?>
-				],
-				backgroundColor: ['#3B82F6', '#F59E0B', '#10B981', '#EF4444'],
-				borderWidth: 0,
-				hoverOffset: 4
-			}]
-		};
-
-		const config = {
-			type: 'doughnut',
-			data: data,
-			options: {
-				responsive: true,
-				maintainAspectRatio: false,
-				plugins: {
-					legend: {
-						position: 'bottom',
-						labels: {
-							padding: 20,
-							usePointStyle: true,
-							font: {
-								size: 12
-							}
-						}
-					},
-					tooltip: {
-						callbacks: {
-							label: function(context) {
-								let total = context.dataset.data.reduce((a, b) => a + b, 0);
-								let value = context.parsed;
-								let percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
-								return `${context.label}: ${value} (${percentage}%)`;
-							}
-						}
-					}
-				},
-				cutout: '60%'
-			}
-		};
-
-		new Chart(ctx, config);
-	});
-
 	function toggleAccordion(type) {
 		const accordion = document.getElementById(`accordion-${type}`);
 		const chevron = document.getElementById(`chevron-${type}`);
