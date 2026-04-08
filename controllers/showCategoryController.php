@@ -1,26 +1,28 @@
 <?php
-$inicio = ($pagina > 0) ? (($pagina * $registros) - $registros) : 0;
+$inicio = (int)(($pagina > 0) ? (($pagina * $registros) - $registros) : 0);
+$registros = (int)$registros;
 $tabla = "";
-
-if (isset($busqueda) && $busqueda != "") {
-
-	$consulta_datos = "SELECT * FROM Categorias WHERE Nombre LIKE '%$busqueda%' ORDER BY Nombre ASC LIMIT $inicio,$registros";
-
-	$consulta_total = "SELECT COUNT(CategoriaID) FROM Categorias WHERE Nombre LIKE '%$busqueda%'";
-} else {
-
-	$consulta_datos = "SELECT * FROM Categorias ORDER BY Nombre ASC LIMIT $inicio,$registros";
-
-	$consulta_total = "SELECT COUNT(CategoriaID) FROM Categorias";
-}
 
 $conexion = conexion();
 
-$datos = $conexion->query($consulta_datos);
-$datos = $datos->fetchAll();
+if (isset($busqueda) && $busqueda != "") {
+	$searchParam = '%' . $busqueda . '%';
+	$stmtDatos = $conexion->prepare("SELECT * FROM Categorias WHERE Nombre LIKE :s1 ORDER BY Nombre ASC LIMIT {$inicio},{$registros}");
+	$stmtDatos->execute([':s1' => $searchParam]);
+	$datos = $stmtDatos->fetchAll();
 
-$total = $conexion->query($consulta_total);
-$total = (int) $total->fetchColumn();
+	$stmtTotal = $conexion->prepare("SELECT COUNT(CategoriaID) FROM Categorias WHERE Nombre LIKE :s1");
+	$stmtTotal->execute([':s1' => $searchParam]);
+	$total = (int)$stmtTotal->fetchColumn();
+} else {
+	$stmtDatos = $conexion->prepare("SELECT * FROM Categorias ORDER BY Nombre ASC LIMIT {$inicio},{$registros}");
+	$stmtDatos->execute();
+	$datos = $stmtDatos->fetchAll();
+
+	$stmtTotal = $conexion->prepare("SELECT COUNT(CategoriaID) FROM Categorias");
+	$stmtTotal->execute();
+	$total = (int)$stmtTotal->fetchColumn();
+}
 
 $Npaginas = ceil($total / $registros);
 

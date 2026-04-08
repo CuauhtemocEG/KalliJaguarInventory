@@ -4,12 +4,16 @@ $idSucursalDelete = limpiar_cadena($_GET['idSucursalDel']);
 
 /*== Verificando usuario ==*/
 $checkSucursal = conexion();
-$checkSucursal = $checkSucursal->query("SELECT SucursalID FROM Sucursales WHERE SucursalID='$idSucursalDelete'");
+$stmtCheck = $checkSucursal->prepare("SELECT SucursalID FROM Sucursales WHERE SucursalID = :id");
+$stmtCheck->execute([':id' => $idSucursalDelete]);
+$checkSucursal = $stmtCheck;
 
 if ($checkSucursal->rowCount() == 1) {
 
 	$checkMovimientos = conexion();
-	$checkMovimientos = $checkMovimientos->query("SELECT SucursalID FROM MovimientosInventario WHERE SucursalID='$idSucursalDelete' LIMIT 1");
+	$stmtMov = $checkMovimientos->prepare("SELECT SucursalID FROM MovimientosInventario WHERE SucursalID = :id LIMIT 1");
+	$stmtMov->execute([':id' => $idSucursalDelete]);
+	$checkMovimientos = $stmtMov;
 
 	if ($checkMovimientos->rowCount() <= 0) {
 

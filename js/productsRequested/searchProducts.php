@@ -1,8 +1,7 @@
 <?php
+session_name("INV");
 session_start();
 
-// Headers CORS para permitir solicitudes desde diferentes subdominios
-header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, X-Requested-With');
 header('Content-Type: text/html; charset=UTF-8');
@@ -13,22 +12,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-function conexion()
-{
-    $pdo = new PDO('mysql:host=localhost:3306
-;dbname=kallijag_inventory', 'kallijag_admin', 'uNtiL.horSe@5');
-    return $pdo;
-}
+require_once dirname(__DIR__, 2) . '/controllers/mainController.php';
 
 $query = isset($_GET['query']) ? $_GET['query'] : '';
 
 $campos = "Productos.ProductoID, Productos.Descripcion,Productos.UPC,Productos.Nombre as nombreProducto,Productos.PrecioUnitario,Productos.Cantidad,Productos.Tipo,Productos.image,Productos.CategoriaID as productCategory,Productos.UsuarioID,Categorias.CategoriaID,Categorias.Nombre as categoryName,Usuarios.UsuarioID,Usuarios.Nombre as userName";
 
-$consulta_datos = "SELECT $campos FROM Productos INNER JOIN Categorias ON Productos.CategoriaID=Categorias.CategoriaID INNER JOIN Usuarios ON Productos.UsuarioID=Usuarios.UsuarioID WHERE Productos.UPC LIKE '%$query%' OR Productos.Nombre LIKE '%$query%' ORDER BY Productos.Nombre";
+$searchParam = '%' . $query . '%';
 
 $conexion = conexion();
-$datos = $conexion->query($consulta_datos);
-$datos = $datos->fetchAll();
+$stmt = $conexion->prepare("SELECT {$campos} FROM Productos INNER JOIN Categorias ON Productos.CategoriaID=Categorias.CategoriaID INNER JOIN Usuarios ON Productos.UsuarioID=Usuarios.UsuarioID WHERE Productos.UPC LIKE :search1 OR Productos.Nombre LIKE :search2 ORDER BY Productos.Nombre");
+$stmt->execute([':search1' => $searchParam, ':search2' => $searchParam]);
+$datos = $stmt->fetchAll();
 
 $tabla = '';
 $tabla .= '<div class="products-grid-container">';

@@ -7,7 +7,9 @@ $id = limpiar_cadena($_POST['sucursalId']);
 
 /*== Verificando categoria ==*/
 $verifySucursal = conexion();
-$verifySucursal = $verifySucursal->query("SELECT * FROM Sucursales WHERE SucursalID='$id'");
+$stmtVerify = $verifySucursal->prepare("SELECT * FROM Sucursales WHERE SucursalID = :id");
+$stmtVerify->execute([':id' => $id]);
+$verifySucursal = $stmtVerify;
 
 if ($verifySucursal->rowCount() <= 0) {
     echo '
@@ -74,7 +76,9 @@ if ($nombre == "") {
 /*== Verificando nombre ==*/
 if ($nombre != $datos['nombre']) {
     $check_nombre = conexion();
-    $check_nombre = $check_nombre->query("SELECT nombre FROM Sucursales WHERE nombre='$nombre'");
+    $stmtNombre = $check_nombre->prepare("SELECT nombre FROM Sucursales WHERE nombre = :nombre");
+    $stmtNombre->execute([':nombre' => $nombre]);
+    $check_nombre = $stmtNombre;
     if ($check_nombre->rowCount() > 0) {
         echo '
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">

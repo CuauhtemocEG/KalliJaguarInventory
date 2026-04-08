@@ -59,16 +59,9 @@ try {
             $_SESSION['usuario'] = $user['Username'];
 
             echo json_encode([
-                "success" => true, 
+                "success" => true,
                 "message" => "Login completado",
-                "debug" => [
-                    "session_id" => session_id(),
-                    "user_id" => $_SESSION['id'],
-                    "username" => $_SESSION['usuario'],
-                    "role" => $_SESSION['rol'],
-                    "host" => $_SERVER['HTTP_HOST'],
-                    "cookie_params" => session_get_cookie_params()
-                ]
+                "rol" => $_SESSION['rol']
             ]);
             exit;
         } else {
@@ -82,5 +75,6 @@ try {
 
     echo json_encode(["success" => false, "message" => "Usuario o contraseña incorrectos."]);
 } catch (PDOException $e) {
-    echo json_encode(["success" => false, "message" => "Error de servidor: " . $e->getMessage()]);
+    error_log("loginHandler PDOException: " . $e->getMessage());
+    echo json_encode(["success" => false, "message" => "Error de servidor. Intente nuevamente."]);
 }

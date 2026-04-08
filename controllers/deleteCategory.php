@@ -4,12 +4,16 @@ $idCategoryDelete = limpiar_cadena($_GET['idCategoryDel']);
 
 /*== Verificando usuario ==*/
 $check_categoria = conexion();
-$check_categoria = $check_categoria->query("SELECT CategoriaID FROM Categorias WHERE CategoriaID='$idCategoryDelete'");
+$stmtCheck = $check_categoria->prepare("SELECT CategoriaID FROM Categorias WHERE CategoriaID = :id");
+$stmtCheck->execute([':id' => $idCategoryDelete]);
+$check_categoria = $stmtCheck;
 
 if ($check_categoria->rowCount() == 1) {
 
 	$check_productos = conexion();
-	$check_productos = $check_productos->query("SELECT CategoriaID FROM Productos WHERE CategoriaID='$idCategoryDelete' LIMIT 1");
+	$stmtProd = $check_productos->prepare("SELECT CategoriaID FROM Productos WHERE CategoriaID = :id LIMIT 1");
+	$stmtProd->execute([':id' => $idCategoryDelete]);
+	$check_productos = $stmtProd;
 
 	if ($check_productos->rowCount() <= 0) {
 

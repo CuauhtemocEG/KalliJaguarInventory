@@ -7,7 +7,9 @@ $id = limpiar_cadena($_POST['idCategory']);
 
 /*== Verificando categoria ==*/
 $check_categoria = conexion();
-$check_categoria = $check_categoria->query("SELECT * FROM Categorias WHERE CategoriaID='$id'");
+$stmtCat = $check_categoria->prepare("SELECT * FROM Categorias WHERE CategoriaID = :id");
+$stmtCat->execute([':id' => $id]);
+$check_categoria = $stmtCat;
 
 if ($check_categoria->rowCount() <= 0) {
     echo '
@@ -57,7 +59,9 @@ if ($nombre == "") {
 /*== Verificando nombre ==*/
 if ($nombre != $datos['Nombre']) {
     $check_nombre = conexion();
-    $check_nombre = $check_nombre->query("SELECT Nombre FROM Categorias WHERE Nombre='$nombre'");
+    $stmtNombre = $check_nombre->prepare("SELECT Nombre FROM Categorias WHERE Nombre = :nombre");
+    $stmtNombre->execute([':nombre' => $nombre]);
+    $check_nombre = $stmtNombre;
     if ($check_nombre->rowCount() > 0) {
         echo '
             <div class="alert alert-danger alert-dismissible fade show" role="alert">

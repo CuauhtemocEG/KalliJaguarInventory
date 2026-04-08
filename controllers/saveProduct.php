@@ -79,7 +79,9 @@ if (verificar_datos("[0.000-9.000]{1,25}", $stock)) {
 
 /*== Verificando codigo ==*/
 $check_codigo = conexion();
-$check_codigo = $check_codigo->query("SELECT UPC FROM Productos WHERE UPC='$codigo'");
+$stmtCodigo = $check_codigo->prepare("SELECT UPC FROM Productos WHERE UPC = :codigo");
+$stmtCodigo->execute([':codigo' => $codigo]);
+$check_codigo = $stmtCodigo;
 if ($check_codigo->rowCount() > 0) {
     echo '
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -96,7 +98,9 @@ $check_codigo = null;
 
 /*== Verificando nombre ==*/
 $check_nombre = conexion();
-$check_nombre = $check_nombre->query("SELECT Nombre FROM Productos WHERE Nombre='$nombre'");
+$stmtNombre = $check_nombre->prepare("SELECT Nombre FROM Productos WHERE Nombre = :nombre");
+$stmtNombre->execute([':nombre' => $nombre]);
+$check_nombre = $stmtNombre;
 if ($check_nombre->rowCount() > 0) {
     echo '
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -113,7 +117,9 @@ $check_nombre = null;
 
 /*== Verificando categoria ==*/
 $check_categoria = conexion();
-$check_categoria = $check_categoria->query("SELECT CategoriaID FROM Categorias WHERE CategoriaID='$categoria'");
+$stmtCat = $check_categoria->prepare("SELECT CategoriaID FROM Categorias WHERE CategoriaID = :id");
+$stmtCat->execute([':id' => $categoria]);
+$check_categoria = $stmtCat;
 if ($check_categoria->rowCount() <= 0) {
     echo '
             <div class="alert alert-danger alert-dismissible fade show" role="alert">

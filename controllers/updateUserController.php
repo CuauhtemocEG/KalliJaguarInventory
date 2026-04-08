@@ -8,7 +8,9 @@ $id = limpiar_cadena($_POST['idUser']);
 
 /*== Verificando usuario ==*/
 $check_usuario = conexion();
-$check_usuario = $check_usuario->query("SELECT * FROM Usuarios WHERE UsuarioID='$id'");
+$stmtUser = $check_usuario->prepare("SELECT * FROM Usuarios WHERE UsuarioID = :id");
+$stmtUser->execute([':id' => $id]);
+$check_usuario = $stmtUser;
 
 if ($check_usuario->rowCount() <= 0) {
     echo '
@@ -72,7 +74,9 @@ if (verificar_datos("[a-zA-Z0-9$@.-]{7,100}", $admin_clave)) {
 
 /*== Verificando el administrador en DB ==*/
 $check_admin = conexion();
-$check_admin = $check_admin->query("SELECT Username,Password FROM Usuarios WHERE Username='$admin_usuario' AND UsuarioID='" . $_SESSION['id'] . "'");
+$stmtAdmin = $check_admin->prepare("SELECT Username,Password FROM Usuarios WHERE Username = :username AND UsuarioID = :uid");
+$stmtAdmin->execute([':username' => $admin_usuario, ':uid' => $_SESSION['id']]);
+$check_admin = $stmtAdmin;
 if ($check_admin->rowCount() == 1) {
 
     $check_admin = $check_admin->fetch();
@@ -169,7 +173,9 @@ if (verificar_datos("[a-zA-Z0-9]{4,20}", $usuario)) {
 if ($email != "" && $email != $datos['email']) {
     if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $check_email = conexion();
-        $check_email = $check_email->query("SELECT email FROM Usuarios WHERE email='$email'");
+        $stmtEmail = $check_email->prepare("SELECT email FROM Usuarios WHERE email = :email");
+        $stmtEmail->execute([':email' => $email]);
+        $check_email = $stmtEmail;
         if ($check_email->rowCount() > 0) {
             echo '
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -199,7 +205,9 @@ if ($email != "" && $email != $datos['email']) {
 /*== Verificando usuario ==*/
 if ($usuario != $datos['Username']) {
     $check_usuario = conexion();
-    $check_usuario = $check_usuario->query("SELECT Username FROM Usuarios WHERE Username='$usuario'");
+    $stmtUser2 = $check_usuario->prepare("SELECT Username FROM Usuarios WHERE Username = :usuario");
+    $stmtUser2->execute([':usuario' => $usuario]);
+    $check_usuario = $stmtUser2;
     if ($check_usuario->rowCount() > 0) {
         echo '
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">

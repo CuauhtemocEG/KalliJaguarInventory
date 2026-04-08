@@ -86,7 +86,9 @@ if (verificar_datos("[a-zA-Z0-9$@.-]{7,100}", $clave_1) || verificar_datos("[a-z
 if ($email != "") {
     if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $check_email = conexion();
-        $check_email = $check_email->query("SELECT email FROM Usuarios WHERE email='$email'");
+        $stmtEmail = $check_email->prepare("SELECT email FROM Usuarios WHERE email = :email");
+        $stmtEmail->execute([':email' => $email]);
+        $check_email = $stmtEmail;
         if ($check_email->rowCount() > 0) {
             echo '
                 <div class="alert alert-danger">
@@ -115,7 +117,9 @@ if ($email != "") {
 
 /*== Verificando usuario ==*/
 $checkUsername = conexion();
-$checkUsername = $checkUsername->query("SELECT Username FROM Usuarios WHERE Username='$usuario'");
+$stmtUser = $checkUsername->prepare("SELECT Username FROM Usuarios WHERE Username = :usuario");
+$stmtUser->execute([':usuario' => $usuario]);
+$checkUsername = $stmtUser;
 if ($checkUsername->rowCount() > 0) {
     echo '
         <div class="alert alert-danger">

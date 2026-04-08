@@ -34,7 +34,9 @@
 
     /*== Verificando nombre ==*/
     $check_nombre=conexion();
-    $check_nombre=$check_nombre->query("SELECT Nombre FROM Categorias WHERE Nombre='$nombre'");
+    $stmtNombre = $check_nombre->prepare("SELECT Nombre FROM Categorias WHERE Nombre = :nombre");
+    $stmtNombre->execute([':nombre' => $nombre]);
+    $check_nombre = $stmtNombre;
     if($check_nombre->rowCount()>0){
         echo '
             <div class="alert alert-danger alert-dismissible fade show" role="alert">

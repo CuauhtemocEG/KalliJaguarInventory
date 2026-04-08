@@ -1,0 +1,32 @@
+# Variables de entorno (NUNCA subir al repositorio)
+.env
+
+# Dependencias PHP (instalar con: composer install)
+/vendor/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs y caché
+/storage/logs/
+/logs/
+*.log
+
+# Uploads de usuarios
+/img/producto/
+/storage/uploads/
+
+# IDEs y editores
+.idea/
+.vscode/
+*.swp
+*.swo
+nbproject/
+
+# Archivos temporales de PHP
+*.php~
+
+# Composer lock (opcional: incluir si se usa composer)
+# composer.lock

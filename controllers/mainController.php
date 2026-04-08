@@ -1,8 +1,19 @@
 <?php
 
+require_once dirname(__DIR__) . '/config.php';
+
 	# Conexion a la base de datos #
 	function conexion(){
-		$pdo = new PDO('mysql:host=localhost:3306;dbname=kallijag_inventory', 'kallijag_admin', 'uNtiL.horSe@5');
+		$pdo = new PDO(
+			'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET,
+			DB_USER,
+			DB_PASS,
+			[
+				PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+				PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+				PDO::ATTR_EMULATE_PREPARES => false,
+			]
+		);
 		return $pdo;
 	}
 

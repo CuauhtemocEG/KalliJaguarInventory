@@ -1,26 +1,28 @@
 <?php
-$inicio = ($pagina > 0) ? (($pagina * $registros) - $registros) : 0;
+$inicio = (int)(($pagina > 0) ? (($pagina * $registros) - $registros) : 0);
+$registros = (int)$registros;
 $tabla = "";
-
-if (isset($busqueda) && $busqueda != "") {
-
-	$consulta_datos = "SELECT * FROM Sucursales WHERE nombre LIKE '%$busqueda%' OR direccion LIKE '%$busqueda%' ORDER BY nombre ASC LIMIT $inicio,$registros";
-
-	$consulta_total = "SELECT COUNT(SucursalID) FROM Sucursales WHERE nombre LIKE '%$busqueda%' OR direccion LIKE '%$busqueda%'";
-} else {
-
-	$consulta_datos = "SELECT * FROM Sucursales ORDER BY nombre ASC LIMIT $inicio,$registros";
-
-	$consulta_total = "SELECT COUNT(SucursalID) FROM Sucursales";
-}
 
 $conexion = conexion();
 
-$datos = $conexion->query($consulta_datos);
-$datos = $datos->fetchAll();
+if (isset($busqueda) && $busqueda != "") {
+	$searchParam = '%' . $busqueda . '%';
+	$stmtDatos = $conexion->prepare("SELECT * FROM Sucursales WHERE nombre LIKE :s1 OR direccion LIKE :s2 ORDER BY nombre ASC LIMIT {$inicio},{$registros}");
+	$stmtDatos->execute([':s1' => $searchParam, ':s2' => $searchParam]);
+	$datos = $stmtDatos->fetchAll();
 
-$total = $conexion->query($consulta_total);
-$total = (int) $total->fetchColumn();
+	$stmtTotal = $conexion->prepare("SELECT COUNT(SucursalID) FROM Sucursales WHERE nombre LIKE :s1 OR direccion LIKE :s2");
+	$stmtTotal->execute([':s1' => $searchParam, ':s2' => $searchParam]);
+	$total = (int)$stmtTotal->fetchColumn();
+} else {
+	$stmtDatos = $conexion->prepare("SELECT * FROM Sucursales ORDER BY nombre ASC LIMIT {$inicio},{$registros}");
+	$stmtDatos->execute();
+	$datos = $stmtDatos->fetchAll();
+
+	$stmtTotal = $conexion->prepare("SELECT COUNT(SucursalID) FROM Sucursales");
+	$stmtTotal->execute();
+	$total = (int)$stmtTotal->fetchColumn();
+}
 
 $Npaginas = ceil($total / $registros);
 

@@ -5,12 +5,16 @@ $idUserDelete = limpiar_cadena($_GET['idUserDel']);
 
 /*== Verificando usuario ==*/
 $check_usuario = conexion();
-$check_usuario = $check_usuario->query("SELECT UsuarioID FROM Usuarios WHERE UsuarioID='$idUserDelete'");
+$stmtCheck = $check_usuario->prepare("SELECT UsuarioID FROM Usuarios WHERE UsuarioID = :id");
+$stmtCheck->execute([':id' => $idUserDelete]);
+$check_usuario = $stmtCheck;
 
 if ($check_usuario->rowCount() == 1) {
 
 	$check_productos = conexion();
-	$check_productos = $check_productos->query("SELECT UsuarioID FROM Productos WHERE UsuarioID='$idUserDelete' LIMIT 1");
+	$stmtProd = $check_productos->prepare("SELECT UsuarioID FROM Productos WHERE UsuarioID = :id LIMIT 1");
+	$stmtProd->execute([':id' => $idUserDelete]);
+	$check_productos = $stmtProd;
 
 	if ($check_productos->rowCount() <= 0) {
 

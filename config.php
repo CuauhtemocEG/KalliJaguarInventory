@@ -1,5 +1,33 @@
 <?php
 // ============================================
+// CARGADOR DE VARIABLES DE ENTORNO
+// ============================================
+// Carga el archivo .env desde la raíz del proyecto si existe.
+// Para producción, se recomienda usar vlucas/phpdotenv via Composer.
+// ============================================
+
+$_envFile = __DIR__ . '/.env';
+if (file_exists($_envFile)) {
+    $lines = file($_envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $_line) {
+        $_line = trim($_line);
+        if ($_line === '' || strpos($_line, '#') === 0) {
+            continue;
+        }
+        if (strpos($_line, '=') !== false) {
+            list($_key, $_val) = explode('=', $_line, 2);
+            $_key = trim($_key);
+            $_val = trim($_val, " \t\n\r\0\x0B\"'");
+            if (!empty($_key) && !array_key_exists($_key, $_ENV)) {
+                putenv("{$_key}={$_val}");
+                $_ENV[$_key] = $_val;
+            }
+        }
+    }
+}
+unset($_envFile, $lines, $_line, $_key, $_val);
+
+// ============================================
 // INFORMACIÓN DE LA APLICACIÓN
 // ============================================
 
@@ -37,12 +65,14 @@ define('APP_TIMEZONE', 'America/Mexico_City');
 
 // ============================================
 // CONFIGURACIÓN DE BASE DE DATOS
+// Todas las credenciales deben venir del archivo .env
+// (ver .env.example para la plantilla)
 // ============================================
 
-define('DB_HOST', 'localhost:3306');
-define('DB_NAME', 'kallijag_inventory');
-define('DB_USER', 'kallijag_admin');
-define('DB_PASS', 'uNtiL.horSe@5');
+define('DB_HOST',    getenv('DB_HOST')    ?: 'localhost:3306');
+define('DB_NAME',    getenv('DB_NAME')    ?: 'kallijag_inventory');
+define('DB_USER',    getenv('DB_USER')    ?: 'kallijag_admin');
+define('DB_PASS',    getenv('DB_PASS'));   // Sin valor por defecto: debe estar en .env
 define('DB_CHARSET', 'utf8mb4');
 
 // ============================================

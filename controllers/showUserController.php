@@ -1,28 +1,29 @@
 <?php
-	$inicio = ($pagina>0) ? (($pagina * $registros)-$registros) : 0;
-	$tabla="";
+$inicio = (int)(($pagina > 0) ? (($pagina * $registros) - $registros) : 0);
+$registros = (int)$registros;
+$tabla = "";
 
-	if(isset($busqueda) && $busqueda!=""){
+$conexion = conexion();
+$sessionId = (int)$_SESSION['id'];
 
-		$consulta_datos="SELECT * FROM Usuarios WHERE ((UsuarioID!='".$_SESSION['id']."') AND (Nombre LIKE '%$busqueda%' OR Rol LIKE '%$busqueda%' OR Username LIKE '%$busqueda%' OR email LIKE '%$busqueda%')) ORDER BY Nombre ASC LIMIT $inicio,$registros";
+if (isset($busqueda) && $busqueda != "") {
+	$searchParam = '%' . $busqueda . '%';
+	$stmtDatos = $conexion->prepare("SELECT * FROM Usuarios WHERE (UsuarioID != :uid) AND (Nombre LIKE :s1 OR Rol LIKE :s2 OR Username LIKE :s3 OR email LIKE :s4) ORDER BY Nombre ASC LIMIT {$inicio},{$registros}");
+	$stmtDatos->execute([':uid' => $sessionId, ':s1' => $searchParam, ':s2' => $searchParam, ':s3' => $searchParam, ':s4' => $searchParam]);
+	$datos = $stmtDatos->fetchAll();
 
-		$consulta_total="SELECT COUNT(UsuarioID) FROM Usuarios WHERE ((UsuarioID!='".$_SESSION['id']."') AND (Nombre LIKE '%$busqueda%' OR Rol LIKE '%$busqueda%' OR Username LIKE '%$busqueda%' OR email LIKE '%$busqueda%'))";
+	$stmtTotal = $conexion->prepare("SELECT COUNT(UsuarioID) FROM Usuarios WHERE (UsuarioID != :uid) AND (Nombre LIKE :s1 OR Rol LIKE :s2 OR Username LIKE :s3 OR email LIKE :s4)");
+	$stmtTotal->execute([':uid' => $sessionId, ':s1' => $searchParam, ':s2' => $searchParam, ':s3' => $searchParam, ':s4' => $searchParam]);
+	$total = (int)$stmtTotal->fetchColumn();
+} else {
+	$stmtDatos = $conexion->prepare("SELECT * FROM Usuarios WHERE UsuarioID != :uid ORDER BY Nombre ASC LIMIT {$inicio},{$registros}");
+	$stmtDatos->execute([':uid' => $sessionId]);
+	$datos = $stmtDatos->fetchAll();
 
-	}else{
-
-		$consulta_datos="SELECT * FROM Usuarios WHERE UsuarioID!='".$_SESSION['id']."' ORDER BY Nombre ASC LIMIT $inicio,$registros";
-
-		$consulta_total="SELECT COUNT(UsuarioID) FROM Usuarios WHERE UsuarioID!='".$_SESSION['id']."'";
-		
-	}
-
-	$conexion=conexion();
-
-	$datos = $conexion->query($consulta_datos);
-	$datos = $datos->fetchAll();
-
-	$total = $conexion->query($consulta_total);
-	$total = (int) $total->fetchColumn();
+	$stmtTotal = $conexion->prepare("SELECT COUNT(UsuarioID) FROM Usuarios WHERE UsuarioID != :uid");
+	$stmtTotal->execute([':uid' => $sessionId]);
+	$total = (int)$stmtTotal->fetchColumn();
+}
 
 	$Npaginas =ceil($total/$registros);
 

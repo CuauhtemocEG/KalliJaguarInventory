@@ -4,7 +4,9 @@ $idProductDelete = limpiar_cadena($_GET['idProductDel']);
 
 /*== Verificando producto ==*/
 $check_producto = conexion();
-$check_producto = $check_producto->query("SELECT * FROM Productos WHERE ProductoID='$idProductDelete'");
+$stmtCheck = $check_producto->prepare("SELECT * FROM Productos WHERE ProductoID = :id");
+$stmtCheck->execute([':id' => $idProductDelete]);
+$check_producto = $stmtCheck;
 
 if ($check_producto->rowCount() == 1) {
 

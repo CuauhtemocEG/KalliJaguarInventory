@@ -7,7 +7,9 @@ $id = limpiar_cadena($_POST['productID']);
 
 /*== Verificando producto ==*/
 $check_producto = conexion();
-$check_producto = $check_producto->query("SELECT * FROM Productos WHERE ProductoID='$id'");
+$stmtProd = $check_producto->prepare("SELECT * FROM Productos WHERE ProductoID = :id");
+$stmtProd->execute([':id' => $id]);
+$check_producto = $stmtProd;
 
 if ($check_producto->rowCount() <= 0) {
     echo '
@@ -103,7 +105,9 @@ if (verificar_datos("[0.000-9.000]{1,25}", $stock)) {
 /*== Verificando codigo ==*/
 if ($codigo != $datos['UPC']) {
     $check_codigo = conexion();
-    $check_codigo = $check_codigo->query("SELECT UPC FROM Productos WHERE UPC='$codigo'");
+    $stmtCod = $check_codigo->prepare("SELECT UPC FROM Productos WHERE UPC = :codigo");
+    $stmtCod->execute([':codigo' => $codigo]);
+    $check_codigo = $stmtCod;
     if ($check_codigo->rowCount() > 0) {
         echo '
 	        <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -122,7 +126,9 @@ if ($codigo != $datos['UPC']) {
 /*== Verificando nombre ==*/
 if ($nombre != $datos['Nombre']) {
     $check_nombre = conexion();
-    $check_nombre = $check_nombre->query("SELECT Nombre FROM Productos WHERE Nombre='$nombre'");
+    $stmtNom = $check_nombre->prepare("SELECT Nombre FROM Productos WHERE Nombre = :nombre");
+    $stmtNom->execute([':nombre' => $nombre]);
+    $check_nombre = $stmtNom;
     if ($check_nombre->rowCount() > 0) {
         echo '
 	        <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -141,7 +147,9 @@ if ($nombre != $datos['Nombre']) {
 /*== Verificando categoria ==*/
 if ($categoria != $datos['CategoriaID']) {
     $check_categoria = conexion();
-    $check_categoria = $check_categoria->query("SELECT CategoriaID FROM Categorias WHERE CategoriaID='$categoria'");
+    $stmtCat = $check_categoria->prepare("SELECT CategoriaID FROM Categorias WHERE CategoriaID = :id");
+    $stmtCat->execute([':id' => $categoria]);
+    $check_categoria = $stmtCat;
     if ($check_categoria->rowCount() <= 0) {
         echo '
 	        <div class="alert alert-danger alert-dismissible fade show" role="alert">

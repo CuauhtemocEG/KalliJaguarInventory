@@ -6,7 +6,9 @@ $product_id = limpiar_cadena($_POST['idImageDel']);
 
 /*== Verificando producto ==*/
 $check_producto = conexion();
-$check_producto = $check_producto->query("SELECT * FROM Productos WHERE ProductoID='$product_id'");
+$stmtCheck = $check_producto->prepare("SELECT * FROM Productos WHERE ProductoID = :id");
+$stmtCheck->execute([':id' => $product_id]);
+$check_producto = $stmtCheck;
 
 if ($check_producto->rowCount() == 1) {
     $datos = $check_producto->fetch();

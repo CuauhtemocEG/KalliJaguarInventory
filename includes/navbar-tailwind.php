@@ -180,7 +180,7 @@ require_once __DIR__ . '/../config.php';
                     <div class="absolute left-0 top-0 bottom-0 w-1 bg-accent-yellow rounded-r-full transform scale-y-0 group-hover:scale-y-100 transition-transform"></div>
                 </a>
 
-                <?php if ($_SESSION['id'] == '1') { ?>
+                <?php if ($_SESSION['rol'] === 'Administrador') { ?>
 
                     <a href="index.php?page=dashboardAvanzado" class="nav-item nav-item-hover flex items-center px-4 py-2.5 text-white text-opacity-80 hover:text-white rounded-lg group relative">
                         <i class="fas fa-chart-line mr-3 text-base group-hover:text-accent-yellow transition-colors"></i>
@@ -226,7 +226,7 @@ require_once __DIR__ . '/../config.php';
 
                 <?php } ?>
 
-                <?php if ($_SESSION['id'] == '1' || $_SESSION['id'] == '16' || $_SESSION['id'] == '10') { ?>
+                <?php if ($_SESSION['rol'] === 'Administrador' || $_SESSION['rol'] === 'Supervisor') { ?>
                     <div class="mb-2">
                         <button onclick="toggleDropdown('ordenes')" class="nav-item nav-item-hover w-full flex items-center justify-between px-4 py-2.5 text-white text-opacity-80 hover:text-white rounded-lg group">
                             <div class="flex items-center">
@@ -263,7 +263,7 @@ require_once __DIR__ . '/../config.php';
                     </div>
                 <?php } ?>
 
-                <?php if ($_SESSION['id'] == '1' || $_SESSION['id'] == '16' || $_SESSION['id'] == '10') { ?>
+                <?php if ($_SESSION['rol'] === 'Administrador' || $_SESSION['rol'] === 'Supervisor') { ?>
                     <div class="mt-8 mb-4">
                         <h3 class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Catálogo de Almacén</h3>
                     </div>

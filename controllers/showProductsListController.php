@@ -1,33 +1,39 @@
 <?php
-$inicio = ($pagina > 0) ? (($pagina * $registros) - $registros) : 0;
+$inicio = (int)(($pagina > 0) ? (($pagina * $registros) - $registros) : 0);
+$registros = (int)$registros;
 $tabla = "";
 
 $campos = "Productos.ProductoID,Productos.UPC,Productos.Nombre as nombreProducto,Productos.PrecioUnitario,Productos.Cantidad,Productos.Tipo,Productos.image,Productos.CategoriaID as productCategory,Productos.UsuarioID,Categorias.CategoriaID,Categorias.Nombre as categoryName,Usuarios.UsuarioID,Usuarios.Nombre as userName";
 
-if (isset($busqueda) && $busqueda != "") {
-
-	$consulta_datos = "SELECT $campos FROM Productos INNER JOIN Categorias ON Productos.CategoriaID=Categorias.CategoriaID INNER JOIN Usuarios ON Productos.UsuarioID=Usuarios.UsuarioID WHERE Productos.UPC LIKE '%$busqueda%' OR Productos.Nombre LIKE '%$busqueda%' ORDER BY Productos.Nombre ASC LIMIT $inicio,$registros";
-
-	$consulta_total = "SELECT COUNT(ProductoID) FROM Productos WHERE UPC LIKE '%$busqueda%' OR Nombre LIKE '%$busqueda%'";
-} elseif ($categoria_id > 0) {
-
-	$consulta_datos = "SELECT $campos FROM Productos INNER JOIN Categorias ON Productos.CategoriaID=Categorias.CategoriaID INNER JOIN Usuarios ON Productos.UsuarioID=Usuarios.UsuarioID WHERE Productos.CategoriaID='$categoria_id' ORDER BY Productos.Nombre ASC LIMIT $inicio,$registros";
-
-	$consulta_total = "SELECT COUNT(ProductoID) FROM Productos WHERE CategoriaID='$categoria_id'";
-} else {
-
-	$consulta_datos = "SELECT $campos FROM Productos INNER JOIN Categorias ON Productos.CategoriaID=Categorias.CategoriaID INNER JOIN Usuarios ON Productos.UsuarioID=Usuarios.UsuarioID ORDER BY Productos.Nombre ASC LIMIT $inicio,$registros";
-
-	$consulta_total = "SELECT COUNT(ProductoID) FROM Productos";
-}
-
 $conexion = conexion();
 
-$datos = $conexion->query($consulta_datos);
-$datos = $datos->fetchAll();
+if (isset($busqueda) && $busqueda != "") {
+	$searchParam = '%' . $busqueda . '%';
+	$stmtDatos = $conexion->prepare("SELECT {$campos} FROM Productos INNER JOIN Categorias ON Productos.CategoriaID=Categorias.CategoriaID INNER JOIN Usuarios ON Productos.UsuarioID=Usuarios.UsuarioID WHERE Productos.UPC LIKE :s1 OR Productos.Nombre LIKE :s2 ORDER BY Productos.Nombre ASC LIMIT {$inicio},{$registros}");
+	$stmtDatos->execute([':s1' => $searchParam, ':s2' => $searchParam]);
+	$datos = $stmtDatos->fetchAll();
 
-$total = $conexion->query($consulta_total);
-$total = (int) $total->fetchColumn();
+	$stmtTotal = $conexion->prepare("SELECT COUNT(ProductoID) FROM Productos WHERE UPC LIKE :s1 OR Nombre LIKE :s2");
+	$stmtTotal->execute([':s1' => $searchParam, ':s2' => $searchParam]);
+	$total = (int)$stmtTotal->fetchColumn();
+} elseif (isset($categoria_id) && $categoria_id > 0) {
+	$catId = (int)$categoria_id;
+	$stmtDatos = $conexion->prepare("SELECT {$campos} FROM Productos INNER JOIN Categorias ON Productos.CategoriaID=Categorias.CategoriaID INNER JOIN Usuarios ON Productos.UsuarioID=Usuarios.UsuarioID WHERE Productos.CategoriaID = :catId ORDER BY Productos.Nombre ASC LIMIT {$inicio},{$registros}");
+	$stmtDatos->execute([':catId' => $catId]);
+	$datos = $stmtDatos->fetchAll();
+
+	$stmtTotal = $conexion->prepare("SELECT COUNT(ProductoID) FROM Productos WHERE CategoriaID = :catId");
+	$stmtTotal->execute([':catId' => $catId]);
+	$total = (int)$stmtTotal->fetchColumn();
+} else {
+	$stmtDatos = $conexion->prepare("SELECT {$campos} FROM Productos INNER JOIN Categorias ON Productos.CategoriaID=Categorias.CategoriaID INNER JOIN Usuarios ON Productos.UsuarioID=Usuarios.UsuarioID ORDER BY Productos.Nombre ASC LIMIT {$inicio},{$registros}");
+	$stmtDatos->execute();
+	$datos = $stmtDatos->fetchAll();
+
+	$stmtTotal = $conexion->prepare("SELECT COUNT(ProductoID) FROM Productos");
+	$stmtTotal->execute();
+	$total = (int)$stmtTotal->fetchColumn();
+}
 
 $Npaginas = ceil($total / $registros);
 

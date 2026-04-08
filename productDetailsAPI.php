@@ -1,17 +1,7 @@
 <?php
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
 
-function conexion() {
-    try {
-        $conexion = new PDO("mysql:host=localhost:3306;dbname=kallijag_inventory", "kallijag_admin", "uNtiL.horSe@5");
-        $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        return $conexion;
-    } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
-        return null;
-    }
-}
+require_once __DIR__ . '/controllers/mainController.php';
 
 // Ruta para obtener productos
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {

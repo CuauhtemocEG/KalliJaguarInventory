@@ -4,7 +4,7 @@ session_name("INV");
 session_start();
 
 // Headers CORS para permitir solicitudes desde diferentes subdominios
-header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Origin: ' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']);
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, X-Requested-With');
 header('Content-Type: application/json; charset=UTF-8');
