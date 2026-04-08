@@ -3,12 +3,14 @@ $inicio = (int)(($pagina > 0) ? (($pagina * $registros) - $registros) : 0);
 $registros = (int)$registros;
 $tabla = "";
 
+// $campos es una lista estática de columnas definida aquí mismo, nunca deriva de input del usuario.
 $campos = "Productos.ProductoID,Productos.UPC,Productos.Nombre as nombreProducto,Productos.PrecioUnitario,Productos.Cantidad,Productos.Tipo,Productos.image,Productos.CategoriaID as productCategory,Productos.UsuarioID,Categorias.CategoriaID,Categorias.Nombre as categoryName,Usuarios.UsuarioID,Usuarios.Nombre as userName";
 
 $conexion = conexion();
 
 if (isset($busqueda) && $busqueda != "") {
 	$searchParam = '%' . $busqueda . '%';
+	// LIMIT usa variables cast a int: PDO no soporta parámetros en cláusula LIMIT en MySQL.
 	$stmtDatos = $conexion->prepare("SELECT {$campos} FROM Productos INNER JOIN Categorias ON Productos.CategoriaID=Categorias.CategoriaID INNER JOIN Usuarios ON Productos.UsuarioID=Usuarios.UsuarioID WHERE Productos.UPC LIKE :s1 OR Productos.Nombre LIKE :s2 ORDER BY Productos.Nombre ASC LIMIT {$inicio},{$registros}");
 	$stmtDatos->execute([':s1' => $searchParam, ':s2' => $searchParam]);
 	$datos = $stmtDatos->fetchAll();

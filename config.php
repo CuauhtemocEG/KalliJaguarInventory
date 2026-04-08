@@ -72,8 +72,18 @@ define('APP_TIMEZONE', 'America/Mexico_City');
 define('DB_HOST',    getenv('DB_HOST')    ?: 'localhost:3306');
 define('DB_NAME',    getenv('DB_NAME')    ?: 'kallijag_inventory');
 define('DB_USER',    getenv('DB_USER')    ?: 'kallijag_admin');
-define('DB_PASS',    getenv('DB_PASS'));   // Sin valor por defecto: debe estar en .env
 define('DB_CHARSET', 'utf8mb4');
+
+$_dbPass = getenv('DB_PASS');
+if ($_dbPass === false || $_dbPass === '') {
+    error_log('CRITICAL: DB_PASS no está configurado en las variables de entorno. Configure el archivo .env');
+    if (!defined('APP_ENV') || getenv('APP_ENV') !== 'testing') {
+        http_response_code(503);
+        exit('Error de configuración del servidor. Contacte al administrador.');
+    }
+}
+define('DB_PASS', $_dbPass !== false ? $_dbPass : '');
+unset($_dbPass);
 
 // ============================================
 // CONFIGURACIÓN DE API

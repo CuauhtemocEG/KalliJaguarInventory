@@ -7,6 +7,7 @@ $conexion = conexion();
 
 if (isset($busqueda) && $busqueda != "") {
 	$searchParam = '%' . $busqueda . '%';
+	// LIMIT usa variables cast a int: PDO no soporta parámetros en cláusula LIMIT en MySQL.
 	$stmtDatos = $conexion->prepare("SELECT * FROM Categorias WHERE Nombre LIKE :s1 ORDER BY Nombre ASC LIMIT {$inicio},{$registros}");
 	$stmtDatos->execute([':s1' => $searchParam]);
 	$datos = $stmtDatos->fetchAll();

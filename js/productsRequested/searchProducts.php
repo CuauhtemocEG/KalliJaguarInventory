@@ -16,6 +16,7 @@ require_once dirname(__DIR__, 2) . '/controllers/mainController.php';
 
 $query = isset($_GET['query']) ? $_GET['query'] : '';
 
+// $campos es una lista estática de columnas: nunca deriva de input del usuario.
 $campos = "Productos.ProductoID, Productos.Descripcion,Productos.UPC,Productos.Nombre as nombreProducto,Productos.PrecioUnitario,Productos.Cantidad,Productos.Tipo,Productos.image,Productos.CategoriaID as productCategory,Productos.UsuarioID,Categorias.CategoriaID,Categorias.Nombre as categoryName,Usuarios.UsuarioID,Usuarios.Nombre as userName";
 
 $searchParam = '%' . $query . '%';

@@ -8,6 +8,7 @@ $sessionId = (int)$_SESSION['id'];
 
 if (isset($busqueda) && $busqueda != "") {
 	$searchParam = '%' . $busqueda . '%';
+	// LIMIT usa variables cast a int: PDO no soporta parámetros en cláusula LIMIT en MySQL.
 	$stmtDatos = $conexion->prepare("SELECT * FROM Usuarios WHERE (UsuarioID != :uid) AND (Nombre LIKE :s1 OR Rol LIKE :s2 OR Username LIKE :s3 OR email LIKE :s4) ORDER BY Nombre ASC LIMIT {$inicio},{$registros}");
 	$stmtDatos->execute([':uid' => $sessionId, ':s1' => $searchParam, ':s2' => $searchParam, ':s3' => $searchParam, ':s4' => $searchParam]);
 	$datos = $stmtDatos->fetchAll();
