@@ -109,6 +109,31 @@
             </div>
 
             <div id="productosContainer" class="hidden animate-fadeIn">
+                <!-- Sección para agregar productos -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 mb-8">
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                        <h2 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
+                            <i class="fas fa-plus-circle text-purple-600 mr-3"></i>
+                            Agregar Productos
+                        </h2>
+                        <p class="mt-1 text-gray-600 dark:text-gray-400">Busca y agrega productos nuevos a la comanda</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row gap-4 items-end">
+                            <div class="flex-1 w-full relative">
+                                <label for="buscarProducto" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                                    <i class="fas fa-search mr-2"></i>Buscar Producto
+                                </label>
+                                <input type="text"
+                                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200"
+                                    id="buscarProducto"
+                                    placeholder="Busca por nombre o código UPC...">
+                                <div id="resultadosBusqueda" class="absolute z-10 mt-2 w-full bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 max-h-96 overflow-y-auto hidden"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 mb-8">
                     <div class="p-6 border-b border-gray-200 dark:border-gray-700">
                         <div class="flex items-center justify-between">
@@ -191,6 +216,7 @@
 
             $(document).ready(function() {
                 let productosActuales = [];
+                let timeoutBusqueda = null;
 
                 function showBadge(txt, type) {
                     const badge = $('#badgeComanda');
@@ -220,6 +246,193 @@
                 function hideBadge() {
                     $('#statusBadge').addClass('hidden').removeClass('animate-slideIn');
                 }
+
+                // Función para buscar productos
+                function buscarProductos(query) {
+                    if (query.length < 2) {
+                        $('#resultadosBusqueda').addClass('hidden').empty();
+                        return;
+                    }
+
+                    $.getJSON(window.location.origin + '/api/requestInsumos/searchProducts.php', {
+                            query: query
+                        })
+                        .done(function(res) {
+                            if (res.status === 'success' && res.productos.length > 0) {
+                                let html = '<div class="p-2">';
+                                res.productos.forEach(producto => {
+                                    const stockColor = producto.Cantidad > 10 ? 'text-green-600' : (producto.Cantidad > 0 ? 'text-yellow-600' : 'text-red-600');
+                                    const disponible = producto.Cantidad > 0;
+                                    
+                                    html += `
+                                        <div class="producto-resultado p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg cursor-pointer transition-colors ${!disponible ? 'opacity-50' : ''}" 
+                                             data-producto-id="${producto.ProductoID}"
+                                             data-producto-nombre="${producto.Nombre}"
+                                             data-producto-tipo="${producto.Tipo}"
+                                             data-producto-stock="${producto.Cantidad}"
+                                             ${!disponible ? 'data-disabled="true"' : ''}>
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex-1">
+                                                    <div class="font-medium text-gray-900 dark:text-white">${producto.Nombre}</div>
+                                                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                                                        UPC: ${producto.UPC} • ${producto.nombreCategoria} • Tipo: ${producto.Tipo}
+                                                    </div>
+                                                    <div class="text-sm ${stockColor} font-semibold">
+                                                        Stock: ${producto.Cantidad} ${producto.Tipo === 'Pesable' ? 'kg' : 'unidades'}
+                                                    </div>
+                                                </div>
+                                                <div class="text-right ml-4">
+                                                    <div class="text-lg font-semibold text-green-600">$${parseFloat(producto.PrecioUnitario).toFixed(2)}</div>
+                                                    ${!disponible ? '<span class="text-xs text-red-600 font-bold">Sin stock</span>' : '<span class="text-xs text-blue-600 font-bold">Agregar</span>'}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+                                });
+                                html += '</div>';
+                                $('#resultadosBusqueda').html(html).removeClass('hidden');
+                            } else {
+                                $('#resultadosBusqueda').html('<div class="p-4 text-center text-gray-500 dark:text-gray-400">No se encontraron productos</div>').removeClass('hidden');
+                            }
+                        })
+                        .fail(function() {
+                            $('#resultadosBusqueda').html('<div class="p-4 text-center text-red-500">Error al buscar productos</div>').removeClass('hidden');
+                        });
+                }
+
+                // Event listener para búsqueda de productos
+                $('#buscarProducto').on('input', function() {
+                    clearTimeout(timeoutBusqueda);
+                    const query = $(this).val().trim();
+                    timeoutBusqueda = setTimeout(() => buscarProductos(query), 300);
+                });
+
+                // Click en resultado de búsqueda para agregar producto
+                $(document).on('click', '.producto-resultado', function() {
+                    if ($(this).data('disabled')) {
+                        Swal.fire({
+                            title: 'Sin stock',
+                            text: 'Este producto no tiene stock disponible.',
+                            icon: 'warning',
+                            confirmButtonColor: '#3B82F6'
+                        });
+                        return;
+                    }
+
+                    const productoId = $(this).data('producto-id');
+                    const productoNombre = $(this).data('producto-nombre');
+                    const productoTipo = $(this).data('producto-tipo');
+                    const productoStock = $(this).data('producto-stock');
+                    const comandaId = $('#comandaId').val();
+
+                    const step = productoTipo === 'Pesable' ? '0.25' : '1';
+                    const inputType = productoTipo === 'Pesable' ? 'number' : 'number';
+                    
+                    Swal.fire({
+                        title: 'Agregar producto',
+                        html: `
+                            <div class="text-left mb-4">
+                                <p class="text-gray-700 dark:text-gray-300 mb-2"><strong>${productoNombre}</strong></p>
+                                <p class="text-sm text-gray-500">Stock disponible: ${productoStock} ${productoTipo === 'Pesable' ? 'kg' : 'unidades'}</p>
+                            </div>
+                            <input type="${inputType}" id="cantidadAgregar" class="swal2-input" placeholder="Cantidad" min="${step}" max="${productoStock}" step="${step}" value="${step}">
+                        `,
+                        showCancelButton: true,
+                        confirmButtonText: 'Agregar',
+                        cancelButtonText: 'Cancelar',
+                        confirmButtonColor: '#8B5CF6',
+                        cancelButtonColor: '#6B7280',
+                        reverseButtons: true,
+                        preConfirm: () => {
+                            const cantidad = parseFloat(document.getElementById('cantidadAgregar').value);
+                            if (!cantidad || cantidad <= 0) {
+                                Swal.showValidationMessage('Por favor ingresa una cantidad válida');
+                                return false;
+                            }
+                            if (cantidad > productoStock) {
+                                Swal.showValidationMessage(`La cantidad no puede exceder el stock disponible (${productoStock})`);
+                                return false;
+                            }
+                            return cantidad;
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const cantidad = result.value;
+                            
+                            Swal.fire({
+                                title: 'Agregando producto...',
+                                text: 'Por favor espera un momento',
+                                allowOutsideClick: false,
+                                didOpen: () => {
+                                    Swal.showLoading()
+                                }
+                            });
+
+                            $.ajax({
+                                url: window.location.origin + '/api/recreateComanda/agregarProductoComanda.php',
+                                method: 'POST',
+                                contentType: 'application/json',
+                                data: JSON.stringify({
+                                    comanda_id: comandaId,
+                                    producto_id: productoId,
+                                    cantidad: cantidad
+                                }),
+                                dataType: 'json',
+                                success: function(res) {
+                                    if (res.success) {
+                                        Swal.fire({
+                                            title: '¡Producto agregado!',
+                                            text: 'El producto ha sido agregado a la comanda correctamente.',
+                                            icon: 'success',
+                                            timer: 2000,
+                                            confirmButtonColor: '#3B82F6'
+                                        });
+                                        $('#buscarProducto').val('');
+                                        $('#resultadosBusqueda').addClass('hidden').empty();
+                                        cargarProductos(comandaId);
+                                    } else {
+                                        Swal.fire({
+                                            title: 'Error',
+                                            text: res.error || 'No se pudo agregar el producto.',
+                                            icon: 'error',
+                                            confirmButtonColor: '#3B82F6'
+                                        });
+                                    }
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error('Error completo:', xhr);
+                                    console.error('Status:', status);
+                                    console.error('Error:', error);
+                                    console.error('Response:', xhr.responseText);
+                                    
+                                    let errorMsg = 'Error de conexión al agregar el producto.';
+                                    if (xhr.responseText) {
+                                        try {
+                                            const response = JSON.parse(xhr.responseText);
+                                            errorMsg = response.error || errorMsg;
+                                        } catch (e) {
+                                            errorMsg = xhr.responseText.substring(0, 200);
+                                        }
+                                    }
+                                    
+                                    Swal.fire({
+                                        title: 'Error',
+                                        text: errorMsg,
+                                        icon: 'error',
+                                        confirmButtonColor: '#3B82F6'
+                                    });
+                                }
+                            });
+                        }
+                    });
+                });
+
+                // Cerrar resultados de búsqueda al hacer click fuera
+                $(document).on('click', function(e) {
+                    if (!$(e.target).closest('#buscarProducto, #resultadosBusqueda').length) {
+                        $('#resultadosBusqueda').addClass('hidden');
+                    }
+                });
 
                 function cargarProductos(comandaId) {
                     showBadge('Buscando comanda...', 'info');
@@ -291,7 +504,7 @@
                                           </span>
                                       </td>
                                       <td class="px-6 py-4">
-                                          <div class="flex items-center justify-center space-x-2">
+                                          <div class="flex items-center justify-center space-x-2 flex-wrap gap-2">
                                               <button class="eliminar inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
                                                   <i class="fas fa-trash mr-1"></i>
                                                   Eliminar
@@ -306,6 +519,17 @@
                                                   <button class="devolver inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors">
                                                       <i class="fas fa-undo mr-1"></i>
                                                       Devolver
+                                                  </button>
+                                              </div>
+                                              <div class="flex items-center space-x-1">
+                                                  <input type="number" 
+                                                         min="0.25" 
+                                                         step="${producto.Tipo === 'Pesable' ? '0.25' : '1'}"
+                                                         value="${producto.Tipo === 'Pesable' ? '0.25' : '1'}" 
+                                                         class="inputAumentar w-20 px-2 py-1 text-center border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                                                  <button class="aumentar inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
+                                                      <i class="fas fa-plus mr-1"></i>
+                                                      Agregar
                                                   </button>
                                               </div>
                                           </div>
@@ -511,6 +735,109 @@
                                     Swal.fire({
                                         title: 'Error',
                                         text: 'Error de conexión al devolver el producto.',
+                                        icon: 'error',
+                                        confirmButtonColor: '#3B82F6'
+                                    });
+                                }
+                            });
+                        }
+                    });
+                });
+
+                // Manejador para aumentar cantidad de productos existentes
+                $('#tablaProductos').on('click', '.aumentar', function() {
+                    const tr = $(this).closest('tr');
+                    const movimientoId = tr.data('movimiento-id');
+                    const cantidad = parseFloat(tr.find('.inputAumentar').val());
+                    const comandaId = $('#comandaId').val();
+
+                    if (!cantidad || cantidad <= 0) {
+                        Swal.fire({
+                            title: 'Cantidad inválida',
+                            text: 'Por favor ingresa una cantidad válida para agregar.',
+                            icon: 'warning',
+                            confirmButtonColor: '#3B82F6'
+                        });
+                        return;
+                    }
+
+                    const productoActual = productosActuales.find(p => p.ID == movimientoId);
+                    const unidad = productoActual && productoActual.Tipo === "Pesable" 
+                        ? (cantidad >= 1.0 ? 'Kg' : 'g') 
+                        : (cantidad === 1 ? 'unidad' : 'unidades');
+                    
+                    const cantidadFormateada = productoActual && productoActual.Tipo === "Pesable"
+                        ? (cantidad >= 1.0 ? cantidad.toFixed(2) : cantidad.toFixed(3))
+                        : cantidad.toString();
+
+                    Swal.fire({
+                        title: '¿Aumentar cantidad?',
+                        text: `Se agregarán ${cantidadFormateada} ${unidad} adicionales a este producto.`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#10B981',
+                        cancelButtonColor: '#6B7280',
+                        confirmButtonText: 'Sí, agregar',
+                        cancelButtonText: 'Cancelar',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Agregando cantidad...',
+                                text: 'Por favor espera un momento',
+                                allowOutsideClick: false,
+                                didOpen: () => {
+                                    Swal.showLoading()
+                                }
+                            });
+
+                            $.ajax({
+                                url: window.location.origin + '/api/recreateComanda/aumentarCantidadProducto.php',
+                                method: 'POST',
+                                contentType: 'application/json',
+                                data: JSON.stringify({
+                                    movimiento_id: movimientoId,
+                                    cantidad: cantidad
+                                }),
+                                dataType: 'json',
+                                success: function(res) {
+                                    if (res.success) {
+                                        Swal.fire({
+                                            title: '¡Cantidad agregada!',
+                                            text: 'La cantidad ha sido agregada correctamente.',
+                                            icon: 'success',
+                                            timer: 2000,
+                                            confirmButtonColor: '#3B82F6'
+                                        });
+                                        cargarProductos(comandaId);
+                                    } else {
+                                        Swal.fire({
+                                            title: 'Error',
+                                            text: res.error || 'No se pudo aumentar la cantidad.',
+                                            icon: 'error',
+                                            confirmButtonColor: '#3B82F6'
+                                        });
+                                    }
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error('Error completo:', xhr);
+                                    console.error('Status:', status);
+                                    console.error('Error:', error);
+                                    console.error('Response:', xhr.responseText);
+                                    
+                                    let errorMsg = 'Error de conexión al aumentar la cantidad.';
+                                    if (xhr.responseText) {
+                                        try {
+                                            const response = JSON.parse(xhr.responseText);
+                                            errorMsg = response.error || errorMsg;
+                                        } catch (e) {
+                                            errorMsg = xhr.responseText.substring(0, 200);
+                                        }
+                                    }
+                                    
+                                    Swal.fire({
+                                        title: 'Error',
+                                        text: errorMsg,
                                         icon: 'error',
                                         confirmButtonColor: '#3B82F6'
                                     });
