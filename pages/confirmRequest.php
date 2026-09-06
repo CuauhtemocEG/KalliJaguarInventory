@@ -184,13 +184,11 @@ try {
     //$mail->setFrom('info@stagging.kallijaguar-inventory.com', 'Informacion Kalli Jaguar');
     //$mail->addAddress('cencarnacion@stagging.kallijaguar-inventory.com');
     $mail->setFrom('info@kallijaguar-inventory.com', 'Informacion Kalli Jaguar');
-    $mail->addAddress('mauricio.dominguez@kallijaguar-inventory.com');
-    $mail->addCC('julieta.ramirez@kallijaguar-inventory.com');
+    $mail->addAddress('temoc612@gmail.com');
+    $mail->addCC('ce8023494@icloud.com');
     $mail->addCC('miguel.loaeza@kallijaguar-inventory.com');
-    $mail->addCC('andrea.sanchez@kallijaguar-inventory.com');
-    $mail->addCC('may.sanchez@kallijaguar-inventory.com');
-    $mail->addCC('cencarnacion@kallijaguar-inventory.com');
-    $mail->addCC('claudia.espinoza@kallijaguar-inventory.com');
+    $mail->addCC('mayysb@gmail.com');
+    $mail->addCC('julieta.ram.enc@gmail.com');
 
     $mail->addAttachment($pdfPath);
 
