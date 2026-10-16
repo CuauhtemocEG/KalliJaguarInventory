@@ -1,0 +1,27 @@
+# Secretos y entorno
+.env
+.env.*
+!.env.example
+
+# Dependencias
+/vendor/
+
+# Datos en tiempo de ejecución
+/storage/logs/*
+/storage/cache/*
+!/storage/logs/.gitkeep
+!/storage/cache/.gitkeep
+/public/uploads/*
+!/public/uploads/.gitkeep
+!/public/uploads/products/
+/public/uploads/products/*
+!/public/uploads/products/.gitkeep
+
+# Sistema / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+/storage/documents/*
+!/storage/documents/.gitkeep
