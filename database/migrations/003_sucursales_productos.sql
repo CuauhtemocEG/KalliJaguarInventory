@@ -1,0 +1,70 @@
+-- 003: sucursales, productos y etiquetas de producto
+
+CREATE TABLE sucursales (
+    id               INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    nombre           VARCHAR(120) NOT NULL,
+    direccion        VARCHAR(255) NULL,
+    telefono         VARCHAR(30)  NULL,
+    email            VARCHAR(150) NULL,
+    gerente          VARCHAR(120) NULL,
+    estado           VARCHAR(20)  NOT NULL DEFAULT 'activa',
+    tipo             VARCHAR(40)  NULL,
+    horario_apertura TIME NULL,
+    horario_cierre   TIME NULL,
+    notas            TEXT NULL,
+    created_at       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_by       INT UNSIGNED NULL,
+    updated_by       INT UNSIGNED NULL,
+    PRIMARY KEY (id),
+    UNIQUE KEY uq_sucursales_nombre (nombre),
+    KEY idx_sucursales_estado (estado),
+    CONSTRAINT fk_sucursales_created_by FOREIGN KEY (created_by) REFERENCES usuarios (id) ON UPDATE CASCADE ON DELETE SET NULL,
+    CONSTRAINT fk_sucursales_updated_by FOREIGN KEY (updated_by) REFERENCES usuarios (id) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE productos (
+    id              INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    upc             VARCHAR(50)  NOT NULL,
+    sku             VARCHAR(50)  NULL,
+    nombre          VARCHAR(200) NOT NULL,
+    descripcion     TEXT NULL,
+    tipo            ENUM('unidad','pesable') NOT NULL DEFAULT 'unidad',
+    precio_unitario DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    cantidad        DECIMAL(12,3) NOT NULL DEFAULT 0.000,
+    stock_minimo    DECIMAL(12,3) NOT NULL DEFAULT 0.000,
+    categoria_id    INT UNSIGNED NULL,
+    proveedor_id    INT UNSIGNED NULL,
+    imagen          VARCHAR(255) NULL COMMENT 'Solo nombre de archivo dentro de UPLOADS_PRODUCTS_DIR',
+    activo          TINYINT(1) NOT NULL DEFAULT 1,
+    created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_by      INT UNSIGNED NULL,
+    updated_by      INT UNSIGNED NULL,
+    PRIMARY KEY (id),
+    UNIQUE KEY uq_productos_upc (upc),
+    UNIQUE KEY uq_productos_sku (sku),
+    KEY idx_productos_nombre (nombre),
+    KEY idx_productos_categoria (categoria_id),
+    KEY idx_productos_proveedor (proveedor_id),
+    KEY idx_productos_activo (activo),
+    CONSTRAINT chk_productos_cantidad CHECK (cantidad >= 0),
+    CONSTRAINT chk_productos_stock_minimo CHECK (stock_minimo >= 0),
+    CONSTRAINT chk_productos_precio CHECK (precio_unitario >= 0),
+    CONSTRAINT fk_productos_categoria  FOREIGN KEY (categoria_id) REFERENCES categorias (id)  ON UPDATE CASCADE ON DELETE SET NULL,
+    CONSTRAINT fk_productos_proveedor  FOREIGN KEY (proveedor_id) REFERENCES proveedores (id) ON UPDATE CASCADE ON DELETE SET NULL,
+    CONSTRAINT fk_productos_created_by FOREIGN KEY (created_by)   REFERENCES usuarios (id)    ON UPDATE CASCADE ON DELETE SET NULL,
+    CONSTRAINT fk_productos_updated_by FOREIGN KEY (updated_by)   REFERENCES usuarios (id)    ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE producto_tags (
+    producto_id INT UNSIGNED NOT NULL,
+    tag_id      INT UNSIGNED NOT NULL,
+    asignado_por INT UNSIGNED NULL,
+    created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (producto_id, tag_id),
+    KEY idx_producto_tags_tag (tag_id),
+    CONSTRAINT fk_producto_tags_producto FOREIGN KEY (producto_id)  REFERENCES productos (id) ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_producto_tags_tag      FOREIGN KEY (tag_id)       REFERENCES tags (id)      ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_producto_tags_usuario  FOREIGN KEY (asignado_por) REFERENCES usuarios (id)  ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
