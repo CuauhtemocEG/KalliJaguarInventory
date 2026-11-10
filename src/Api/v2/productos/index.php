@@ -65,6 +65,14 @@ function handleGet($pdo) {
     $tipo = isset($_GET['tipo']) ? $_GET['tipo'] : null;
     $search = isset($_GET['search']) ? trim($_GET['search']) : null;
     $stockBajo = isset($_GET['stockBajo']) && $_GET['stockBajo'] === 'true';
+    $estadoStock = in_array($_GET['estado'] ?? '', ['normal', 'bajo', 'sin_stock'], true) ? $_GET['estado'] : null;
+    $ordenes = [
+        'nombre' => 'p.Nombre ASC', 'stock_asc' => 'p.Cantidad ASC, p.Nombre ASC', 'stock_desc' => 'p.Cantidad DESC, p.Nombre ASC',
+        'precio_asc' => 'p.PrecioUnitario ASC, p.Nombre ASC', 'precio_desc' => 'p.PrecioUnitario DESC, p.Nombre ASC',
+        'recientes' => 'p.FechaModificacion DESC, p.Nombre ASC',
+    ];
+    $orden = $ordenes[$_GET['orden'] ?? ''] ?? $ordenes['nombre'];
+    $condEstado = ['normal' => 'p.Cantidad > p.StockMinimo', 'bajo' => 'p.Cantidad > 0 AND p.Cantidad <= p.StockMinimo', 'sin_stock' => 'p.Cantidad <= 0'];
     $includeInactive = isset($_GET['includeInactive']) && $_GET['includeInactive'] === 'true';
     $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 1000;
     $offset = isset($_GET['offset']) ? intval($_GET['offset']) : 0;
@@ -157,8 +165,11 @@ function handleGet($pdo) {
             if ($stockBajo) {
                 $sql .= " AND p.Cantidad <= p.StockMinimo";
             }
+            if ($estadoStock) {
+                $sql .= " AND (" . $condEstado[$estadoStock] . ")";
+            }
             
-            $sql .= " ORDER BY p.Nombre ASC LIMIT :limit OFFSET :offset";
+            $sql .= " ORDER BY {$orden} LIMIT :limit OFFSET :offset";
             
             $stmt = $pdo->prepare($sql);
             
@@ -193,14 +204,15 @@ function handleGet($pdo) {
             
             // Contar total
             $sqlCount = "SELECT COUNT(DISTINCT p.ProductoID) as total FROM Productos p";
-            if ($tagId || $categoriaId || $tipo || $search || $stockBajo || !$includeInactive) {
+            if ($tagId || $categoriaId || $tipo || $search || $stockBajo || $estadoStock || !$includeInactive) {
                 $sqlCount .= " LEFT JOIN ProductoTags pt ON p.ProductoID = pt.ProductoID WHERE 1=1";
                 if (!$includeInactive) $sqlCount .= " AND p.Activo = 1";
                 if ($categoriaId) $sqlCount .= " AND p.CategoriaID = :categoriaId";
                 if ($tagId) $sqlCount .= " AND pt.TagID = :tagId";
                 if ($tipo) $sqlCount .= " AND p.Tipo = :tipo";
                 if ($stockBajo) $sqlCount .= " AND p.Cantidad <= p.StockMinimo";
-                if ($search) $sqlCount .= " AND (p.Nombre LIKE :search OR p.UPC LIKE :search OR p.SKU LIKE :search)";
+                if ($estadoStock) $sqlCount .= " AND (" . $condEstado[$estadoStock] . ")";
+                if ($search) $sqlCount .= " AND (p.Nombre LIKE :search OR p.UPC LIKE :search OR p.SKU LIKE :search OR p.Descripcion LIKE :search)";
             }
             
             $stmtCount = $pdo->prepare($sqlCount);
@@ -218,7 +230,8 @@ function handleGet($pdo) {
                     COUNT(*) as total,
                     SUM(CASE WHEN Cantidad > StockMinimo THEN 1 ELSE 0 END) as normal,
                     SUM(CASE WHEN Cantidad > 0 AND Cantidad <= StockMinimo THEN 1 ELSE 0 END) as bajo,
-                    SUM(CASE WHEN Cantidad = 0 THEN 1 ELSE 0 END) as sin_stock
+                    SUM(CASE WHEN Cantidad = 0 THEN 1 ELSE 0 END) as sin_stock,
+                    COALESCE(SUM(Cantidad * PrecioUnitario), 0) as valor
                 FROM Productos
                 WHERE Activo = 1
             ";
@@ -246,8 +259,8 @@ function handlePost($pdo) {
     if (empty($input['Nombre'])) {
         sendError('El nombre del producto es requerido');
     }
-    if (empty($input['Tipo']) || !in_array($input['Tipo'], ['Unidad', 'Pesable'])) {
-        sendError('El tipo debe ser Unidad o Pesable');
+    if (empty($input['Tipo']) || !\App\Services\Unidades::esValido($input['Tipo'])) {
+        sendError('El tipo debe ser Unidad, Pesable, Litro o Manojo');
     }
     if (!isset($input['PrecioUnitario']) || $input['PrecioUnitario'] < 0) {
         sendError('El precio unitario es requerido y debe ser mayor a 0');
@@ -325,12 +338,24 @@ function handlePut($pdo) {
         $pdo->beginTransaction();
         
         // Verificar que existe
-        $stmt = $pdo->prepare("SELECT ProductoID FROM Productos WHERE ProductoID = :productoId");
+        $stmt = $pdo->prepare("SELECT ProductoID, Cantidad, Tipo FROM Productos WHERE ProductoID = :productoId FOR UPDATE");
         $stmt->execute(['productoId' => $productoId]);
+        $actual = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        if (!$stmt->fetch()) {
+        if (!$actual) {
             $pdo->rollBack();
             sendError('Producto no encontrado', 404);
+        }
+
+        $tipoFinal = $input['Tipo'] ?? $actual['Tipo'];
+        $stockFinal = isset($input['Cantidad']) ? (float) $input['Cantidad'] : (float) $actual['Cantidad'];
+        if (!\App\Services\Unidades::esValido($tipoFinal)) {
+            $pdo->rollBack();
+            sendError('El tipo debe ser Unidad, Pesable, Litro o Manojo');
+        }
+        if (\App\Services\Unidades::esEntero($tipoFinal) && abs($stockFinal - round($stockFinal)) > 0.0001) {
+            $pdo->rollBack();
+            sendError('Este tipo de producto solo admite stock entero');
         }
         
         // Construir query dinámica

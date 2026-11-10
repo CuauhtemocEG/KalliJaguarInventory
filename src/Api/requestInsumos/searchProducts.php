@@ -13,6 +13,7 @@ $sql = "SELECT
             p.PrecioUnitario, 
             p.Cantidad,
             p.Tipo,
+            p.StockMinimo,
             c.CategoriaID,
             c.Nombre AS nombreCategoria, 
             p.image,
@@ -23,8 +24,9 @@ $sql = "SELECT
             AND mi.TipoMovimiento = 'Salida'";
 
 $params = [];
+$sql .= " WHERE COALESCE(p.Activo, 1) = 1";
 if ($query !== '') {
-    $sql .= " WHERE p.Nombre LIKE :query OR p.UPC LIKE :query";
+    $sql .= " AND (p.Nombre LIKE :query OR p.UPC LIKE :query)";
     $params[':query'] = "%$query%";
 }
 $sql .= " GROUP BY p.ProductoID

@@ -374,7 +374,7 @@
 		});
 
 		function redirectToHome() {
-			const homeUrl = "index.php?page=home";
+			const homeUrl = <?= json_encode(\App\Core\Router::homeFor($_SESSION['rol'] ?? null)) ?>;
 
 			try {
 				if (isAndroid || isMobile) {

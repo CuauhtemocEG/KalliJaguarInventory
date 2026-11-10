@@ -188,7 +188,7 @@ try {
             'avatar' => $usuarioDB['avatar'],
             'ultimo_acceso' => $usuarioDB['ultimo_acceso']
         ],
-        'redirect' => 'index.php?page=home',
+        'redirect' => \App\Core\Router::homeFor($usuarioDB['Rol']),
         'session_info' => [
             'login_time' => $_SESSION['login_time'],
             'expires_in' => 3600 // 1 hora

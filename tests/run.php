@@ -84,6 +84,56 @@ $_SESSION['rol'] = 'Administrador';
 $r = $router->resolve('GET', '/', ['page' => 'userManagement']);
 prueba('Administrador entra a userManagement', $r['page'] === 'userManagement');
 
+echo "Áreas /gestor y /solicitar" . PHP_EOL;
+$_SESSION = [];
+$r = $router->resolve('GET', '/gestor');
+prueba('/gestor sin sesión -> login', $r['type'] === 'redirect' && str_contains($r['location'], 'page=login'));
+$_SESSION = ['id' => 5, 'usuario' => 'x', 'rol' => 'Supervisor'];
+$r = $router->resolve('GET', '/gestor/dashboard');
+prueba('Supervisor no entra al Gestor', $r['type'] === 'redirect' && str_ends_with($r['location'], '/solicitar'));
+$r = $router->resolve('GET', '/solicitar');
+prueba('Supervisor entra a Solicitar', $r['type'] === 'area' && $r['area'] === 'solicitar' && $r['page'] === 'catalogo');
+$r = $router->resolve('GET', '/solicitar/../config');
+prueba('área con traversal -> 404', $r['type'] === 'error' && $r['status'] === 404);
+$_SESSION['rol'] = 'Logistica';
+$r = $router->resolve('GET', '/gestor/pedidos');
+prueba('Logistica entra a pedidos', $r['type'] === 'area' && $r['page'] === 'pedidos');
+$r = $router->resolve('GET', '/gestor/usuarios');
+prueba('Logistica no entra a usuarios', $r['type'] === 'redirect');
+$_SESSION['rol'] = 'Administrador';
+$r = $router->resolve('GET', '/gestor');
+prueba('Administrador entra al panel', $r['type'] === 'area' && $r['page'] === 'dashboard');
+foreach (['dashboard', 'pedidos', 'productos', 'categorias', 'etiquetas', 'inventario', 'sucursales', 'usuarios', 'configuracion'] as $p) {
+    prueba("vista del Gestor existe: {$p}", is_file(base_path("views/gestor/pages/{$p}.php")));
+}
+
+echo "Unidades" . PHP_EOL;
+use App\Services\Unidades;
+prueba('tipos: Unidad, Pesable, Litro, Manojo', Unidades::tipos() === ['Unidad', 'Pesable', 'Litro', 'Manojo']);
+prueba('Manojo es entero y Litro decimal', Unidades::esEntero('Manojo') && !Unidades::esEntero('Litro'));
+prueba('Manojo rechaza 1.5', Unidades::validar('Manojo', 1.5)[0] === null);
+prueba('Litro acepta 2.5', Unidades::validar('Litro', '2.5')[0] === 2.5);
+prueba('rechaza 0, negativos y texto', Unidades::validar('Litro', 0)[0] === null && Unidades::validar('Pesable', -1)[0] === null && Unidades::validar('Unidad', 'x')[0] === null);
+prueba('formato "3 manojos" y "1 L"', Unidades::formato('Manojo', 3) === '3 manojos' && Unidades::formato('Litro', 1) === '1 L');
+prueba('tipo inválido no existe', !Unidades::esValido('Galon'));
+
+echo "Requisiciones (interpretación de texto)" . PHP_EOL;
+use App\Services\Requisiciones;
+$caso = static fn (string $t) => Requisiciones::interpretarLinea($t);
+prueba('"10 lechugas" -> 10 / lechugas', ($c = $caso('10 lechugas')) && $c['cantidad'] === 10.0 && $c['tipo'] === null && $c['nombre'] === 'lechugas');
+prueba('"2 col" no confunde la unidad', ($c = $caso('2 col')) && $c['cantidad'] === 2.0 && $c['nombre'] === 'col');
+prueba('"5kg de queso" -> 5 Pesable queso', ($c = $caso('5kg de queso')) && $c['cantidad'] === 5.0 && $c['tipo'] === 'Pesable' && $c['nombre'] === 'queso');
+prueba('"queso 5 kg" (cantidad al final)', ($c = $caso('queso 5 kg')) && $c['cantidad'] === 5.0 && $c['tipo'] === 'Pesable' && $c['nombre'] === 'queso');
+prueba('"1,5 L leche" decimal con coma', ($c = $caso('1,5 L leche')) && $c['cantidad'] === 1.5 && $c['tipo'] === 'Litro');
+prueba('"500 g de jamón" -> 0.5 kg', ($c = $caso('500 g de jamón')) && $c['cantidad'] === 0.5 && $c['tipo'] === 'Pesable');
+prueba('"medio kilo de queso" -> 0.5', ($c = $caso('medio kilo de queso')) && $c['cantidad'] === 0.5);
+prueba('"3 manojos de cilantro"', ($c = $caso('3 manojos de cilantro')) && $c['tipo'] === 'Manojo' && $c['nombre'] === 'cilantro');
+prueba('texto sin cantidad o con 0 se rechaza', $caso('queso') === null && $caso('0 queso') === null);
+prueba('dividir: comas, saltos y decimales', Requisiciones::dividir("10 lechugas, 2 col\n1,5 kg queso; 3 limones") === ['10 lechugas', '2 col', '1,5 kg queso', '3 limones']);
+prueba('puntuar: plural y palabra completa', Requisiciones::puntuar('Lechuga', 'lechugas') === 0 && Requisiciones::puntuar('Lechuga Romana', 'lechugas') === 1);
+prueba('puntuar: "col" no es coliflor segura', Requisiciones::puntuar('Coliflor', 'col') === 2 && Requisiciones::puntuar('Col morada', 'col') === 1);
+prueba('puntuar: sin relación', Requisiciones::puntuar('Aceite', 'queso') === 9);
+
 echo "Estructura" . PHP_EOL;
 foreach (($rutas = require base_path('config/routes.php'))['page_roles'] as $pagina => $_) {
     prueba("page_roles apunta a una vista real: {$pagina}", is_file(base_path("views/pages/{$pagina}.php")));

@@ -54,7 +54,45 @@ final class Router
             return $this->resolveApi($method, substr($path, 5));
         }
 
+        foreach (array_keys((array) ($this->routes['areas'] ?? [])) as $area) {
+            if ($path === "/{$area}" || str_starts_with($path, "/{$area}/")) {
+                return $this->resolveArea($method, $area, trim(substr($path, strlen($area) + 1), '/'));
+            }
+        }
+
         return ['type' => 'error', 'status' => 404, 'message' => 'Recurso no encontrado.', 'json' => false];
+    }
+
+    /** URL de inicio según el rol: Gestor para personal administrativo, Solicitar para el resto. */
+    public static function homeFor(?string $role): string
+    {
+        return app_url(in_array($role, ['Administrador', 'Logistica'], true) ? 'gestor' : 'solicitar');
+    }
+
+    /** Áreas /gestor y /solicitar: views/<area>/layout.php + views/<area>/pages/<pagina>.php */
+    private function resolveArea(string $method, string $area, string $page): array
+    {
+        $config = $this->routes['areas'][$area];
+        $page = $page === '' ? (string) ($config['default'] ?? 'dashboard') : $page;
+
+        if (!preg_match('/^[A-Za-z0-9_]+$/', $page) || !is_file(base_path("views/{$area}/pages/{$page}.php"))) {
+            return ['type' => 'error', 'status' => 404, 'message' => 'Página no encontrada.', 'json' => false];
+        }
+
+        if (AuthMiddleware::handle() !== null) {
+            return ['type' => 'redirect', 'location' => app_url('index.php?page=login')];
+        }
+
+        $roles = $config['page_roles'][$page] ?? $config['roles'] ?? [];
+        if (RoleMiddleware::handle($roles) !== null) {
+            return ['type' => 'redirect', 'location' => self::homeFor(Auth::role())];
+        }
+
+        if ($error = CsrfMiddleware::handle($method)) {
+            return $this->error($error, false);
+        }
+
+        return ['type' => 'area', 'area' => $area, 'page' => $page];
     }
 
     private function resolvePage(string $method, string $page): array

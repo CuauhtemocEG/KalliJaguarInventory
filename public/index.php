@@ -36,6 +36,15 @@ switch ($destino['type']) {
         require BASE_PATH . '/views/layouts/main.php';
         break;
 
+    case 'area':
+        $page = $destino['page'];
+        require BASE_PATH . "/views/{$destino['area']}/layout.php";
+        break;
+
+    case 'redirect':
+        header('Location: ' . $destino['location']);
+        break;
+
     case 'api':
         require $destino['file'];
         break;

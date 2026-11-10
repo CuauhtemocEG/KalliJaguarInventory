@@ -1,36 +1,35 @@
 <?php
+/** Configuración de mantenimiento leída directo de la BD (misma forma que devuelve maintenance-config/index.php). */
 function getMaintenanceConfigFromAPI() {
-    $apiUrl = getApiUrl() . 'maintenance-config/index.php';
-    
+    static $cache = null;
+    static $cachedAt = 0;
+    if ($cache !== null && (time() - $cachedAt) < 2) {
+        return $cache;
+    }
+
     try {
-        $ch = curl_init($apiUrl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curlError = curl_error($ch);
-        curl_close($ch);
-        
-        if ($httpCode !== 200 || !$response) {
-            error_log("Error al consultar API de mantenimiento: HTTP $httpCode" . ($curlError ? ", Error: $curlError" : ''));
-            return null;
-        }
-        
-        $data = json_decode($response, true);
-        
-        if (!$data || !isset($data['success']) || !$data['success']) {
-            error_log("Respuesta inválida de API de mantenimiento");
-            return null;
-        }
-        
-        return $data['data']['configuraciones'];
-        
-    } catch (Exception $e) {
-        error_log("Excepción al consultar API de mantenimiento: " . $e->getMessage());
+        require_once BASE_PATH . '/src/Helpers/legacy.php';
+        $rows = conexion()->query('SELECT ConfigKey, ConfigValue, ConfigType FROM MaintenanceConfig WHERE Activo = 1')->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Throwable $e) {
+        error_log('Error al leer configuración de mantenimiento: ' . $e->getMessage());
         return null;
     }
+
+    $configs = [];
+    foreach ($rows as $row) {
+        $value = $row['ConfigValue'];
+        $value = match ($row['ConfigType']) {
+            'boolean' => $value === 'true' || $value === '1',
+            'array' => json_decode((string) $value, true) ?? [],
+            'integer' => (int) $value,
+            default => $value,
+        };
+        $configs[] = ['key' => $row['ConfigKey'], 'value' => $value];
+    }
+
+    $cachedAt = time();
+
+    return $cache = $configs;
 }
 
 function getApiUrl() {

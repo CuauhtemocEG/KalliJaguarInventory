@@ -52,7 +52,9 @@ final class Config
     /** Lee una variable de entorno con conversión de tipos (true/false/null). */
     public static function env(string $key, mixed $default = null): mixed
     {
-        $value = $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key);
+        // Una variable real del proceso tiene prioridad sobre las leídas de .env
+        $real = getenv($key);
+        $value = $real !== false ? $real : ($_ENV[$key] ?? $_SERVER[$key] ?? false);
 
         if ($value === false || $value === null) {
             return $default;
