@@ -2,5 +2,5 @@
 
 return [
     'name' => env('SESSION_NAME', 'INV'),
-    'lifetime' => (int) env('SESSION_LIFETIME', 7200),
+    'lifetime' => (int) env('SESSION_LIFETIME', 2592000),
 ];

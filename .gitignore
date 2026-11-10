@@ -25,3 +25,5 @@ Thumbs.db
 *.log
 /storage/documents/*
 !/storage/documents/.gitkeep
+/storage/sessions/*
+!/storage/sessions/.gitkeep

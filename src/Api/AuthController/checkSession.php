@@ -21,8 +21,7 @@ try {
         exit;
     }
     
-    // Verificar timeout de sesión (1 hora por defecto)
-    $session_timeout = 3600; // 1 hora en segundos
+    $session_timeout = (int) config('session.lifetime', 2592000);
     $current_time = time();
     $last_activity = $_SESSION['last_activity'] ?? $_SESSION['login_time'] ?? $current_time;
     

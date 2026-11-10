@@ -62,10 +62,56 @@ $masSolicitados = $db->query(
      LIMIT 5"
 )->fetchAll(PDO::FETCH_ASSOC);
 
+$mesAnterior = $db->query(
+    "SELECT COUNT(DISTINCT ComandaID) AS pedidos, COALESCE(SUM(PrecioFinal), 0) AS monto
+     FROM MovimientosInventario
+     WHERE TipoMovimiento = 'Salida' AND ComandaID IS NOT NULL AND Status <> 'Cancelado'
+       AND FechaMovimiento >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-01')
+       AND FechaMovimiento < DATE_FORMAT(CURDATE(), '%Y-%m-01')"
+)->fetch(PDO::FETCH_ASSOC);
+
+$serie = $db->query(
+    "SELECT DATE(FechaMovimiento) AS dia, COALESCE(SUM(PrecioFinal), 0) AS monto, COUNT(DISTINCT ComandaID) AS pedidos
+     FROM MovimientosInventario
+     WHERE TipoMovimiento = 'Salida' AND ComandaID IS NOT NULL AND Status <> 'Cancelado'
+       AND FechaMovimiento >= DATE_SUB(CURDATE(), INTERVAL 13 DAY)
+     GROUP BY DATE(FechaMovimiento)"
+)->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_ASSOC);
+
+$porSucursal = $db->query(
+    "SELECT COALESCE(s.nombre, 'Sin sucursal') AS sucursal, COALESCE(SUM(m.PrecioFinal), 0) AS monto, COUNT(DISTINCT m.ComandaID) AS pedidos
+     FROM MovimientosInventario m
+     LEFT JOIN Sucursales s ON s.SucursalID = m.SucursalID
+     WHERE m.TipoMovimiento = 'Salida' AND m.ComandaID IS NOT NULL AND m.Status <> 'Cancelado'
+       AND YEAR(m.FechaMovimiento) = YEAR(CURDATE()) AND MONTH(m.FechaMovimiento) = MONTH(CURDATE())
+     GROUP BY s.SucursalID, s.nombre
+     ORDER BY monto DESC
+     LIMIT 5"
+)->fetchAll(PDO::FETCH_ASSOC);
+
+$hoy = (int) $db->query(
+    "SELECT COUNT(DISTINCT ComandaID) FROM MovimientosInventario
+     WHERE TipoMovimiento = 'Salida' AND ComandaID IS NOT NULL AND DATE(FechaMovimiento) = CURDATE()"
+)->fetchColumn();
+
+try {
+    $requisiciones = $db->query(
+        "SELECT SUM(Estado = 'Enviada') AS por_aprobar, SUM(Estado IN ('Aprobada', 'Parcial')) AS por_recibir
+         FROM Requisiciones"
+    )->fetch(PDO::FETCH_ASSOC) ?: [];
+} catch (Throwable $e) {
+    $requisiciones = [];
+}
+
 echo json_encode([
     'success' => true,
     'estados' => $estados,
     'mes' => $mes,
+    'mes_anterior' => $mesAnterior,
+    'serie' => $serie,
+    'por_sucursal' => $porSucursal,
+    'hoy' => $hoy,
+    'requisiciones' => $requisiciones,
     'inventario' => $inventario,
     'bajo_stock' => $bajoStock,
     'recientes' => $recientes,
