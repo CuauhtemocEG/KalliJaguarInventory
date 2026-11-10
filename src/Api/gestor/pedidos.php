@@ -3,7 +3,9 @@
  * Gestor · Pedidos (comandas).
  * GET  ?comanda=ID            → detalle de una comanda
  * GET  (filtros: estado, sucursal, solicitante, desde, hasta, q) → lista + contadores
+ * GET  ?buscar=texto          → productos activos para agregar a un pedido
  * POST {accion: transito|entregar|cancelar, comanda, picking?, motivo?}
+ * POST {accion: agregar, comanda, producto_id, cantidad} / {accion: quitar, comanda, movimiento_id} (solo pedidos Abiertos)
  */
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
@@ -42,6 +44,9 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 try {
     if ($method === 'GET') {
+        if (isset($_GET['buscar'])) {
+            pedidoBuscarProductos($db, trim((string) $_GET['buscar']));
+        }
         $comanda = trim((string) ($_GET['comanda'] ?? ''));
         if ($comanda !== '') {
             pedidoDetalle($db, $comanda);
@@ -64,6 +69,130 @@ try {
     }
     error_log('gestor/pedidos: ' . $e->getMessage());
     pedidoResponder(500, ['success' => false, 'message' => 'Error interno al procesar el pedido']);
+}
+
+function pedidoBuscarProductos(PDO $db, string $q): void
+{
+    if (mb_strlen($q) < 2) {
+        pedidoResponder(200, ['success' => true, 'productos' => []]);
+    }
+    $stmt = $db->prepare(
+        "SELECT ProductoID, UPC, Nombre, Tipo, Cantidad AS Stock, PrecioUnitario
+         FROM Productos
+         WHERE COALESCE(Activo, 1) = 1 AND (Nombre LIKE :q OR UPC LIKE :q OR SKU LIKE :q)
+         ORDER BY Nombre LIMIT 15"
+    );
+    $stmt->execute([':q' => '%' . addcslashes($q, '%_\\') . '%']);
+    $filas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($filas as &$f) {
+        $f['PrecioUnitarioIva'] = round((float) $f['PrecioUnitario'] * TAX_MULTIPLIER, 2);
+    }
+    unset($f);
+    pedidoResponder(200, ['success' => true, 'productos' => $filas]);
+}
+
+/** Agrega o quita una partida de un pedido Abierto; el stock se descuenta/repone y el total se recalcula. */
+function pedidoEditarPartida(PDO $db, string $accion, string $comanda, array $in, int $userId): void
+{
+    if ($comanda === '') {
+        pedidoResponder(400, ['success' => false, 'message' => 'Datos incompletos']);
+    }
+
+    $db->beginTransaction();
+    $stmt = $db->prepare(
+        "SELECT MovimientoID, ProductoID, Cantidad, PrecioFinal, SucursalID, UsuarioID, Status FROM MovimientosInventario
+         WHERE ComandaID = :c AND TipoMovimiento = 'Salida' FOR UPDATE"
+    );
+    $stmt->execute([':c' => $comanda]);
+    $filas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if (!$filas) {
+        $db->rollBack();
+        pedidoResponder(404, ['success' => false, 'message' => 'El pedido no existe']);
+    }
+    if (count(array_unique(array_column($filas, 'Status'))) !== 1 || $filas[0]['Status'] !== 'Abierto') {
+        $db->rollBack();
+        pedidoResponder(409, ['success' => false, 'message' => 'Solo se pueden modificar pedidos en estado Abierto']);
+    }
+
+    $stock = $db->prepare('SELECT ProductoID, UPC, Nombre, Tipo, Cantidad, PrecioUnitario, COALESCE(Activo, 1) AS Activo FROM Productos WHERE ProductoID = :p FOR UPDATE');
+    $logStock = $db->prepare('INSERT INTO Logs_stock (UPC, StockBefore, StockAfter, UsuarioID, Fecha) VALUES (:u, :a, :d, :usr, NOW())');
+    $est = $db->prepare(
+        'INSERT INTO EstadosComanda (ComandaID, EstadoAnterior, EstadoNuevo, FechaCambio, UsuarioID, Observaciones)
+         VALUES (:c, \'Abierto\', \'Abierto\', NOW(), :u, :o)'
+    );
+
+    if ($accion === 'agregar') {
+        $productoId = (int) ($in['producto_id'] ?? 0);
+        $stock->execute([':p' => $productoId]);
+        $prod = $stock->fetch(PDO::FETCH_ASSOC);
+        if (!$prod || !(int) $prod['Activo']) {
+            $db->rollBack();
+            pedidoResponder(404, ['success' => false, 'message' => 'El producto no existe o está inactivo']);
+        }
+        [$cantidad, $error] = \App\Services\Unidades::validar($prod['Tipo'], $in['cantidad'] ?? null);
+        if ($error !== null) {
+            $db->rollBack();
+            pedidoResponder(422, ['success' => false, 'message' => $error]);
+        }
+        if ($cantidad > (float) $prod['Cantidad'] + 0.0001) {
+            $db->rollBack();
+            pedidoResponder(422, ['success' => false, 'message' => 'Stock insuficiente de ' . $prod['Nombre'] . ': quedan ' . \App\Services\Unidades::formato($prod['Tipo'], (float) $prod['Cantidad'])]);
+        }
+
+        $existente = null;
+        foreach ($filas as $f) {
+            if ((int) $f['ProductoID'] === $productoId) {
+                $existente = $f;
+                break;
+            }
+        }
+        if ($existente) {
+            // La cantidad ya apartada conserva su precio; solo lo agregado se cotiza al precio vigente
+            $previa = (float) $existente['Cantidad'];
+            $total = $previa + $cantidad;
+            $importe = round((float) $existente['PrecioFinal'] + $cantidad * (float) $prod['PrecioUnitario'] * TAX_MULTIPLIER, 2);
+            $db->prepare('UPDATE MovimientosInventario SET Cantidad = :q, PrecioFinal = :i WHERE MovimientoID = :m')
+                ->execute([':q' => $total, ':i' => $importe, ':m' => $existente['MovimientoID']]);
+        } else {
+            $importe = round($cantidad * (float) $prod['PrecioUnitario'] * TAX_MULTIPLIER, 2);
+            $db->prepare(
+                "INSERT INTO MovimientosInventario (ComandaID, SucursalID, ProductoID, TipoMovimiento, Cantidad, FechaMovimiento, PrecioFinal, UsuarioID, Status)
+                 VALUES (:c, :s, :p, 'Salida', :q, NOW(), :i, :u, 'Abierto')"
+            )->execute([':c' => $comanda, ':s' => $filas[0]['SucursalID'], ':p' => $productoId, ':q' => $cantidad, ':i' => $importe, ':u' => $filas[0]['UsuarioID']]);
+        }
+        $db->prepare('UPDATE Productos SET Cantidad = Cantidad - :q WHERE ProductoID = :p')->execute([':q' => $cantidad, ':p' => $productoId]);
+        $logStock->execute([':u' => $prod['UPC'], ':a' => $prod['Cantidad'], ':d' => round((float) $prod['Cantidad'] - $cantidad, 3), ':usr' => $userId]);
+        $obs = 'Se agregó ' . $prod['Nombre'] . ' (' . \App\Services\Unidades::formato($prod['Tipo'], $cantidad) . ')';
+    } else {
+        $movId = (int) ($in['movimiento_id'] ?? 0);
+        $fila = null;
+        foreach ($filas as $f) {
+            if ((int) $f['MovimientoID'] === $movId) {
+                $fila = $f;
+                break;
+            }
+        }
+        if (!$fila) {
+            $db->rollBack();
+            pedidoResponder(404, ['success' => false, 'message' => 'La partida no pertenece a este pedido']);
+        }
+        if (count($filas) === 1) {
+            $db->rollBack();
+            pedidoResponder(409, ['success' => false, 'message' => 'Es la única partida: cancela el pedido en lugar de quitarla']);
+        }
+        $stock->execute([':p' => $fila['ProductoID']]);
+        $prod = $stock->fetch(PDO::FETCH_ASSOC);
+        $db->prepare('DELETE FROM MovimientosInventario WHERE MovimientoID = :m')->execute([':m' => $movId]);
+        if ($prod) {
+            $db->prepare('UPDATE Productos SET Cantidad = Cantidad + :q WHERE ProductoID = :p')->execute([':q' => $fila['Cantidad'], ':p' => $fila['ProductoID']]);
+            $logStock->execute([':u' => $prod['UPC'], ':a' => $prod['Cantidad'], ':d' => round((float) $prod['Cantidad'] + (float) $fila['Cantidad'], 3), ':usr' => $userId]);
+        }
+        $obs = 'Se quitó ' . ($prod['Nombre'] ?? 'un producto') . ' (' . \App\Services\Unidades::formato($prod['Tipo'] ?? null, (float) $fila['Cantidad']) . ')';
+    }
+
+    $est->execute([':c' => $comanda, ':u' => $userId, ':o' => mb_substr($obs, 0, 240)]);
+    $db->commit();
+    pedidoResponder(200, ['success' => true, 'message' => 'Pedido actualizado']);
 }
 
 function pedidoLista(PDO $db): void
@@ -219,6 +348,10 @@ function pedidoAccion(PDO $db, array $in): void
     $accion = (string) ($in['accion'] ?? '');
     $comanda = trim((string) ($in['comanda'] ?? ''));
     $userId = (int) $_SESSION['id'];
+
+    if (in_array($accion, ['agregar', 'quitar'], true)) {
+        pedidoEditarPartida($db, $accion, $comanda, $in, $userId);
+    }
 
     if ($comanda === '' || !in_array($accion, ['transito', 'entregar', 'cancelar'], true)) {
         pedidoResponder(400, ['success' => false, 'message' => 'Datos incompletos o acción no válida']);

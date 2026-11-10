@@ -112,7 +112,7 @@
             </tr>`).join('');
     }
 
-    function pintarDetalle(r) {
+    function pintarDetalle(r, conservar = {}) {
         actual = r;
         const p = r.pedido;
         $('d-titulo').textContent = p.ComandaID;
@@ -130,7 +130,8 @@
                 <td class="py-2">${U.esc(d.Nombre)}<p class="text-xs text-slate-400">${U.esc(d.UPC || '')}</p></td>
                 <td class="py-2 text-right whitespace-nowrap">${U.qty(pedida, d.Tipo)}</td>
                 <td class="py-2 text-right">${surtido}</td>
-                <td class="py-2 text-right whitespace-nowrap" data-importe="${d.MovimientoID}">${U.money(d.PrecioFinal)}</td></tr>`;
+                <td class="py-2 text-right whitespace-nowrap" data-importe="${d.MovimientoID}">${U.money(d.PrecioFinal)}</td>
+                ${editable ? `<td class="py-2 pl-2 text-right"><button type="button" data-quitar="${d.MovimientoID}" data-nombre="${U.esc(d.Nombre)}" title="Quitar del pedido" class="w-8 h-8 rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-600"><i class="fa-solid fa-trash-can"></i></button></td>` : ''}</tr>`;
         }).join('');
         const hist = r.historial.length ? r.historial.map((h) => `
             <li class="text-slate-600"><span class="text-slate-400">${fecha(h.FechaCambio)}</span> ${U.esc(etiquetas[h.EstadoAnterior] || h.EstadoAnterior)} → <strong>${U.esc(etiquetas[h.EstadoNuevo] || h.EstadoNuevo)}</strong>
@@ -141,9 +142,17 @@
                 ${[['Solicitante', U.esc(p.solicitante || '—')], ['Sucursal', U.esc(p.sucursal || '—')], ['Solicitado', fecha(p.fecha)], ['Entrega', fecha(p.entrega) + entregaTag(p)]].map(([t, v]) => `<div class="rounded-xl bg-slate-50 px-3 py-2"><p class="text-[11px] text-slate-400">${t}</p><p class="font-medium">${v}</p></div>`).join('')}
             </div>
             <div class="overflow-x-auto"><table class="w-full">
-                <thead class="text-slate-500 text-xs"><tr><th class="text-left">Producto</th><th class="text-right">Pedido</th><th class="text-right">${editable ? 'Surtir' : 'Enviado'}</th><th class="text-right">Importe</th></tr></thead>
+                <thead class="text-slate-500 text-xs"><tr><th class="text-left">Producto</th><th class="text-right">Pedido</th><th class="text-right">${editable ? 'Surtir' : 'Enviado'}</th><th class="text-right">Importe</th>${editable ? '<th></th>' : ''}</tr></thead>
                 <tbody>${filas}</tbody>
             </table></div>
+            ${editable ? `<div class="rounded-xl border border-dashed border-slate-300 p-3">
+                <p class="font-semibold mb-2"><i class="fa-solid fa-plus mr-1 text-brand-600"></i>Agregar producto al pedido</p>
+                <div class="relative">
+                    <input id="add-q" type="search" autocomplete="off" placeholder="Buscar por nombre, UPC o SKU…" class="w-full rounded-lg border border-slate-200 px-3 py-2.5">
+                    <ul id="add-res" class="hidden absolute z-10 mt-1 w-full max-h-56 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg divide-y divide-slate-100"></ul>
+                </div>
+                <div id="add-sel" class="hidden mt-3 flex flex-wrap items-center gap-2"></div>
+            </div>` : ''}
             ${editable ? '<p class="text-xs text-slate-500 bg-slate-50 rounded-lg px-3 py-2"><i class="fa-solid fa-scale-balanced mr-1"></i>Captura lo que realmente se envía (máx. 50% sobre lo pedido). El importe, el total y el inventario se ajustan al confirmar.</p>' : ''}
             <div><p class="font-semibold mb-1">Historial</p><ul class="space-y-1">${hist}</ul></div>`;
         const btn = 'px-4 py-2.5 rounded-xl font-semibold ';
@@ -157,7 +166,10 @@
             <span>Total <b id="t-total" class="text-lg">${U.money(r.totales.total)}</b></span>
             <span id="t-dif" class="hidden w-full text-xs text-right"></span>`;
         $('d-acciones').innerHTML = acc.join('');
-        if (editable) { recalcular(); }
+        if (editable) {
+            $('d-cuerpo').querySelectorAll('[data-mov]').forEach((i) => { if (conservar[i.dataset.mov] !== undefined) { i.value = conservar[i.dataset.mov]; } });
+            recalcular();
+        }
     }
 
     // Recalcula importes y totales con lo capturado, antes de confirmar
@@ -210,6 +222,66 @@
         pintarDetalle(await U.api('gestor/pedidos.php', { query: { comanda: body.comanda } }));
         await cargar();
     }
+
+    // ---- Agregar / quitar partidas (solo pedidos Abiertos) ----
+    const capturado = () => Object.fromEntries([...$('d-cuerpo').querySelectorAll('[data-mov]')].map((i) => [i.dataset.mov, i.value]));
+    let elegido = null;
+
+    async function editarPartida(body) {
+        const conservar = capturado();
+        await U.api('gestor/pedidos.php', { method: 'POST', body: { ...body, comanda: actual.pedido.ComandaID } });
+        pintarDetalle(await U.api('gestor/pedidos.php', { query: { comanda: actual.pedido.ComandaID } }), conservar);
+        await cargar();
+    }
+
+    const buscarProducto = U.debounce(async () => {
+        const q = $('add-q').value.trim(), lista = $('add-res');
+        if (q.length < 2) { lista.classList.add('hidden'); return; }
+        try {
+            const r = await U.api('gestor/pedidos.php', { query: { buscar: q } });
+            lista.innerHTML = r.productos.map((p) => `
+                <li><button type="button" data-elegir='${U.esc(JSON.stringify(p))}' class="w-full text-left px-3 py-2 hover:bg-slate-50 flex items-center justify-between gap-3">
+                    <span class="min-w-0"><span class="block truncate">${U.esc(p.Nombre)}</span><span class="block text-xs text-slate-400">${U.money(p.PrecioUnitarioIva)} c/IVA por ${U.unit(p.Tipo).abbr}</span></span>
+                    <span class="text-xs font-semibold px-2 py-1 rounded-full whitespace-nowrap ${Number(p.Stock) > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}">${U.qty(p.Stock, p.Tipo)}</span>
+                </button></li>`).join('') || '<li class="px-3 py-3 text-slate-500">Sin resultados</li>';
+            lista.classList.remove('hidden');
+        } catch (e) { U.toast(e.message, 'error'); }
+    }, 300);
+
+    function elegirProducto(p) {
+        elegido = p;
+        const u = U.unit(p.Tipo);
+        $('add-res').classList.add('hidden');
+        $('add-q').value = '';
+        const caja = $('add-sel');
+        caja.classList.remove('hidden');
+        caja.innerHTML = `<span class="font-medium">${U.esc(p.Nombre)}</span>
+            <input id="add-cant" type="number" min="${u.entero ? 1 : 0.001}" max="${p.Stock}" step="${u.entero ? '1' : '0.001'}" inputmode="${u.entero ? 'numeric' : 'decimal'}" placeholder="Cantidad" class="w-28 rounded-lg border border-slate-200 px-2 py-1.5 text-right"><span class="text-xs text-slate-500">${u.abbr} · disp. ${U.qty(p.Stock, p.Tipo)}</span>
+            <button type="button" id="add-ok" class="ml-auto px-3 py-1.5 rounded-lg bg-ink text-white font-semibold hover:bg-slate-700">Agregar</button>
+            <button type="button" id="add-no" class="px-2 py-1.5 rounded-lg text-slate-500 hover:bg-slate-100" aria-label="Cancelar"><i class="fa-solid fa-xmark"></i></button>`;
+        $('add-cant').focus();
+    }
+
+    $('d-cuerpo').addEventListener('input', (e) => { if (e.target.id === 'add-q') { buscarProducto(); } });
+    $('d-cuerpo').addEventListener('click', async (e) => {
+        const el = e.target.closest('[data-elegir]');
+        if (el) { return elegirProducto(JSON.parse(el.dataset.elegir)); }
+        if (e.target.closest('#add-no')) { elegido = null; return $('add-sel').classList.add('hidden'); }
+        try {
+            if (e.target.closest('#add-ok') && elegido) {
+                const cantidad = $('add-cant').value;
+                if (!(Number(cantidad) > 0)) { return U.toast('Indica la cantidad', 'error'); }
+                await editarPartida({ accion: 'agregar', producto_id: elegido.ProductoID, cantidad });
+                U.toast('Producto agregado; el PDF ya incluye el cambio', 'success');
+                return;
+            }
+            const q = e.target.closest('[data-quitar]');
+            if (q && await U.confirm(`¿Quitar "${q.dataset.nombre}" del pedido? El stock se repondrá.`)) {
+                await editarPartida({ accion: 'quitar', movimiento_id: q.dataset.quitar });
+                U.toast('Producto quitado', 'success');
+            }
+        } catch (err) { U.toast(err.message, 'error'); }
+    });
 
     const recargar = U.debounce(() => cargar().catch((e) => U.toast(e.message, 'error')), 300);
     ['f-q', 'f-sucursal', 'f-solicitante', 'f-desde', 'f-hasta'].forEach((id) => { $(id).addEventListener('input', recargar); $(id).addEventListener('change', recargar); });
