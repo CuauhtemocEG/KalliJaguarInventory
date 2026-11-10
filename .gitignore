@@ -27,3 +27,5 @@ Thumbs.db
 !/storage/documents/.gitkeep
 /storage/sessions/*
 !/storage/sessions/.gitkeep
+/public/assets/img/producto/*
+!/public/assets/img/producto/.gitkeep

@@ -1,13 +1,15 @@
 <?php
 
 $raiz = dirname(__DIR__);
-$uploads = $raiz . '/' . trim((string) env('UPLOADS_DIR', 'public/uploads'), '/');
+$uploadsDir = trim((string) env('UPLOADS_DIR', 'public/uploads'), '/');
+$uploads = $raiz . '/' . $uploadsDir;
 $productos = trim((string) env('UPLOADS_PRODUCTS_DIR', 'products'), '/');
 
 return [
     'root' => $raiz,
     'uploads' => $uploads,
-    'uploads_url' => 'uploads',
+    // URL pública relativa a APP_URL: UPLOADS_URL, o UPLOADS_DIR sin el prefijo "public/".
+    'uploads_url' => trim((string) env('UPLOADS_URL', preg_replace('#^public/#', '', $uploadsDir)), '/'),
     'products' => $uploads . '/' . $productos,
     'products_url' => $productos,
     'logs' => $raiz . '/' . trim((string) env('LOGS_DIR', 'storage/logs'), '/'),
