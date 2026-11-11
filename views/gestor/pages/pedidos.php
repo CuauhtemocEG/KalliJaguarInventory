@@ -119,6 +119,7 @@
         $('d-estado').className = 'inline-block mt-1 px-2.5 py-1 rounded-full text-xs font-semibold ' + (colores[p.estado] || 'bg-slate-100');
         $('d-estado').textContent = etiquetas[p.estado] || p.estado;
         const editable = p.estado === 'Abierto';
+        const complementable = editable || p.estado === 'En transito';
         const filas = r.partidas.map((d) => {
             const u = U.unit(d.Tipo);
             const pedida = editable ? d.Cantidad : d.CantidadSolicitada;
@@ -131,7 +132,7 @@
                 <td class="py-2 text-right whitespace-nowrap">${U.qty(pedida, d.Tipo)}</td>
                 <td class="py-2 text-right">${surtido}</td>
                 <td class="py-2 text-right whitespace-nowrap" data-importe="${d.MovimientoID}">${U.money(d.PrecioFinal)}</td>
-                ${editable ? `<td class="py-2 pl-2 text-right"><button type="button" data-quitar="${d.MovimientoID}" data-nombre="${U.esc(d.Nombre)}" title="Quitar del pedido" class="w-8 h-8 rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-600"><i class="fa-solid fa-trash-can"></i></button></td>` : ''}</tr>`;
+                ${complementable ? `<td class="py-2 pl-2 text-right"><button type="button" data-quitar="${d.MovimientoID}" data-nombre="${U.esc(d.Nombre)}" title="Quitar del pedido" class="w-8 h-8 rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-600"><i class="fa-solid fa-trash-can"></i></button></td>` : ''}</tr>`;
         }).join('');
         const hist = r.historial.length ? r.historial.map((h) => `
             <li class="text-slate-600"><span class="text-slate-400">${fecha(h.FechaCambio)}</span> ${U.esc(etiquetas[h.EstadoAnterior] || h.EstadoAnterior)} → <strong>${U.esc(etiquetas[h.EstadoNuevo] || h.EstadoNuevo)}</strong>
@@ -142,11 +143,11 @@
                 ${[['Solicitante', U.esc(p.solicitante || '—')], ['Sucursal', U.esc(p.sucursal || '—')], ['Solicitado', fecha(p.fecha)], ['Entrega', fecha(p.entrega) + entregaTag(p)]].map(([t, v]) => `<div class="rounded-xl bg-slate-50 px-3 py-2"><p class="text-[11px] text-slate-400">${t}</p><p class="font-medium">${v}</p></div>`).join('')}
             </div>
             <div class="overflow-x-auto"><table class="w-full">
-                <thead class="text-slate-500 text-xs"><tr><th class="text-left">Producto</th><th class="text-right">Pedido</th><th class="text-right">${editable ? 'Surtir' : 'Enviado'}</th><th class="text-right">Importe</th>${editable ? '<th></th>' : ''}</tr></thead>
+                <thead class="text-slate-500 text-xs"><tr><th class="text-left">Producto</th><th class="text-right">Pedido</th><th class="text-right">${editable ? 'Surtir' : 'Enviado'}</th><th class="text-right">Importe</th>${complementable ? '<th></th>' : ''}</tr></thead>
                 <tbody>${filas}</tbody>
             </table></div>
-            ${editable ? `<div class="rounded-xl border border-dashed border-slate-300 p-3">
-                <p class="font-semibold mb-2"><i class="fa-solid fa-plus mr-1 text-brand-600"></i>Agregar producto al pedido</p>
+            ${complementable ? `<div class="rounded-xl border border-dashed border-slate-300 p-3">
+                <p class="font-semibold mb-2"><i class="fa-solid fa-plus mr-1 text-brand-600"></i>Agregar producto al pedido${editable ? '' : ' <span class="text-xs font-normal text-slate-500">(se enviará como complemento)</span>'}</p>
                 <div class="relative">
                     <input id="add-q" type="search" autocomplete="off" placeholder="Buscar por nombre, UPC o SKU…" class="w-full rounded-lg border border-slate-200 px-3 py-2.5">
                     <ul id="add-res" class="hidden absolute z-10 mt-1 w-full max-h-56 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg divide-y divide-slate-100"></ul>

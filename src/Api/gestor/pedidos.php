@@ -91,7 +91,7 @@ function pedidoBuscarProductos(PDO $db, string $q): void
     pedidoResponder(200, ['success' => true, 'productos' => $filas]);
 }
 
-/** Agrega o quita una partida de un pedido Abierto; el stock se descuenta/repone y el total se recalcula. */
+/** Agrega o quita una partida de un pedido Abierto o En transito; el stock se descuenta/repone y el total se recalcula. */
 function pedidoEditarPartida(PDO $db, string $accion, string $comanda, array $in, int $userId): void
 {
     if ($comanda === '') {
@@ -109,16 +109,18 @@ function pedidoEditarPartida(PDO $db, string $accion, string $comanda, array $in
         $db->rollBack();
         pedidoResponder(404, ['success' => false, 'message' => 'El pedido no existe']);
     }
-    if (count(array_unique(array_column($filas, 'Status'))) !== 1 || $filas[0]['Status'] !== 'Abierto') {
+    if (count(array_unique(array_column($filas, 'Status'))) !== 1 || !in_array($filas[0]['Status'], ['Abierto', 'En transito'], true)) {
         $db->rollBack();
-        pedidoResponder(409, ['success' => false, 'message' => 'Solo se pueden modificar pedidos en estado Abierto']);
+        pedidoResponder(409, ['success' => false, 'message' => 'Solo se pueden modificar pedidos Abiertos o En tránsito']);
     }
+    $estadoActual = $filas[0]['Status'];
+    $enTransito = $estadoActual === 'En transito';
 
     $stock = $db->prepare('SELECT ProductoID, UPC, Nombre, Tipo, Cantidad, PrecioUnitario, COALESCE(Activo, 1) AS Activo FROM Productos WHERE ProductoID = :p FOR UPDATE');
     $logStock = $db->prepare('INSERT INTO Logs_stock (UPC, StockBefore, StockAfter, UsuarioID, Fecha) VALUES (:u, :a, :d, :usr, NOW())');
     $est = $db->prepare(
         'INSERT INTO EstadosComanda (ComandaID, EstadoAnterior, EstadoNuevo, FechaCambio, UsuarioID, Observaciones)
-         VALUES (:c, \'Abierto\', \'Abierto\', NOW(), :u, :o)'
+         VALUES (:c, :e, :e, NOW(), :u, :o)'
     );
 
     if ($accion === 'agregar') {
@@ -153,16 +155,25 @@ function pedidoEditarPartida(PDO $db, string $accion, string $comanda, array $in
             $importe = round((float) $existente['PrecioFinal'] + $cantidad * (float) $prod['PrecioUnitario'] * TAX_MULTIPLIER, 2);
             $db->prepare('UPDATE MovimientosInventario SET Cantidad = :q, PrecioFinal = :i WHERE MovimientoID = :m')
                 ->execute([':q' => $total, ':i' => $importe, ':m' => $existente['MovimientoID']]);
+            if ($enTransito) {
+                // Ya hubo surtido: lo olvidado se suma a lo solicitado y a lo enviado
+                $db->prepare('UPDATE PickingLog SET CantidadSolicitada = CantidadSolicitada + :q, CantidadPickeada = CantidadPickeada + :q WHERE ComandaID = :c AND ProductoID = :p ORDER BY FechaPicking DESC LIMIT 1')
+                    ->execute([':q' => $cantidad, ':c' => $comanda, ':p' => $productoId]);
+            }
         } else {
             $importe = round($cantidad * (float) $prod['PrecioUnitario'] * TAX_MULTIPLIER, 2);
             $db->prepare(
                 "INSERT INTO MovimientosInventario (ComandaID, SucursalID, ProductoID, TipoMovimiento, Cantidad, FechaMovimiento, PrecioFinal, UsuarioID, Status)
-                 VALUES (:c, :s, :p, 'Salida', :q, NOW(), :i, :u, 'Abierto')"
-            )->execute([':c' => $comanda, ':s' => $filas[0]['SucursalID'], ':p' => $productoId, ':q' => $cantidad, ':i' => $importe, ':u' => $filas[0]['UsuarioID']]);
+                 VALUES (:c, :s, :p, 'Salida', :q, NOW(), :i, :u, :st)"
+            )->execute([':st' => $estadoActual, ':c' => $comanda, ':s' => $filas[0]['SucursalID'], ':p' => $productoId, ':q' => $cantidad, ':i' => $importe, ':u' => $filas[0]['UsuarioID']]);
+            if ($enTransito) {
+                $db->prepare('INSERT INTO PickingLog (ComandaID, ProductoID, UPC, CantidadSolicitada, CantidadPickeada, FechaPicking, UsuarioID) VALUES (:c, :p, :u, :q, :q, NOW(), :usr)')
+                    ->execute([':c' => $comanda, ':p' => $productoId, ':u' => $prod['UPC'] ?: 'SIN-UPC-' . $productoId, ':q' => $cantidad, ':usr' => $userId]);
+            }
         }
         $db->prepare('UPDATE Productos SET Cantidad = Cantidad - :q WHERE ProductoID = :p')->execute([':q' => $cantidad, ':p' => $productoId]);
         $logStock->execute([':u' => $prod['UPC'], ':a' => $prod['Cantidad'], ':d' => round((float) $prod['Cantidad'] - $cantidad, 3), ':usr' => $userId]);
-        $obs = 'Se agregó ' . $prod['Nombre'] . ' (' . \App\Services\Unidades::formato($prod['Tipo'], $cantidad) . ')';
+        $obs = ($enTransito ? 'Complemento en tránsito: ' : '') . 'Se agregó ' . $prod['Nombre'] . ' (' . \App\Services\Unidades::formato($prod['Tipo'], $cantidad) . ')';
     } else {
         $movId = (int) ($in['movimiento_id'] ?? 0);
         $fila = null;
@@ -190,7 +201,7 @@ function pedidoEditarPartida(PDO $db, string $accion, string $comanda, array $in
         $obs = 'Se quitó ' . ($prod['Nombre'] ?? 'un producto') . ' (' . \App\Services\Unidades::formato($prod['Tipo'] ?? null, (float) $fila['Cantidad']) . ')';
     }
 
-    $est->execute([':c' => $comanda, ':u' => $userId, ':o' => mb_substr($obs, 0, 240)]);
+    $est->execute([':c' => $comanda, ':e' => $estadoActual, ':u' => $userId, ':o' => mb_substr($obs, 0, 240)]);
     $db->commit();
     pedidoResponder(200, ['success' => true, 'message' => 'Pedido actualizado']);
 }
