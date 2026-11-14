@@ -121,6 +121,11 @@ final class Router
             return ['type' => 'page', 'page' => 'logout'];
         }
 
+        // Las aplicaciones instaladas y los marcadores antiguos siguen abriendo page=home.
+        if ($page === 'home' && in_array($method, ['GET', 'HEAD'], true)) {
+            return ['type' => 'redirect', 'location' => self::homeFor(Auth::role())];
+        }
+
         $roles = $this->routes['page_roles'][$page] ?? [];
         if ($error = RoleMiddleware::handle($roles)) {
             return $this->error($error, false);

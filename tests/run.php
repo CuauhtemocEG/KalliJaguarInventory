@@ -78,8 +78,11 @@ prueba('POST sin CSRF -> 419', $r['type'] === 'error' && $r['status'] === 419);
 $_SESSION = ['id' => 5, 'usuario' => 'x', 'rol' => 'Supervisor'];
 $r = $router->resolve('GET', '/', ['page' => 'userManagement']);
 prueba('Supervisor no entra a userManagement', $r['type'] === 'error' && $r['status'] === 403);
-$r = $router->resolve('GET', '/', ['page' => 'home']);
-prueba('Supervisor entra a home', $r['page'] === 'home');
+foreach (['Supervisor' => 'solicitar', 'Logistica' => 'gestor', 'Administrador' => 'gestor'] as $rol => $destino) {
+    $_SESSION['rol'] = $rol;
+    $r = $router->resolve('GET', '/index.php', ['page' => 'home']);
+    prueba("Inicio anterior redirige a {$destino} para {$rol}", $r['type'] === 'redirect' && $r['location'] === app_url($destino));
+}
 $_SESSION['rol'] = 'Administrador';
 $r = $router->resolve('GET', '/', ['page' => 'userManagement']);
 prueba('Administrador entra a userManagement', $r['page'] === 'userManagement');
