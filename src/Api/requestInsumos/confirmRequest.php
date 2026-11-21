@@ -31,13 +31,30 @@ if ($mantenimiento !== null) {
 }
 
 try {
-    $comandaId = \App\Services\Solicitud::confirmar(conexion(), $userId, $idSucursal, $fechaEntrega, TAX_MULTIPLIER);
-    echo json_encode(['status' => 'success', 'message' => 'Solicitud confirmada correctamente', 'comandaID' => $comandaId]);
+    $db = conexion();
+    $comandaId = \App\Services\Solicitud::confirmar($db, $userId, $idSucursal, $fechaEntrega, TAX_MULTIPLIER);
 } catch (InvalidArgumentException $e) {
     http_response_code(422);
     echo json_encode(['status' => 'error', 'message' => $e->getMessage()], JSON_UNESCAPED_UNICODE);
+    exit;
 } catch (Throwable $e) {
     error_log('[confirmRequest] ' . $e->getMessage());
     http_response_code(500);
     echo json_encode(['status' => 'error', 'message' => 'No se pudo procesar la solicitud. Intenta de nuevo.']);
+    exit;
 }
+
+try {
+    \App\Services\ConfirmacionPedido::enviar($db, $comandaId);
+    $correoEnviado = true;
+} catch (Throwable $e) {
+    error_log('[confirmRequest] Correo no enviado para ' . $comandaId . ': ' . $e->getMessage());
+    $correoEnviado = false;
+}
+
+echo json_encode([
+    'status' => 'success',
+    'message' => 'Solicitud confirmada correctamente',
+    'comandaID' => $comandaId,
+    'correo_enviado' => $correoEnviado,
+], JSON_UNESCAPED_UNICODE);

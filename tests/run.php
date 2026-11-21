@@ -120,6 +120,28 @@ prueba('rechaza 0, negativos y texto', Unidades::validar('Litro', 0)[0] === null
 prueba('formato "3 manojos" y "1 L"', Unidades::formato('Manojo', 3) === '3 manojos' && Unidades::formato('Litro', 1) === '1 L');
 prueba('tipo inválido no existe', !Unidades::esValido('Galon'));
 
+echo "Confirmación de pedido por correo" . PHP_EOL;
+$correo = new \PHPMailer\PHPMailer\PHPMailer(true);
+$correo->CharSet = 'UTF-8';
+$correo->setFrom('remitente@example.com', 'Kalli Jaguar');
+$correo->addAddress('destinatario@example.com');
+\App\Services\ConfirmacionPedido::preparar($correo, [
+    'info' => ['ComandaID' => 'COM-123', 'sucursal' => 'Centro & Norte', 'solicitante' => 'Ana', 'entrega' => '2026-11-21'],
+    'items' => [
+        ['Nombre' => '<Queso>', 'Tipo' => 'Pesable', 'Cantidad' => 1.5, 'PrecioFinal' => 34.80],
+        ['Nombre' => 'Aceite', 'Tipo' => 'Unidad', 'Cantidad' => 2, 'PrecioFinal' => 50.00],
+    ],
+], '%PDF-test');
+$adjuntos = $correo->getAttachments();
+prueba('confirmación contiene el folio', str_contains($correo->Subject, 'COM-123'));
+prueba('confirmación contiene resumen seguro',
+    str_contains($correo->Body, 'Centro &amp; Norte') && str_contains($correo->Body, '&lt;Queso&gt;')
+    && str_contains($correo->Body, '1.5 kg') && str_contains($correo->Body, '$84.80'));
+prueba('confirmación adjunta el PDF generado',
+    count($adjuntos) === 1 && $adjuntos[0][0] === '%PDF-test' && $adjuntos[0][2] === 'comanda-COM-123.pdf'
+    && $adjuntos[0][4] === 'application/pdf');
+prueba('confirmación genera MIME válido', $correo->preSend() && str_contains($correo->getSentMIMEMessage(), 'application/pdf'));
+
 echo "Requisiciones (interpretación de texto)" . PHP_EOL;
 use App\Services\Requisiciones;
 $caso = static fn (string $t) => Requisiciones::interpretarLinea($t);

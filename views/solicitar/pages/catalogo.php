@@ -399,7 +399,7 @@ if ($mantenimiento !== null) {
             const res = await U.api('requestInsumos/confirmRequest.php', { method: 'POST', body: { idSucursal, fechaEntrega } });
             abrirCarrito(false);
             const next = await Swal.fire({
-                icon: 'success', title: 'Solicitud enviada', html: `Folio <b>${U.esc(res.comandaID)}</b><br><span class="text-sm text-slate-500">El almacén la preparará para tu entrega.</span>`,
+                icon: res.correo_enviado === false ? 'warning' : 'success', title: 'Solicitud enviada', html: `Folio <b>${U.esc(res.comandaID)}</b><br><span class="text-sm text-slate-500">El almacén la preparará para tu entrega.</span>${res.correo_enviado === false ? '<p class="mt-3 text-sm text-amber-700">El pedido se guardó, pero no se pudo enviar el correo de confirmación. Avisa al administrador; no necesitas crear el pedido de nuevo.</p>' : ''}`,
                 showCancelButton: true, confirmButtonText: 'Ver mis pedidos', cancelButtonText: 'Seguir pidiendo', confirmButtonColor: '#f59e0b',
             });
             if (next.isConfirmed) { window.location.href = U.url('solicitar/pedidos'); return; }
