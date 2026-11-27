@@ -309,7 +309,8 @@ function pedidoDetalle(PDO $db, string $comanda): void
     }
 
     $det = $db->prepare(
-        "SELECT m.MovimientoID, m.ProductoID, p.UPC, p.Nombre, p.Tipo, m.Cantidad, m.PrecioFinal
+        "SELECT m.MovimientoID, m.ProductoID, p.UPC, p.Nombre, p.Tipo, p.Cantidad AS StockDisponible,
+                m.Cantidad, m.PrecioFinal
          FROM MovimientosInventario m
          INNER JOIN Productos p ON p.ProductoID = m.ProductoID
          WHERE m.ComandaID = :c AND m.TipoMovimiento = 'Salida'
@@ -507,10 +508,6 @@ function pedidoAccion(PDO $db, array $in): void
                 }
                 if (\App\Services\Unidades::esEntero($f['Tipo']) && abs($surtida - round($surtida)) > 0.0001) {
                     $errores[] = "'$nombre' solo admite cantidades enteras";
-                    continue;
-                }
-                if ($surtida > $pedida * 1.5 + 0.0001) {
-                    $errores[] = "'$nombre': no puedes surtir más de 50% sobre lo pedido (" . \App\Services\Unidades::formato($f['Tipo'], $pedida) . ')';
                     continue;
                 }
                 $extra = $surtida - $pedida;

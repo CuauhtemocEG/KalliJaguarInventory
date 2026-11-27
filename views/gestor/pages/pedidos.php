@@ -125,8 +125,9 @@
             const u = U.unit(d.Tipo);
             const pedida = editable ? d.Cantidad : d.CantidadSolicitada;
             const cambio = !editable && Math.abs(Number(d.Cantidad) - Number(d.CantidadSolicitada)) > 0.0005;
+            const disponibleSurtido = editable ? Number(d.Cantidad) + Number(d.StockDisponible || 0) : Number(d.Cantidad);
             const surtido = editable
-                ? `<div class="inline-flex items-center gap-1"><input type="number" min="0" max="${Number(d.Cantidad) * 1.5}" step="${u.entero ? '1' : '0.001'}" inputmode="${u.entero ? 'numeric' : 'decimal'}" data-mov="${d.MovimientoID}" data-pedida="${d.Cantidad}" data-unit="${d.PrecioUnitarioIva}" value="${U.esc(d.Cantidad)}" class="w-24 rounded-lg border border-slate-200 px-2 py-1 text-right"><span class="text-xs text-slate-500 w-8 text-left">${u.abbr}</span></div>`
+                ? `<div class="inline-flex items-center gap-1"><input type="number" min="0" max="${disponibleSurtido}" step="${u.entero ? '1' : '0.001'}" inputmode="${u.entero ? 'numeric' : 'decimal'}" data-mov="${d.MovimientoID}" data-pedida="${d.Cantidad}" data-unit="${d.PrecioUnitarioIva}" value="${U.esc(d.Cantidad)}" class="w-24 rounded-lg border border-slate-200 px-2 py-1 text-right"><span class="text-xs text-slate-500 w-8 text-left">${u.abbr}</span></div>`
                 : `<span class="${cambio ? 'font-bold text-amber-700' : ''}">${U.qty(d.Cantidad, d.Tipo)}</span>`;
             return `<tr class="border-b border-slate-100">
                 <td class="py-2">${U.esc(d.Nombre)}<p class="text-xs text-slate-400">${U.esc(d.UPC || '')}</p></td>
@@ -166,7 +167,7 @@
                 </div>
                 <div id="add-sel" class="hidden mt-3 flex flex-wrap items-center gap-2"></div>
             </div>` : ''}
-            ${editable ? '<p class="text-xs text-slate-500 bg-slate-50 rounded-lg px-3 py-2"><i class="fa-solid fa-scale-balanced mr-1"></i>Captura lo que realmente se envía (máx. 50% sobre lo pedido). El importe, el total y el inventario se ajustan al confirmar.</p>' : ''}
+            ${editable ? '<p class="text-xs text-slate-500 bg-slate-50 rounded-lg px-3 py-2"><i class="fa-solid fa-scale-balanced mr-1"></i>Captura lo que realmente se envía. El límite es el inventario disponible; el importe, el total y el inventario se ajustan al confirmar.</p>' : ''}
             <div><p class="font-semibold mb-1">Historial</p><ul class="space-y-1">${hist}</ul></div>`;
         const btn = 'px-4 py-2.5 rounded-xl font-semibold ';
         const acc = [];
