@@ -294,13 +294,13 @@ function pedidoDetalle(PDO $db, string $comanda): void
 {
     $cab = $db->prepare(
         "SELECT m.ComandaID, MIN(m.FechaMovimiento) AS fecha, MAX(m.Status) AS estado,
-                MAX(m.FechaDelivery) AS entrega, s.nombre AS sucursal, u.Nombre AS solicitante,
+                MAX(m.FechaDelivery) AS entrega, s.SucursalID, s.nombre AS sucursal, u.Nombre AS solicitante,
                 SUM(m.PrecioFinal) AS total
          FROM MovimientosInventario m
          LEFT JOIN Sucursales s ON s.SucursalID = m.SucursalID
          LEFT JOIN Usuarios u ON u.UsuarioID = m.UsuarioID
          WHERE m.ComandaID = :c AND m.TipoMovimiento = 'Salida'
-         GROUP BY m.ComandaID, s.nombre, u.Nombre"
+         GROUP BY m.ComandaID, s.SucursalID, s.nombre, u.Nombre"
     );
     $cab->execute([':c' => $comanda]);
     $pedido = $cab->fetch(PDO::FETCH_ASSOC);
@@ -351,6 +351,7 @@ function pedidoDetalle(PDO $db, string $comanda): void
         'historial' => $hist->fetchAll(PDO::FETCH_ASSOC),
         'totales' => ['subtotal' => $subtotal, 'iva' => round($total - $subtotal, 2), 'total' => $total],
         'pdf' => true,
+        'sucursales' => $db->query("SELECT SucursalID, nombre FROM Sucursales ORDER BY nombre")->fetchAll(PDO::FETCH_ASSOC),
     ]);
 }
 
@@ -364,8 +365,74 @@ function pedidoAccion(PDO $db, array $in): void
         pedidoEditarPartida($db, $accion, $comanda, $in, $userId);
     }
 
-    if ($comanda === '' || !in_array($accion, ['transito', 'entregar', 'cancelar'], true)) {
+    if ($comanda === '' || !in_array($accion, ['transito', 'entregar', 'cancelar', 'cambiar_sucursal'], true)) {
         pedidoResponder(400, ['success' => false, 'message' => 'Datos incompletos o acción no válida']);
+    }
+
+    if ($accion === 'cambiar_sucursal') {
+        $sucursalId = (int) ($in['sucursal_id'] ?? 0);
+        if ($sucursalId <= 0) {
+            pedidoResponder(422, ['success' => false, 'message' => 'Selecciona una sucursal válida']);
+        }
+
+        $db->beginTransaction();
+        $stmt = $db->prepare(
+            "SELECT MovimientoID, SucursalID, Status FROM MovimientosInventario
+             WHERE ComandaID = :c AND TipoMovimiento = 'Salida' FOR UPDATE"
+        );
+        $stmt->execute([':c' => $comanda]);
+        $filasSucursal = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if (!$filasSucursal) {
+            $db->rollBack();
+            pedidoResponder(404, ['success' => false, 'message' => 'El pedido no existe']);
+        }
+
+        $estados = array_values(array_unique(array_column($filasSucursal, 'Status')));
+        if (count($estados) !== 1 || !in_array($estados[0], ['Abierto', 'En transito'], true)) {
+            $db->rollBack();
+            pedidoResponder(409, ['success' => false, 'message' => 'Solo se puede cambiar la sucursal de pedidos Abiertos o En tránsito']);
+        }
+
+        $sucursalNueva = $db->prepare('SELECT SucursalID, nombre FROM Sucursales WHERE SucursalID = :id');
+        $sucursalNueva->execute([':id' => $sucursalId]);
+        $destino = $sucursalNueva->fetch(PDO::FETCH_ASSOC);
+        if (!$destino) {
+            $db->rollBack();
+            pedidoResponder(404, ['success' => false, 'message' => 'La sucursal seleccionada no existe']);
+        }
+
+        $sucursalActual = (int) $filasSucursal[0]['SucursalID'];
+        if ($sucursalActual === $sucursalId) {
+            $db->rollBack();
+            pedidoResponder(409, ['success' => false, 'message' => 'El pedido ya pertenece a esa sucursal']);
+        }
+
+        $db->prepare(
+            "UPDATE MovimientosInventario SET SucursalID = :s
+             WHERE ComandaID = :c AND TipoMovimiento = 'Salida'"
+        )->execute([':s' => $sucursalId, ':c' => $comanda]);
+
+        $sucursalAnterior = $db->prepare('SELECT nombre FROM Sucursales WHERE SucursalID = :id');
+        $sucursalAnterior->execute([':id' => $sucursalActual]);
+        $origenNombre = (string) ($sucursalAnterior->fetchColumn() ?: 'sucursal anterior');
+
+        $db->prepare(
+            'INSERT INTO EstadosComanda (ComandaID, EstadoAnterior, EstadoNuevo, FechaCambio, UsuarioID, Observaciones)
+             VALUES (:c, :e, :e, NOW(), :u, :o)'
+        )->execute([
+            ':c' => $comanda,
+            ':e' => $estados[0],
+            ':u' => $userId,
+            ':o' => 'Cambio de sucursal: ' . mb_substr($origenNombre, 0, 80) . ' → ' . mb_substr((string) $destino['nombre'], 0, 80),
+        ]);
+
+        $db->commit();
+        pedidoResponder(200, [
+            'success' => true,
+            'message' => 'Sucursal cambiada a ' . $destino['nombre'],
+            'SucursalID' => $sucursalId,
+            'sucursal' => $destino['nombre'],
+        ]);
     }
     $motivo = trim((string) ($in['motivo'] ?? ''));
     if ($accion === 'cancelar' && $motivo === '') {

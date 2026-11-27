@@ -120,6 +120,7 @@
         $('d-estado').textContent = etiquetas[p.estado] || p.estado;
         const editable = p.estado === 'Abierto';
         const complementable = editable || p.estado === 'En transito';
+        const puedeCambiarSucursal = p.estado === 'Abierto' || p.estado === 'En transito';
         const filas = r.partidas.map((d) => {
             const u = U.unit(d.Tipo);
             const pedida = editable ? d.Cantidad : d.CantidadSolicitada;
@@ -137,10 +138,21 @@
         const hist = r.historial.length ? r.historial.map((h) => `
             <li class="text-slate-600"><span class="text-slate-400">${fecha(h.FechaCambio)}</span> ${U.esc(etiquetas[h.EstadoAnterior] || h.EstadoAnterior)} → <strong>${U.esc(etiquetas[h.EstadoNuevo] || h.EstadoNuevo)}</strong>
             ${h.usuario ? '· ' + U.esc(h.usuario) : ''}${h.Observaciones ? ' · ' + U.esc(h.Observaciones) : ''}</li>`).join('') : '<li class="text-slate-400">Sin movimientos registrados</li>';
+        const sucursalActual = Number(p.SucursalID);
+        const sucursalSelector = puedeCambiarSucursal
+            ? `<div class="rounded-xl bg-purple-50 px-3 py-2 sm:col-span-2 lg:col-span-1">
+                <label for="d-sucursal" class="block text-[11px] text-purple-600 mb-1">Sucursal destino</label>
+                <select id="d-sucursal" class="w-full rounded-lg border border-purple-200 bg-white px-2 py-1.5 text-sm">
+                    ${(r.sucursales || []).map((s) => `<option value="${U.esc(s.SucursalID)}"${Number(s.SucursalID) === sucursalActual ? ' selected' : ''}>${U.esc(s.nombre)}</option>`).join('')}
+                </select>
+                <button type="button" data-accion="cambiar_sucursal" class="mt-2 w-full px-3 py-1.5 rounded-lg border border-purple-300 text-purple-700 font-semibold hover:bg-purple-100">Cambiar sucursal</button>
+               </div>`
+            : `<div class="rounded-xl bg-slate-50 px-3 py-2"><p class="text-[11px] text-slate-400">Sucursal</p><p class="font-medium">${U.esc(p.sucursal || '—')}</p></div>`;
         $('d-cuerpo').innerHTML = `
             ${progreso(p.estado)}
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                ${[['Solicitante', U.esc(p.solicitante || '—')], ['Sucursal', U.esc(p.sucursal || '—')], ['Solicitado', fecha(p.fecha)], ['Entrega', fecha(p.entrega) + entregaTag(p)]].map(([t, v]) => `<div class="rounded-xl bg-slate-50 px-3 py-2"><p class="text-[11px] text-slate-400">${t}</p><p class="font-medium">${v}</p></div>`).join('')}
+                ${[['Solicitante', U.esc(p.solicitante || '—')], ['Solicitado', fecha(p.fecha)], ['Entrega', fecha(p.entrega) + entregaTag(p)]].map(([t, v]) => `<div class="rounded-xl bg-slate-50 px-3 py-2"><p class="text-[11px] text-slate-400">${t}</p><p class="font-medium">${v}</p></div>`).join('')}
+                ${sucursalSelector}
             </div>
             <div class="overflow-x-auto"><table class="w-full">
                 <thead class="text-slate-500 text-xs"><tr><th class="text-left">Producto</th><th class="text-right">Pedido</th><th class="text-right">${editable ? 'Surtir' : 'Enviado'}</th><th class="text-right">Importe</th>${complementable ? '<th></th>' : ''}</tr></thead>
@@ -205,7 +217,13 @@
     async function ejecutar(accion) {
         if (accion === 'pdf') { return U.pdf(actual.pedido.ComandaID); }
         const body = { accion, comanda: actual.pedido.ComandaID };
-        if (accion === 'transito') {
+        if (accion === 'cambiar_sucursal') {
+            const select = $('d-sucursal');
+            if (!select || !select.value) { return U.toast('Selecciona una sucursal', 'error'); }
+            body.sucursal_id = Number(select.value);
+            const sucursal = select.options[select.selectedIndex].text;
+            if (!(await U.confirm(`¿Cambiar la sucursal destino a "${sucursal}"?`))) { return; }
+        } else if (accion === 'transito') {
             body.picking = {};
             $('d-cuerpo').querySelectorAll('[data-mov]').forEach((i) => { body.picking[i.dataset.mov] = i.value; });
             const cambios = [...$('d-cuerpo').querySelectorAll('[data-mov]')].filter((i) => Math.abs(Number(i.value) - Number(i.dataset.pedida)) > 0.0005).length;
@@ -219,7 +237,7 @@
             body.motivo = r.value.trim();
         }
         await U.api('gestor/pedidos.php', { method: 'POST', body });
-        U.toast('Pedido actualizado', 'success');
+        U.toast(accion === 'cambiar_sucursal' ? 'Sucursal actualizada' : 'Pedido actualizado', 'success');
         pintarDetalle(await U.api('gestor/pedidos.php', { query: { comanda: body.comanda } }));
         await cargar();
     }
@@ -265,6 +283,15 @@
 
     $('d-cuerpo').addEventListener('input', (e) => { if (e.target.id === 'add-q') { buscarProducto(); } });
     $('d-cuerpo').addEventListener('click', async (e) => {
+        const accionSucursal = e.target.closest('[data-accion="cambiar_sucursal"]');
+        if (accionSucursal) {
+            try {
+                await ejecutar('cambiar_sucursal');
+            } catch (err) {
+                U.toast(err.message, 'error');
+            }
+            return;
+        }
         const el = e.target.closest('[data-elegir]');
         if (el) { return elegirProducto(JSON.parse(el.dataset.elegir)); }
         if (e.target.closest('#add-no')) { elegido = null; return $('add-sel').classList.add('hidden'); }
